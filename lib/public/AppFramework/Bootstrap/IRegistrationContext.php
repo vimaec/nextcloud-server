@@ -26,6 +26,7 @@ declare(strict_types=1);
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 namespace OCP\AppFramework\Bootstrap;
 
 use OCP\AppFramework\IAppContainer;
@@ -35,6 +36,7 @@ use OCP\EventDispatcher\IEventDispatcher;
 use OCP\Files\Template\ICustomTemplateProvider;
 use OCP\IContainer;
 use OCP\Notification\INotifier;
+use OCP\Preview\IProviderV2;
 
 /**
  * The context object passed to IBootstrap::register
@@ -228,4 +230,16 @@ interface IRegistrationContext {
 	 * @since 22.0.0
 	 */
 	public function registerTwoFactorProvider(string $twoFactorProviderClass): void;
+
+	/**
+	 * Register a preview provider
+	 *
+	 * It is allowed to register more than one provider per app.
+	 *
+	 * @param string $previewProviderClass
+	 * @param string $mimeTypeRegex
+	 * @psalm-param class-string<IProviderV2> $previewProviderClass
+	 * @since 23.0.0
+	 */
+	public function registerPreviewProvider(string $previewProviderClass, string $mimeTypeRegex): void;
 }

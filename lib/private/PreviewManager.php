@@ -30,8 +30,10 @@
  */
 namespace OC;
 
+use OC\AppFramework\Bootstrap\Coordinator;
 use OC\Preview\Generator;
 use OC\Preview\GeneratorHelper;
+use OCP\AppFramework\QueryException;
 use OCP\Files\File;
 use OCP\Files\IAppData;
 use OCP\Files\IRootFolder;
@@ -39,6 +41,7 @@ use OCP\Files\NotFoundException;
 use OCP\Files\SimpleFS\ISimpleFile;
 use OCP\IConfig;
 use OCP\IPreview;
+use OCP\IServerContainer;
 use OCP\Preview\IProviderV2;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -79,6 +82,12 @@ class PreviewManager implements IPreview {
 	/** @var string */
 	protected $userId;
 
+	/** @var Coordinator */
+	private $bootstrapCoordinator;
+
+	/** @var IServerContainer */
+	private $container;
+
 	/**
 	 * PreviewManager constructor.
 	 *
@@ -93,13 +102,17 @@ class PreviewManager implements IPreview {
 								IAppData $appData,
 								EventDispatcherInterface $eventDispatcher,
 								GeneratorHelper $helper,
-								$userId) {
+								$userId,
+								Coordinator $bootstrapCoordinator,
+								IServerContainer $container) {
 		$this->config = $config;
 		$this->rootFolder = $rootFolder;
 		$this->appData = $appData;
 		$this->eventDispatcher = $eventDispatcher;
 		$this->helper = $helper;
 		$this->userId = $userId;
+		$this->bootstrapCoordinator = $bootstrapCoordinator;
+		$this->container = $container;
 	}
 
 	/**
@@ -134,6 +147,7 @@ class PreviewManager implements IPreview {
 		}
 
 		$this->registerCoreProviders();
+		$this->registerBootstrapProviders();
 		if ($this->providerListDirty) {
 			$keys = array_map('strlen', array_keys($this->providers));
 			array_multisort($keys, SORT_DESC, $this->providers);
@@ -220,6 +234,7 @@ class PreviewManager implements IPreview {
 		}
 
 		$this->registerCoreProviders();
+		$this->registerBootstrapProviders();
 		$providerMimeTypes = array_keys($this->providers);
 		foreach ($providerMimeTypes as $supportedMimeType) {
 			if (preg_match($supportedMimeType, $mimeType)) {
@@ -429,6 +444,26 @@ class PreviewManager implements IPreview {
 
 				$this->registerCoreProvider(Preview\Movie::class, '/video\/.*/');
 			}
+		}
+	}
+
+	private function registerBootstrapProviders(): void {
+		$context = $this->bootstrapCoordinator->getRegistrationContext();
+
+		if ($context === null) {
+			// Just ignore for now
+			return;
+		}
+
+		$providers = $context->getPreviewProviders();
+		foreach ($providers as $provider) {
+			$this->registerProvider($provider->getMimeTypeRegex(), function () use ($provider) {
+				try {
+					return $this->container->query($provider->getService());
+				} catch (QueryException $e) {
+					return null;
+				}
+			});
 		}
 	}
 }
