@@ -55,4 +55,16 @@ class UserStatusProvider implements IProvider {
 
 		return $userStatuses;
 	}
+
+	public function setUserStatus(string $userId, string $messageId, string $status, bool $createBackup = false): void {
+		if ($createBackup) {
+			$this->service->backupCurrentStatus($userId);
+		}
+		$this->service->setStatus($userId, $status, null, true);
+		$this->service->setPredefinedMessage($userId, $messageId, null);
+	}
+
+	public function revertUserStatus(string $userId, string $messageId, string $status): void {
+		$this->service->revertUserStatus($userId, $messageId, $status);
+	}
 }

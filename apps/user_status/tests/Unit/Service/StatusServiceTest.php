@@ -665,4 +665,71 @@ class StatusServiceTest extends TestCase {
 
 		parent::invokePrivate($this->service, 'cleanStatus', [$status]);
 	}
+
+	public function testBackupWorkingHasOneAlreadyAndNothingToBackup() {
+		$status = new UserStatus();
+		$status->setStatus(IUserStatus::ONLINE);
+		$status->setStatusTimestamp(1337);
+		$status->setIsUserDefined(true);
+		$status->setMessageId('meeting');
+		$status->setUserId('john');
+		$status->setIsBackup(true);
+
+		$this->mapper->expects($this->once())
+			->method('findByUserId')
+			->with('john', true)
+			->willReturn($status);
+		$this->mapper->expects($this->once())
+			->method('delete')
+			->with($status);
+		$this->mapper->expects($this->once())
+			->method('findByUserId')
+			->with('john')
+			->willThrowException(new DoesNotExistException(''));
+
+		$this->service->backupCurrentStatus('john');
+	}
+
+	public function testBackupWorkingHasOneAlready() {
+		$status = new UserStatus();
+		$status->setStatus(IUserStatus::ONLINE);
+		$status->setStatusTimestamp(1337);
+		$status->setIsUserDefined(true);
+		$status->setMessageId('meeting');
+		$status->setUserId('john');
+		$status->setIsBackup(true);
+
+		$currentStatus = new UserStatus();
+		$currentStatus->setStatus(IUserStatus::ONLINE);
+		$currentStatus->setStatusTimestamp(1337);
+		$currentStatus->setIsUserDefined(true);
+		$currentStatus->setMessageId('meeting');
+		$currentStatus->setUserId('john');
+
+		$this->mapper->expects($this->once())
+			->method('findByUserId')
+			->with('john', true)
+			->willReturn($status);
+		$this->mapper->expects($this->once())
+			->method('delete')
+			->with($status);
+		$this->mapper->expects($this->once())
+			->method('findByUserId')
+			->with('john')
+			->willReturn($currentStatus);
+
+		$newBackupStatus = new UserStatus();
+		$newBackupStatus->setStatus(IUserStatus::ONLINE);
+		$newBackupStatus->setStatusTimestamp(1337);
+		$newBackupStatus->setIsUserDefined(true);
+		$newBackupStatus->setMessageId('meeting');
+		$newBackupStatus->setUserId('_john');
+		$newBackupStatus->setIsBackup(true);
+
+		$this->mapper->expects($this->once())
+			->method('update')
+			->with($newBackupStatus);
+
+		$this->service->backupCurrentStatus('john');
+	}
 }
