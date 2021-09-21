@@ -56,6 +56,7 @@
 					:show-user-status-compact="false"
 					:disable-menu="true"
 					:disable-tooltip="true"
+					:is-no-user="!isUserAvatarVisible"
 					@click.native.prevent.stop="openStatusModal" />
 
 				<div class="user-actions">
@@ -64,12 +65,11 @@
 						class="user-actions__primary"
 						:href="primaryAction.target"
 						:icon="primaryAction.icon"
-						:label="primaryAction.title"
-						:target="primaryAction.name === 'phone' ? '_self' :'_blank'">
-						{{ primaryAction.label }}
+						:target="primaryAction.id === 'phone' ? '_self' :'_blank'">
+						{{ primaryAction.title }}
 					</PrimaryActionButton>
 					<div class="user-actions__other">
-						<!-- TODO fix icon rendering in nextcloud-vue, no icon is displayed on the action when not in the dropdown menu -->
+						<!-- TODO fix icon rendering in nextcloud-vue, the icon passed as the prop is not displayed on the action when not in the dropdown menu -->
 						<Actions v-for="action in allActions.slice(1, 4)"
 							:key="action.icon"
 							:default-icon="action.icon"
@@ -85,7 +85,7 @@
 								:close-after-click="true"
 								:icon="action.icon"
 								:href="action.target"
-								:target="action.name === 'phone' ? '_self' :'_blank'">
+								:target="action.id === 'phone' ? '_self' :'_blank'">
 								{{ action.title }}
 							</ActionLink>
 						</Actions>
@@ -96,7 +96,7 @@
 								<ActionLink
 									:close-after-click="true"
 									:href="action.target"
-									:target="action.name === 'phone' ? '_self' :'_blank'"
+									:target="action.id === 'phone' ? '_self' :'_blank'"
 									:class="{ 'icon-invert': colorMainBackground === '#181818' }"
 									:icon="action.icon">
 									{{ action.title }}
@@ -165,20 +165,37 @@ import { showError } from '@nextcloud/dialogs'
 
 import PrimaryActionButton from '../components/Profile/PrimaryActionButton'
 
-const { actionParameters, userId, biography, organisation, headline, role, displayName, address, isAvatarDisplayed } = loadState('core', 'profileParameters', {})
 const status = loadState('core', 'status', {})
-
-// const actionParameters = []
+const {
+	userId,
+	displayName,
+	address,
+	organisation,
+	role,
+	headline,
+	biography,
+	actions,
+	isUserAvatarVisible,
+} = loadState('core', 'profileParameters', {
+	userId: null,
+	displayName: null,
+	address: null,
+	organisation: null,
+	role: null,
+	headline: null,
+	biography: null,
+	actions: [],
+	isUserAvatarVisible: false,
+})
 
 export default {
 	name: 'Profile',
 
 	components: {
-		Avatar,
-		Actions,
-		ActionLink,
 		AccountIcon,
-		// PhoneIcon,
+		ActionLink,
+		Actions,
+		Avatar,
 		MapMarkerIcon,
 		PencilIcon,
 		PrimaryActionButton,
@@ -186,24 +203,22 @@ export default {
 
 	data() {
 		return {
+			status,
 			userId,
 			displayName,
 			address,
-			status,
 			organisation,
 			role,
 			headline,
 			biography,
+			actions,
+			isUserAvatarVisible,
 		}
 	},
 
 	computed: {
 		isCurrentUser() {
 			return getCurrentUser()?.uid === this.userId
-		},
-
-		actionsDisabled() {
-			return this.isCurrentUser
 		},
 
 		primaryAction() {
@@ -214,7 +229,7 @@ export default {
 		},
 
 		allActions() {
-			return actionParameters
+			return this.actions
 		},
 
 		otherActions() {
@@ -483,13 +498,17 @@ $content-max-width: 640px;
 .user-actions {
 	display: flex;
 	flex-direction: column;
-	gap: 5px 0;
+	gap: 8px 0;
 	margin-top: 20px;
+
+	&__primary {
+		margin: 0 auto;
+	}
 
 	&__other {
 		display: flex;
 		justify-content: center;
-		gap: 0 5px;
+		gap: 0 4px;
 	}
 }
 
