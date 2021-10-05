@@ -880,6 +880,12 @@ class Cache implements ICache {
 			$query->setFirstResult($searchQuery->getOffset());
 		}
 
+		return $query;
+	}
+
+	public function searchQuery(ISearchQuery $searchQuery) {
+		$query = $this->buildSearchQuery($searchQuery);
+
 		$result = $query->execute();
 		return $this->searchResultToCacheEntries($result);
 	}
