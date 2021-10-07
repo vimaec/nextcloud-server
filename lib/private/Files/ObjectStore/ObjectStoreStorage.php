@@ -539,7 +539,13 @@ class ObjectStoreStorage extends \OC\Files\Storage\Common {
 		if ($sourceStorage->instanceOfStorage(ObjectStoreStorage::class)) {
 			/** @var ObjectStoreStorage $sourceStorage */
 			if ($sourceStorage->getObjectStore()->getStorageId() === $this->getObjectStore()->getStorageId()) {
+				/** @var CacheEntry $sourceEntry */
 				$sourceEntry = $sourceStorage->getCache()->get($sourceInternalPath);
+				$sourceEntryData = $sourceEntry->getData();
+				if (is_array($sourceEntryData) && array_key_exists('scan_permissions', $sourceEntryData)) {
+					$sourceEntryData['permissions'] = $sourceEntryData['scan_permissions'];
+				}
+				$sourceEntry = new CacheEntry($sourceEntryData);
 				$this->copyInner($sourceEntry, $targetInternalPath);
 				return true;
 			}

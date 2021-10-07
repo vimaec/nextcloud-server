@@ -42,7 +42,6 @@ namespace OC\Files\Cache;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use OC\Files\Search\SearchComparison;
 use OC\Files\Search\SearchQuery;
-use OCP\Constants;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\EventDispatcher\IEventDispatcher;
 use OCP\Files\Cache\CacheEntryInsertedEvent;
@@ -1017,14 +1016,6 @@ class Cache implements ICache {
 			throw new \RuntimeException("Invalid source cache entry on copyFromCache");
 		}
 		$data = $this->cacheEntryToArray($sourceEntry);
-		$targetParentEntry = $this->get(dirname($targetPath));
-		if ($targetParentEntry !== false && $targetParentEntry !== null) {
-			if ($sourceEntry->getMimeType() === ICacheEntry::DIRECTORY_MIMETYPE) {
-				$data['permissions'] = $targetParentEntry->getPermissions();
-			} else {
-				$data['permissions'] = $targetParentEntry->getPermissions() & ~Constants::PERMISSION_CREATE;
-			}
-		}
 		$fileId = $this->put($targetPath, $data);
 		if ($fileId <= 0) {
 			throw new \RuntimeException("Failed to copy to " . $targetPath . " from cache with source data " . json_encode($data) . " ");
