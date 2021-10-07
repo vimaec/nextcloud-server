@@ -89,7 +89,7 @@ export const ACCOUNT_SETTING_PROPERTY_ENUM = Object.freeze({
 
 /** Enum of account setting properties to human readable setting properties */
 export const ACCOUNT_SETTING_PROPERTY_READABLE_ENUM = Object.freeze({
-	LANGUAGE: 'Language',
+	LANGUAGE: t('settings', 'Language'),
 })
 
 /** Enum of scopes */
@@ -130,6 +130,7 @@ export const SCOPE_PROPERTY_ENUM = Object.freeze({
 		name: SCOPE_ENUM.PRIVATE,
 		displayName: t('settings', 'Private'),
 		tooltip: t('settings', 'Only visible to people matched via phone number integration through Talk on mobile'),
+		tooltipDisabled: t('settings', 'Only visible to people matched via phone number integration through Talk on mobile. Unavailable as this property is required for core functionality including file sharing and calendar invitations'),
 		iconClass: 'icon-phone',
 	},
 	[SCOPE_ENUM.LOCAL]: {

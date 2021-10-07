@@ -55,8 +55,8 @@ class TwitterAction implements IAction {
 		$this->urlGenerator = $urlGenerator;
 	}
 
-	public function preload(IUser $user): void {
-		$account = $this->accountManager->getAccount($user);
+	public function preload(IUser $targetUser): void {
+		$account = $this->accountManager->getAccount($targetUser);
 		$this->value = $account->getProperty(IAccountManager::PROPERTY_TWITTER)->getValue();
 	}
 
@@ -66,6 +66,10 @@ class TwitterAction implements IAction {
 
 	public function getId(): string {
 		return IAccountManager::PROPERTY_TWITTER;
+	}
+
+	public function getDisplayId(): string {
+		return $this->l10nFactory->get('core')->t('Twitter');
 	}
 
 	public function getTitle(): string {

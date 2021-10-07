@@ -26,6 +26,7 @@ declare(strict_types=1);
 
 namespace OCP\Profile;
 
+use OC\Core\Db\ProfileConfig;
 use OC\Profile\Actions\EmailAction;
 use OC\Profile\Actions\PhoneAction;
 use OC\Profile\Actions\TwitterAction;
@@ -86,19 +87,23 @@ interface IProfileManager {
 	public function queueAction(string $actionClass): void;
 
 	/**
-	 * Returns an array of registered profile actions for the user
-	 *
-	 * @return IAction[]
-	 *
-	 * @since 23.0.0
-	 */
-	public function getActions(IUser $user, ?IUser $visitingUser): array;
-
-	/**
 	 * Returns the profile parameters in an
 	 * associative array
 	 *
+	 * @param IUser $targetUser
+	 * @param IUser|null|SAME_USER $visitingUser
+	 *
 	 * @since 23.0.0
 	 */
-	public function getProfileParams(IUser $user, ?IUser $visitingUser): array;
+	public function getProfileParams(IUser $targetUser, $visitingUser): array;
+
+	/**
+	 * Returns the profile config
+	 *
+	 * @param IUser $targetUser
+	 * @param IUser|null|true $visitingUser
+	 *
+	 * @since 23.0.0
+	 */
+	public function getProfileConfig(IUser $targetUser, ?IUser $visitingUser): ProfileConfig;
 }

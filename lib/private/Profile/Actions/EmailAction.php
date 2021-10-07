@@ -54,8 +54,8 @@ class EmailAction implements IAction {
 		$this->urlGenerator = $urlGenerator;
 	}
 
-	public function preload(IUser $user): void {
-		$account = $this->accountManager->getAccount($user);
+	public function preload(IUser $targetUser): void {
+		$account = $this->accountManager->getAccount($targetUser);
 		$this->value = $account->getProperty(IAccountManager::PROPERTY_EMAIL)->getValue();
 	}
 
@@ -65,6 +65,10 @@ class EmailAction implements IAction {
 
 	public function getId(): string {
 		return IAccountManager::PROPERTY_EMAIL;
+	}
+
+	public function getDisplayId(): string {
+		return $this->l10nFactory->get('core')->t('Email');
 	}
 
 	public function getTitle(): string {

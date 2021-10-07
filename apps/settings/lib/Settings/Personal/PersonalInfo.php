@@ -51,6 +51,7 @@ use OCP\IL10N;
 use OCP\IUser;
 use OCP\IUserManager;
 use OCP\L10N\IFactory;
+use OCP\Profile\IProfileManager;
 use OCP\Settings\ISettings;
 
 class PersonalInfo implements ISettings {
@@ -64,6 +65,9 @@ class PersonalInfo implements ISettings {
 
 	/** @var IAccountManager */
 	private $accountManager;
+
+	/** @var IProfileManager */
+	private $profileManager;
 
 	/** @var IGroupManager */
 	private $groupManager;
@@ -85,6 +89,7 @@ class PersonalInfo implements ISettings {
 		IUserManager $userManager,
 		IGroupManager $groupManager,
 		IAccountManager $accountManager,
+		IProfileManager $profileManager,
 		IAppManager $appManager,
 		IFactory $l10nFactory,
 		IL10N $l,
@@ -93,6 +98,7 @@ class PersonalInfo implements ISettings {
 		$this->config = $config;
 		$this->userManager = $userManager;
 		$this->accountManager = $accountManager;
+		$this->profileManager = $profileManager;
 		$this->groupManager = $groupManager;
 		$this->appManager = $appManager;
 		$this->l10nFactory = $l10nFactory;
@@ -171,8 +177,13 @@ class PersonalInfo implements ISettings {
 			'lookupServerUploadEnabled' => $lookupServerUploadEnabled,
 		];
 
+		$profileParameters = [
+			'visibilityMap' => $this->profileManager->getProfileConfig($user, $user)->getVisibilityMap(),
+		];
+
 		$this->initialStateService->provideInitialState('personalInfoParameters', $personalInfoParameters);
 		$this->initialStateService->provideInitialState('accountParameters', $accountParameters);
+		$this->initialStateService->provideInitialState('profileParameters', $profileParameters);
 
 		return new TemplateResponse('settings', 'settings/personal/personal.info', $parameters, '');
 	}

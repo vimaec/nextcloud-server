@@ -27,12 +27,14 @@ declare(strict_types=1);
 namespace OC\Profile;
 
 use function Safe\usort;
-use InvalidArgumentException;
+use OC\Core\Db\ProfileConfig;
+use OC\Core\Db\ProfileConfigMapper;
 use OC\KnownUser\KnownUserService;
 use OCP\Accounts\IAccountManager;
 use OCP\Accounts\IAccountProperty;
 use OCP\Accounts\PropertyDoesNotExistException;
 use OCP\App\IAppManager;
+use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\IUser;
 use OCP\Profile\IAction;
 use OCP\Profile\IProfileManager;
@@ -53,6 +55,9 @@ class ProfileManager implements IProfileManager {
 	/** @var IAppManager */
 	private $appManager;
 
+	/** @var ProfileConfigMapper */
+	private $configMapper;
+
 	/** @var ContainerInterface */
 	private $container;
 
@@ -71,12 +76,14 @@ class ProfileManager implements IProfileManager {
 	public function __construct(
 		IAccountManager $accountManager,
 		IAppManager $appManager,
+		ProfileConfigMapper $configMapper,
 		ContainerInterface $container,
 		KnownUserService $knownUserService,
 		LoggerInterface $logger
 	) {
 		$this->accountManager = $accountManager;
 		$this->appManager = $appManager;
+		$this->configMapper = $configMapper;
 		$this->container = $container;
 		$this->knownUserService = $knownUserService;
 		$this->logger = $logger;
@@ -92,21 +99,24 @@ class ProfileManager implements IProfileManager {
 	/**
 	 * Register an action for the user
 	 */
-	private function registerAction(IUser $user, ?IUser $visitingUser, IAction $action): void {
+	private function registerAction(IUser $targetUser, ?IUser $visitingUser, IAction $action): void {
 		if ($action->getAppId() !== 'core') {
-			if (!$this->appManager->isEnabledForUser($action->getAppId(), $user)) {
-				$this->logger->notice('App: ' . $action->getAppId() . ' is not enabled for the user profile: ' . $user->getUID());
+			if (!$this->appManager->isEnabledForUser($action->getAppId(), $targetUser)) {
+				$this->logger->notice('App: ' . $action->getAppId() . ' is not enabled for the user profile: ' . $targetUser->getUID());
+				return;
 			}
 			if (!$this->appManager->isEnabledForUser($action->getAppId(), $visitingUser)) {
-				$this->logger->notice('App: ' . $action->getAppId() . ' is not enabled for the visiting user: ' . $user->getUID());
+				$this->logger->notice('App: ' . $action->getAppId() . ' is not enabled for the visiting user: ' . $targetUser->getUID());
+				return;
 			}
 		}
 
 		if (array_key_exists($action->getId(), $this->actions)) {
-			throw new InvalidArgumentException('Profile action with this id has already been registered: ' . $action->getId());
+			// Don't register duplicate action
+			return;
 		}
 
-		$action->preload($user);
+		$action->preload($targetUser);
 		// Add action to associative array of actions with action ID as the key
 		$this->actions[$action->getId()] = $action;
 	}
@@ -114,7 +124,7 @@ class ProfileManager implements IProfileManager {
 	/**
 	 * Load user actons
 	 */
-	private function loadActions(IUser $user, ?IUser $visitingUser): void {
+	private function loadActions(IUser $targetUser, ?IUser $visitingUser): void {
 		$allActionQueue = array_merge(IProfileManager::ACCOUNT_PROPERTY_ACTION_QUEUE, $this->appActionQueue);
 
 		foreach ($allActionQueue as $actionClass) {
@@ -124,14 +134,14 @@ class ProfileManager implements IProfileManager {
 
 				// Run checks if the action is an account property action
 				if (in_array($actionClass, IProfileManager::ACCOUNT_PROPERTY_ACTION_QUEUE, true)) {
-					$account = $this->accountManager->getAccount($user);
+					$account = $this->accountManager->getAccount($targetUser);
 					$property = $action->getId();
 					$value = $account->getProperty($property)->getValue();
 
 					// Only register action if property is set and visible to visiting user
-					if (!empty($value) && $this->isPropertyVisible($user, $visitingUser, $property)) {
+					if (!empty($value) && $this->isPropertyVisible($targetUser, $visitingUser, $property)) {
 						try {
-							$this->registerAction($user, $visitingUser, $action);
+							$this->registerAction($targetUser, $visitingUser, $action);
 						} catch (TypeError $e) {
 							$this->logger->error(
 								"$actionClass is not an IAction instance",
@@ -143,7 +153,7 @@ class ProfileManager implements IProfileManager {
 					}
 				} else {
 					try {
-						$this->registerAction($user, $visitingUser, $action);
+						$this->registerAction($targetUser, $visitingUser, $action);
 					} catch (TypeError $e) {
 						$this->logger->error(
 							"$actionClass is not an IAction instance",
@@ -165,10 +175,12 @@ class ProfileManager implements IProfileManager {
 	}
 
 	/**
-	 * @inheritDoc
+	 * Return an array of registered profile actions for the user
+	 *
+	 * @return IAction[]
 	 */
-	public function getActions(IUser $user, ?IUser $visitingUser): array {
-		$this->loadActions($user, $visitingUser);
+	private function getActions(IUser $targetUser, ?IUser $visitingUser): array {
+		$this->loadActions($targetUser, $visitingUser);
 
 		$actionsClone = $this->actions;
 		// Sort associative array into indexed array in ascending order of priority
@@ -179,29 +191,46 @@ class ProfileManager implements IProfileManager {
 	}
 
 	/**
-	 * Returns whether the user account property is visible to the visiting user
+	 * Return whether the user account property is visible to the visiting user
 	 * based on it's scope
 	 */
-	private function isPropertyVisible(IUser $user, ?IUser $visitingUser, string $property): bool {
+	private function isPropertyVisible(IUser $targetUser, ?IUser $visitingUser, string $property): bool {
 		try {
-			$account = $this->accountManager->getAccount($user);
+			$account = $this->accountManager->getAccount($targetUser);
 			$scope = $account->getProperty($property)->getScope();
+			$visibility = $this->getProfileConfig($targetUser, $visitingUser)->getVisibility($property);
 
-			// Users, guests, and public access (non-logged in) visitors may only view profiles on the same server
-			// Handle scope so that properties are only visible to visiting users who are permitted
-			// 1) Private   - hidden from public access and from unknown users
-			// 2) Local     - hidden from nobody
-			// 3) Federated - hidden from nobody
-			// 4) Published - hidden from nobody
-			switch ($scope) {
-				case IAccountManager::SCOPE_PRIVATE:
-					return $visitingUser !== null && $this->knownUserService->isKnownToUser($user->getUID(), $visitingUser->getUID());
-				case IAccountManager::SCOPE_LOCAL:
-					return true;
-				case IAccountManager::SCOPE_FEDERATED:
-					return true;
-				case IAccountManager::SCOPE_PUBLISHED:
-					return true;
+			// Handle profile visibility and scope
+			switch ($visibility) {
+				case ProfileConfig::VISIBILITY_HIDE:
+					return false;
+				case ProfileConfig::VISIBILITY_SHOW_USERS_ONLY:
+					switch ($scope) {
+						case IAccountManager::SCOPE_PRIVATE:
+							// Private scope - hidden from public (non-logged-in) and from unknown users
+							return $visitingUser !== null && $this->knownUserService->isKnownToUser($targetUser->getUID(), $visitingUser->getUID());
+						case IAccountManager::SCOPE_LOCAL:
+							return $visitingUser !== null;
+						case IAccountManager::SCOPE_FEDERATED:
+							return $visitingUser !== null;
+						case IAccountManager::SCOPE_PUBLISHED:
+							return $visitingUser !== null;
+						default:
+							return false;
+					}
+				case ProfileConfig::VISIBILITY_SHOW:
+					switch ($scope) {
+						case IAccountManager::SCOPE_PRIVATE:
+							return $visitingUser !== null && $this->knownUserService->isKnownToUser($targetUser->getUID(), $visitingUser->getUID());
+						case IAccountManager::SCOPE_LOCAL:
+							return true;
+						case IAccountManager::SCOPE_FEDERATED:
+							return true;
+						case IAccountManager::SCOPE_PUBLISHED:
+							return true;
+						default:
+							return false;
+					}
 				default:
 					return false;
 			}
@@ -213,8 +242,8 @@ class ProfileManager implements IProfileManager {
 	/**
 	 * @inheritDoc
 	 */
-	public function getProfileParams(IUser $user, ?IUser $visitingUser): array {
-		$account = $this->accountManager->getAccount($user);
+	public function getProfileParams(IUser $targetUser, $visitingUser): array {
+		$account = $this->accountManager->getAccount($targetUser);
 		// Initialize associative array of profile parameters
 		$profileParameters = [
 			'userId' => $account->getUser()->getUID(),
@@ -231,14 +260,14 @@ class ProfileManager implements IProfileManager {
 		// Add account property parameters
 		foreach (IProfileManager::PROFILE_PROPERTIES as $property) {
 			$profileParameters[IProfileManager::PROFILE_PROPERTY_MAP[$property]] =
-				$this->isPropertyVisible($user, $visitingUser, $property)
+				$this->isPropertyVisible($targetUser, $visitingUser, $property)
 				// If empty string explicitly set to null
-				? ($account->getProperty($property)->getValue() ? $account->getProperty($property)->getValue() : null)
+				? ($account->getProperty($property)->getValue() ?: null)
 				: null;
 		}
 
 		// Add avatar visibility parameter
-		$profileParameters['isUserAvatarVisible'] = $this->isPropertyVisible($user, $visitingUser, IAccountManager::PROPERTY_AVATAR);
+		$profileParameters['isUserAvatarVisible'] = $this->isPropertyVisible($targetUser, $visitingUser, IAccountManager::PROPERTY_AVATAR);
 
 		// Add actions paraemer
 		$profileParameters['actions'] = array_map(
@@ -251,9 +280,35 @@ class ProfileManager implements IProfileManager {
 					'target' => $action->getTarget(),
 				];
 			},
-			$this->getActions($user, $visitingUser),
+			$this->getActions($targetUser, $visitingUser),
 		);
 
 		return $profileParameters;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getProfileConfig(IUser $targetUser, ?IUser $visitingUser): ProfileConfig {
+		try {
+			$config = $this->configMapper->get($targetUser->getUID());
+		} catch (DoesNotExistException $e) {
+			$config = new ProfileConfig();
+			$config->setUserId($targetUser->getUID());
+
+			$actionVisibilityMap = [];
+			/** @var IAction $action */
+			foreach ($this->getActions($targetUser, $visitingUser) as $action) {
+				$actionVisibilityMap[$action->getId()] =
+					in_array($action->getId(), ProfileConfig::DEFAULT_ACTION_VISIBILITY_MAP, true)
+					? ProfileConfig::DEFAULT_ACTION_VISIBILITY_MAP[$action->getId()]
+					: ProfileConfig::DEFAULT_VISIBILITY;
+			}
+
+			$config->setVisibilityMap(array_merge(ProfileConfig::DEFAULT_PROPERTY_VISIBILITY_MAP, $actionVisibilityMap));
+			$this->configMapper->insert($config);
+		}
+
+		return $config;
 	}
 }

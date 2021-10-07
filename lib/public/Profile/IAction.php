@@ -40,7 +40,7 @@ interface IAction {
 	 *
 	 * @since 23.0.0
 	 */
-	public function preload(IUser $user): void;
+	public function preload(IUser $targetUser): void;
 
 	/**
 	 * Returns the app ID of the action
@@ -61,6 +61,15 @@ interface IAction {
 	 * @since 23.0.0
 	 */
 	public function getId(): string;
+
+	/**
+	 * Returns the translated unique display ID of the action
+	 *
+	 * e.g. 'Email'
+	 *
+	 * @since 23.0.0
+	 */
+	public function getDisplayId(): string;
 
 	/**
 	 * Returns the translated title

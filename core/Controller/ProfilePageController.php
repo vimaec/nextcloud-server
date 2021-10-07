@@ -26,6 +26,7 @@ declare(strict_types=1);
 
 namespace OC\Core\Controller;
 
+use OCA\Guests\GuestManager;
 use OCP\Accounts\IAccountManager;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\TemplateResponse;
@@ -36,7 +37,7 @@ use OCP\IUserSession;
 use OCP\Profile\IProfileManager;
 use OCP\UserStatus\IManager as IUserStatusManager;
 
-class ProfileController extends Controller {
+class ProfilePageController extends Controller {
 	use \OC\Profile\TProfileHelper;
 
 	/** @var IInitialState */
@@ -47,6 +48,9 @@ class ProfileController extends Controller {
 
 	/** @var IProfileManager */
 	private $profileManager;
+
+	/** @var GuestManager */
+	private $guestManager;
 
 	/** @var IUserManager */
 	private $userManager;
@@ -63,6 +67,7 @@ class ProfileController extends Controller {
 		IInitialState $initialStateService,
 		IAccountManager $accountManager,
 		IProfileManager $profileManager,
+		GuestManager $guestManager,
 		IUserManager $userManager,
 		IUserSession $userSession,
 		IUserStatusManager $userStatusManager
@@ -71,6 +76,7 @@ class ProfileController extends Controller {
 		$this->initialStateService = $initialStateService;
 		$this->accountManager = $accountManager;
 		$this->profileManager = $profileManager;
+		$this->guestManager = $guestManager;
 		$this->userManager = $userManager;
 		$this->userSession = $userSession;
 		$this->userStatusManager = $userStatusManager;
@@ -83,8 +89,8 @@ class ProfileController extends Controller {
 	 * @NoAdminRequired
 	 * @NoSubAdminRequired
 	 */
-	public function index(string $userId): TemplateResponse {
-		if (!$this->userManager->userExists($userId)) {
+	public function index(string $targetUserId): TemplateResponse {
+		if (!$this->userManager->userExists($targetUserId)) {
 			return new TemplateResponse(
 				'core',
 				'404-page',
@@ -94,10 +100,10 @@ class ProfileController extends Controller {
 		}
 
 		$visitingUser = $this->userSession->getUser();
-		$user = $this->userManager->get($userId);
-		$account = $this->accountManager->getAccount($user);
+		$targetUser = $this->userManager->get($targetUserId);
+		$targetAccount = $this->accountManager->getAccount($targetUser);
 
-		if (!$this->isProfileEnabled($account)) {
+		if (!$this->isProfileEnabled($targetAccount)) {
 			return new TemplateResponse(
 				'core',
 				'404-page',
@@ -106,7 +112,7 @@ class ProfileController extends Controller {
 			);
 		}
 
-		$status = array_shift($this->userStatusManager->getUserStatuses([$userId]));
+		$status = array_shift($this->userStatusManager->getUserStatuses([$targetUserId]));
 		if (!empty($status)) {
 			$this->initialStateService->provideInitialState('status', [
 				'icon' => $status->getIcon(),
@@ -114,7 +120,10 @@ class ProfileController extends Controller {
 			]);
 		}
 
-		$this->initialStateService->provideInitialState('profileParameters', $this->profileManager->getProfileParams($user, $visitingUser));
+		$this->initialStateService->provideInitialState(
+			'profileParameters',
+			$this->profileManager->getProfileParams($targetUser, $visitingUser),
+		);
 
 		\OCP\Util::addScript('core', 'dist/profile');
 

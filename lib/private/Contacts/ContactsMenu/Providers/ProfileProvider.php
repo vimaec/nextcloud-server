@@ -75,14 +75,14 @@ class ProfileProvider implements IProvider {
 	 * @param IEntry $entry
 	 */
 	public function process(IEntry $entry) {
-		$userId = $entry->getProperty('UID');
-		$user = $this->userManager->get($userId);
-		if (!empty($user)) {
+		$targetUserId = $entry->getProperty('UID');
+		$user = $this->userManager->get($targetUserId);
+		if (empty($user)) {
 			$account = $this->accountManager->getAccount($user);
 			if ($this->isProfileEnabled($account)) {
 				$iconUrl = $this->urlGenerator->getAbsoluteURL($this->urlGenerator->imagePath('core', 'actions/profile.svg'));
 				$profileActionText = $this->l10nFactory->get('core')->t('View profile');
-				$profileUrl = $this->urlGenerator->linkToRouteAbsolute('core.profile.index', ['userId' => $entry->getProperty('UID')]);
+				$profileUrl = $this->urlGenerator->linkToRouteAbsolute('core.ProfilePage.index', ['targetUserId' => $targetUserId]);
 				$action = $this->actionFactory->newLinkAction($iconUrl, $profileActionText, $profileUrl);
 				// Set highest priority (by descending order), other actions have the default priority 10 as defined in lib/private/Contacts/ContactsMenu/Actions/LinkAction.php
 				$action->setPriority(20);

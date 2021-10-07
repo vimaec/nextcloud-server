@@ -63,7 +63,7 @@ export default {
 		accountProperty: {
 			type: String,
 			required: true,
-			validator: (value) => Object.values(ACCOUNT_PROPERTY_READABLE_ENUM).includes(value) || Object.values(ACCOUNT_SETTING_PROPERTY_READABLE_ENUM).includes(value),
+			validator: (value) => Object.values(ACCOUNT_PROPERTY_READABLE_ENUM).includes(value) || Object.values(ACCOUNT_SETTING_PROPERTY_READABLE_ENUM).includes(value) || value === t('settings', 'Profile Visibility'),
 		},
 		isEditable: {
 			type: Boolean,
@@ -95,7 +95,7 @@ export default {
 
 	computed: {
 		isProfileProperty() {
-			return this.accountProperty === ACCOUNT_PROPERTY_READABLE_ENUM.PROFILE_ENABLED
+			return this.accountProperty === ACCOUNT_PROPERTY_READABLE_ENUM.PROFILE_ENABLED || this.accountProperty === t('settings', 'Profile Visibility')
 		},
 
 		isSettingProperty() {

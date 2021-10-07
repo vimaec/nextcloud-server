@@ -1,5 +1,5 @@
 <!--
-	- @copyright 2021, Christopher Ng <chrng8@gmail.com>
+	- @copyright 2021 Christopher Ng <chrng8@gmail.com>
 	-
 	- @author Christopher Ng <chrng8@gmail.com>
 	-
@@ -12,7 +12,7 @@
 	-
 	- This program is distributed in the hope that it will be useful,
 	- but WITHOUT ANY WARRANTY; without even the implied warranty of
-	- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 	- GNU Affero General Public License for more details.
 	-
 	- You should have received a copy of the GNU Affero General Public License
@@ -23,30 +23,36 @@
 <template>
 	<div class="checkbox-container">
 		<input
-			id="enable-profile"
+			:id="inputId"
 			class="checkbox"
 			type="checkbox"
-			:checked="profileEnabled"
-			@change="onEnableProfileChange">
-		<label for="enable-profile">
-			{{ t('settings', 'Enable Profile') }}
+			:checked="isVisible"
+			@change="onVisibilityChange">
+		<label :for="inputId">
+			{{ t('settings', `Show {displayId} on my profile`, { displayId }) }}
 		</label>
 	</div>
 </template>
 
 <script>
 import { showError } from '@nextcloud/dialogs'
-import { emit } from '@nextcloud/event-bus'
 
-import { savePrimaryAccountProperty } from '../../../service/PersonalInfo/PersonalInfoService'
+import { saveProfileParameterVisibility } from '../../../service/ProfileService'
 import { validateBoolean } from '../../../utils/validate'
-import { ACCOUNT_PROPERTY_ENUM } from '../../../constants/AccountPropertyConstants'
 
 export default {
-	name: 'ProfileCheckbox',
+	name: 'VisibilityCheckbox',
 
 	props: {
-		profileEnabled: {
+		paramId: {
+			type: String,
+			required: true,
+		},
+		displayId: {
+			type: String,
+			required: true,
+		},
+		isVisible: {
 			type: Boolean,
 			required: true,
 		},
@@ -54,40 +60,45 @@ export default {
 
 	data() {
 		return {
-			initialProfileEnabled: this.profileEnabled,
+			initialIsVisible: this.isVisible,
 		}
 	},
 
-	methods: {
-		async onEnableProfileChange(e) {
-			const isEnabled = e.target.checked
-			this.$emit('update:profile-enabled', isEnabled)
+	computed: {
+		inputId() {
+			return `profile-visibility-${this.paramId}`
+		},
+	},
 
-			if (validateBoolean(isEnabled)) {
-				await this.updateEnableProfile(isEnabled)
+	methods: {
+		async onVisibilityChange(e) {
+			const isVisible = e.target.checked
+			this.$emit('update:is-visible', isVisible)
+
+			if (validateBoolean(isVisible)) {
+				await this.updateVisibility(isVisible)
 			}
 		},
 
-		async updateEnableProfile(isEnabled) {
+		async updateVisibility(isVisible) {
 			try {
-				const responseData = await savePrimaryAccountProperty(ACCOUNT_PROPERTY_ENUM.PROFILE_ENABLED, isEnabled)
+				const responseData = await saveProfileParameterVisibility(this.paramId, isVisible)
 				this.handleResponse({
-					isEnabled,
+					isVisible,
 					status: responseData.ocs?.meta?.status,
 				})
 			} catch (e) {
 				this.handleResponse({
-					errorMessage: t('settings', 'Unable to update profile enabled state'),
+					errorMessage: t('settings', 'Unable to update visibility of {displayId}', { displayId: this.displayId }),
 					error: e,
 				})
 			}
 		},
 
-		handleResponse({ isEnabled, status, errorMessage, error }) {
+		handleResponse({ isVisible, status, errorMessage, error }) {
 			if (status === 'ok') {
 				// Ensure that local state reflects server state
-				this.initialProfileEnabled = isEnabled
-				emit('settings:profile-enabled:updated', isEnabled)
+				this.initialIsVisible = isVisible
 			} else {
 				showError(errorMessage)
 				this.logger.error(errorMessage, error)

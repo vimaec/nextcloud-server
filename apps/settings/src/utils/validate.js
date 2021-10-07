@@ -71,11 +71,11 @@ export function validateLanguage(input) {
 }
 
 /**
- * Validate the enable profile input
+ * Validate boolean input
  *
  * @param {boolean} input the input
  * @returns {boolean}
  */
-export function validateEnableProfile(input) {
+export function validateBoolean(input) {
 	return typeof input === 'boolean'
 }

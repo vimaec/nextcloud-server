@@ -28,14 +28,15 @@
 		:disabled="disabled">
 		<ActionButton v-for="federationScope in federationScopes"
 			:key="federationScope.name"
-			:aria-label="federationScope.tooltip"
+			:aria-label="!supportedScopes.includes(federationScope.name) ? federationScope.tooltipDisabled : federationScope.tooltip"
 			class="federation-actions__btn"
 			:class="{ 'federation-actions__btn--active': scope === federationScope.name }"
 			:close-after-click="true"
+			:disabled="!supportedScopes.includes(federationScope.name)"
 			:icon="federationScope.iconClass"
 			:title="federationScope.displayName"
 			@click.stop.prevent="changeScope(federationScope.name)">
-			{{ federationScope.tooltip }}
+			{{ !supportedScopes.includes(federationScope.name) ? federationScope.tooltipDisabled : federationScope.tooltip }}
 		</ActionButton>
 	</Actions>
 </template>
@@ -96,15 +97,15 @@ export default {
 
 	computed: {
 		ariaLabel() {
-			return t('settings', 'Change privacy level of {accountProperty}', { accountProperty: this.accountPropertyLowerCase })
-		},
-
-		federationScopes() {
-			return Object.values(SCOPE_PROPERTY_ENUM).filter(({ name }) => this.supportedScopes.includes(name))
+			return t('settings', 'Change scope level of {accountProperty}', { accountProperty: this.accountPropertyLowerCase })
 		},
 
 		scopeIcon() {
 			return SCOPE_PROPERTY_ENUM[this.scope].iconClass
+		},
+
+		federationScopes() {
+			return Object.values(SCOPE_PROPERTY_ENUM)
 		},
 
 		supportedScopes() {

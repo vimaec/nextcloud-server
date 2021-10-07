@@ -24,7 +24,7 @@
 	<div>
 		<div class="email">
 			<input
-				id="email"
+				:id="inputId"
 				ref="email"
 				type="email"
 				:placeholder="inputPlaceholder"
@@ -182,6 +182,13 @@ export default {
 
 		federationDisabled() {
 			return !this.initialEmail
+		},
+
+		inputId() {
+			if (this.primary) {
+				return 'email'
+			}
+			return `email-${this.index}`
 		},
 
 		inputPlaceholder() {

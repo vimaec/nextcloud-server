@@ -35,6 +35,7 @@ import OrganisationSection from './components/PersonalInfo/OrganisationSection/O
 import RoleSection from './components/PersonalInfo/RoleSection/RoleSection'
 import HeadlineSection from './components/PersonalInfo/HeadlineSection/HeadlineSection'
 import BiographySection from './components/PersonalInfo/BiographySection/BiographySection'
+import ProfileVisibilitySection from './components/PersonalInfo/ProfileVisibilitySection/ProfileVisibilitySection'
 
 __webpack_nonce__ = btoa(getRequestToken())
 
@@ -55,6 +56,7 @@ const OrganisationView = Vue.extend(OrganisationSection)
 const RoleView = Vue.extend(RoleSection)
 const HeadlineView = Vue.extend(HeadlineSection)
 const BiographyView = Vue.extend(BiographySection)
+const ProfileVisibilityView = Vue.extend(ProfileVisibilitySection)
 
 new DisplayNameView().$mount('#vue-displayname-section')
 new EmailView().$mount('#vue-email-section')
@@ -64,3 +66,4 @@ new OrganisationView().$mount('#vue-organisation-section')
 new RoleView().$mount('#vue-role-section')
 new HeadlineView().$mount('#vue-headline-section')
 new BiographyView().$mount('#vue-biography-section')
+new ProfileVisibilityView().$mount('#vue-profile-visibility-section')
