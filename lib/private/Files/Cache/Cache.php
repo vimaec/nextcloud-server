@@ -1017,10 +1017,13 @@ class Cache implements ICache {
 			throw new \RuntimeException("Invalid source cache entry on copyFromCache");
 		}
 		$data = $this->cacheEntryToArray($sourceEntry);
-		if ($sourceEntry->getMimeType() === ICacheEntry::DIRECTORY_MIMETYPE) {
-			$data['permissions'] = Constants::PERMISSION_ALL;
-		} else {
-			$data['permissions'] = Constants::PERMISSION_ALL - Constants::PERMISSION_CREATE;
+		$targetParentEntry = $this->get(dirname($targetPath));
+		if ($targetParentEntry !== false && $targetParentEntry !== null) {
+			if ($sourceEntry->getMimeType() === ICacheEntry::DIRECTORY_MIMETYPE) {
+				$data['permissions'] = $targetParentEntry->getPermissions();
+			} else {
+				$data['permissions'] = $targetParentEntry->getPermissions() & ~Constants::PERMISSION_CREATE;
+			}
 		}
 		$fileId = $this->put($targetPath, $data);
 		if ($fileId <= 0) {
