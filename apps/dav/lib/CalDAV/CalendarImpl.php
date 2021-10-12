@@ -24,10 +24,12 @@
  */
 namespace OCA\DAV\CalDAV;
 
-use OCP\Calendar\ICalendar;
+use OCP\Calendar\Exceptions\CalendarException;
+use OCP\Calendar\IExtendedCalendar;
 use OCP\Constants;
+use Sabre\DAV\Exception\BadRequest;
 
-class CalendarImpl implements ICalendar {
+class CalendarImpl implements IExtendedCalendar {
 
 	/** @var CalDavBackend */
 	private $backend;
@@ -45,13 +47,14 @@ class CalendarImpl implements ICalendar {
 	 * @param array $calendarInfo
 	 * @param CalDavBackend $backend
 	 */
-	public function __construct(Calendar $calendar, array $calendarInfo,
+	public function __construct(Calendar $calendar,
+								array $calendarInfo,
 								CalDavBackend $backend) {
 		$this->calendar = $calendar;
 		$this->calendarInfo = $calendarInfo;
 		$this->backend = $backend;
 	}
-	
+
 	/**
 	 * @return string defining the technical unique key
 	 * @since 13.0.0
@@ -116,5 +119,18 @@ class CalendarImpl implements ICalendar {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * @param string $ics a string containing a valid VEVENT ics
+	 *
+	 * @throws CalendarException
+	 */
+	public function create(string $ics, string $name): void {
+		try {
+			$this->backend->createCalendarObject($this->getKey(), $name, $ics);
+		} catch (BadRequest $e) {
+			throw new CalendarException("Could not create calendar object", 0, $e);
+		}
 	}
 }
