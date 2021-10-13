@@ -132,41 +132,41 @@
 						aria-label="<?php p($l->t('Settings'));?>"
 						aria-haspopup="true" aria-controls="expanddiv" aria-expanded="false">
 						<div id="avatardiv-menu" class="avatardiv<?php if ($_['userAvatarSet']) {
-				print_unescaped(' avatardiv-shown" ');
+				print_unescaped(' avatardiv-shown');
 			} else {
-				print_unescaped('" style="display: none" ');
-			}
-			if ($_['userStatus'] !== false) {
-				p('data-userstatus="' . $_['userStatus']->getStatus() . '" ');
-				p('data-userstatus_message="' . $_['userStatus']->getMessage() . '" ');
-				p('data-userstatus_icon="' . $_['userStatus']->getIcon() . '" ');
-			}
-			p('data-user="' . $_['user_uid'] . '" ');
-			p('data-displayname="' . $_['user_displayname'] . '" ');
+				print_unescaped('" style="display: none');
+			} ?>"
+							 data-user="<?php p($_['user_uid']); ?>"
+							 data-displayname="<?php p($_['user_displayname']); ?>"
+			<?php if ($_['userStatus'] !== false) { ?>
+				data-userstatus="<?php p($_['userStatus']->getStatus()); ?>"
+				data-userstatus_message="<?php p($_['userStatus']->getMessage()); ?>"
+				data-userstatus_icon="<?php p($_['userStatus']->getIcon()); ?>"
+			<?php }
 			if ($_['userAvatarSet']) {
 				$avatar32 = \OC::$server->getURLGenerator()->linkToRoute('core.avatar.getAvatar', [
 					'userId' => $_['user_uid'],
 					'size' => 32,
 					'v' => $_['userAvatarVersion']
-				]);
-				p('data-avatar="' . $avatar32 . '" ');
-				$avatar64 = \OC::$server->getURLGenerator()->linkToRoute('core.avatar.getAvatar', [
-					'userId' => $_['user_uid'],
-					'size' => 64,
-					'v' => $_['userAvatarVersion']
-				]);
-				$avatar128 = \OC::$server->getURLGenerator()->linkToRoute('core.avatar.getAvatar', [
-					'userId' => $_['user_uid'],
-					'size' => 128,
-					'v' => $_['userAvatarVersion']
-				]);
-			} ?>>
-							<?php if ($_['userAvatarSet']): ?>
+				]); ?> data-avatar="<?php p($avatar32); ?>"
+			<?php } ?>>
+							<?php
+							if ($_['userAvatarSet']) {
+								$avatar64 = \OC::$server->getURLGenerator()->linkToRoute('core.avatar.getAvatar', [
+									'userId' => $_['user_uid'],
+									'size' => 64,
+									'v' => $_['userAvatarVersion']
+								]);
+								$avatar128 = \OC::$server->getURLGenerator()->linkToRoute('core.avatar.getAvatar', [
+									'userId' => $_['user_uid'],
+									'size' => 128,
+									'v' => $_['userAvatarVersion']
+								]); ?>
 								<img alt="" width="32" height="32"
 								src="<?php p($avatar32);?>"
 								srcset="<?php p($avatar64);?> 2x, <?php p($avatar128);?> 4x"
 								>
-							<?php endif; ?>
+							<?php } ?>
 						</div>
 					</div>
 					<nav class="settings-menu" id="expanddiv" style="display:none;"
