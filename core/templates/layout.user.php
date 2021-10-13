@@ -1,4 +1,18 @@
-<!DOCTYPE html>
+<?php
+/**
+ * @var \OC_Defaults $theme
+ * @var array $_
+ */
+
+$getUserAvatar = static function (int $size) use ($_): string {
+	return \OC::$server->getURLGenerator()->linkToRoute('core.avatar.getAvatar', [
+		'userId' => $_['user_uid'],
+		'size' => $size,
+		'v' => $_['userAvatarVersion']
+	]);
+}
+
+?><!DOCTYPE html>
 <html class="ng-csp" data-placeholder-focus="false" lang="<?php p($_['language']); ?>" data-locale="<?php p($_['locale']); ?>" >
 	<head data-user="<?php p($_['user_uid']); ?>" data-user-displayname="<?php p($_['user_displayname']); ?>" data-requesttoken="<?php p($_['requesttoken']); ?>">
 		<meta charset="utf-8">
@@ -144,27 +158,13 @@
 				data-userstatus_icon="<?php p($_['userStatus']->getIcon()); ?>"
 			<?php }
 			if ($_['userAvatarSet']) {
-				$avatar32 = \OC::$server->getURLGenerator()->linkToRoute('core.avatar.getAvatar', [
-					'userId' => $_['user_uid'],
-					'size' => 32,
-					'v' => $_['userAvatarVersion']
-				]); ?> data-avatar="<?php p($avatar32); ?>"
+				$avatar32 = $getUserAvatar(32); ?> data-avatar="<?php p($avatar32); ?>"
 			<?php } ?>>
 							<?php
-							if ($_['userAvatarSet']) {
-								$avatar64 = \OC::$server->getURLGenerator()->linkToRoute('core.avatar.getAvatar', [
-									'userId' => $_['user_uid'],
-									'size' => 64,
-									'v' => $_['userAvatarVersion']
-								]);
-								$avatar128 = \OC::$server->getURLGenerator()->linkToRoute('core.avatar.getAvatar', [
-									'userId' => $_['user_uid'],
-									'size' => 128,
-									'v' => $_['userAvatarVersion']
-								]); ?>
+							if ($_['userAvatarSet']) {?>
 								<img alt="" width="32" height="32"
 								src="<?php p($avatar32);?>"
-								srcset="<?php p($avatar64);?> 2x, <?php p($avatar128);?> 4x"
+								srcset="<?php p($getUserAvatar(64));?> 2x, <?php p($getUserAvatar(128));?> 4x"
 								>
 							<?php } ?>
 						</div>
