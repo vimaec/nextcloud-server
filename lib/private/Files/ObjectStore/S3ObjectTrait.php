@@ -57,6 +57,7 @@ trait S3ObjectTrait {
 				'Range' => 'bytes=' . $range,
 			]);
 			$request = \Aws\serialize($command);
+			var_dump($request);
 			$headers = [];
 			foreach ($request->getHeaders() as $key => $values) {
 				foreach ($values as $value) {
@@ -65,7 +66,7 @@ trait S3ObjectTrait {
 			}
 			$opts = [
 				'http' => [
-					'protocol_version' => 1.1,
+					'protocol_version' => $request->getProtocolVersion(),
 					'header' => $headers,
 				],
 			];
