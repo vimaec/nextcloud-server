@@ -14,10 +14,10 @@ BANDWIDTH=${BANDWIDTH:-$((100*MB/CONCURRENCY))}
 USER="admin"
 PASS="password"
 SERVER="nextcloud.test"
-UPLOAD_PATH="/tmp/bundle_upload_request_$(openssl rand --hex 8).txt"
+UPLOAD_PATH="/tmp/bulk_upload_request_$(openssl rand --hex 8).txt"
 BOUNDARY="boundary_$(openssl rand --hex 8)"
-LOCAL_FOLDER="/tmp/bundle_upload/${BOUNDARY}_${NB}_${SIZE}"
-REMOTE_FOLDER="/bundle_upload/${BOUNDARY}_${NB}_${SIZE}"
+LOCAL_FOLDER="/tmp/bulk_upload/${BOUNDARY}_${NB}_${SIZE}"
+REMOTE_FOLDER="/bulk_upload/${BOUNDARY}_${NB}_${SIZE}"
 
 mkdir --parent "$LOCAL_FOLDER"
 
@@ -64,7 +64,7 @@ blackfire curl \
 	--cookie "XDEBUG_PROFILE=MROW4A;path=/;" \
 	-H "Content-Type: multipart/related; boundary=$BOUNDARY" \
 	--data-binary "@$UPLOAD_PATH" \
-	"https://$USER:$PASS@$SERVER/remote.php/dav/files/bundle"
+	"https://$USER:$PASS@$SERVER/remote.php/dav/files/bulk"
 
 rm -rf "${LOCAL_FOLDER:?}"
 rm "$UPLOAD_PATH"

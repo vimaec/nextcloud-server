@@ -15,8 +15,8 @@ export USER="admin"
 export PASS="password"
 export SERVER="nextcloud.test"
 export UPLOAD_ID="single_$(openssl rand --hex 8)"
-export LOCAL_FOLDER="/tmp/bundle_upload/${UPLOAD_ID}_${NB}_${SIZE}"
-export REMOTE_FOLDER="/bundle_upload/${UPLOAD_ID}_${NB}_${SIZE}"
+export LOCAL_FOLDER="/tmp/single_upload/${UPLOAD_ID}_${NB}_${SIZE}"
+export REMOTE_FOLDER="/single_upload/${UPLOAD_ID}_${NB}_${SIZE}"
 
 mkdir --parent "$LOCAL_FOLDER"
 
