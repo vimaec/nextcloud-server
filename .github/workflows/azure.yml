@@ -36,7 +36,7 @@ jobs:
     - name: 'Zip the Repository'
       uses: papeloto/action-zip@v1
       with:
-        files: ${{ github.workspace }}
+        files: ./
         recursive: true
         dest: result.zip
     - name: 'Upload Artifact'
