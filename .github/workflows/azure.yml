@@ -32,18 +32,18 @@ jobs:
     environment: dev
     steps:
     - name: 'List files'
-      run: ls ${{ github.workspace }}
-    - name: 'Zip the Repository'
-      uses: papeloto/action-zip@v1
+      run: ls
+    - name: Archive Release
+      uses: thedoctor0/zip-release@master
       with:
-        files: ./
-        recursive: true
-        dest: result.zip
+        type: 'zip'
+        filename: 'release.zip'
+        exclusions: '*.git* /*node_modules/* .editorconfig'
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v1
       with:
         name: my-artifact
-        path: ${{ github.workspace }}/result.zip
+        path: ${{ github.workspace }}/release.zip
     - name: 'Deploy to Azure WebApp'
       uses: azure/webapps-deploy@v2
       with:
