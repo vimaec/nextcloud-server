@@ -31,6 +31,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     steps:
+    - name: 'List files'
+      run: ls 
     - name: 'Zip the Repository'
       uses: papeloto/action-zip@v1
       with:
