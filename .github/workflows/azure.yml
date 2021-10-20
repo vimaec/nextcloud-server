@@ -32,11 +32,11 @@ jobs:
     environment: dev
     steps:
     - name: 'List files'
-      run: ls 
+      run: ls ${{ github.workspace }}
     - name: 'Zip the Repository'
       uses: papeloto/action-zip@v1
       with:
-        files: ./
+        files: ${{ github.workspace }}/*
         recursive: true
         dest: result.zip
     - name: 'Upload Artifact'
