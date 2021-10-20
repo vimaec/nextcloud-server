@@ -33,12 +33,9 @@ jobs:
     steps:
     - name: 'List files'
       run: ls
-    - name: Archive Release
-      uses: thedoctor0/zip-release@master
-      with:
-        type: 'zip'
-        filename: 'release.zip'
-        exclusions: '*.git* /*node_modules/* .editorconfig'
+    - uses: actions/checkout@v1
+    - name: Zip Folder
+      run: zip -r release.zip .
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v1
       with:
