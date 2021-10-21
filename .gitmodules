@@ -3,34 +3,34 @@
 	url = https://github.com/nextcloud/3rdparty.git
 [submodule "apps/activity"]
 	path = apps/activity
-	url = https://github.com/shahzad744/activity
+	url = https://github.com/vimaec/nextcloud-activity
 [submodule "apps/firstrunwizard"]
 	path = apps/firstrunwizard
-	url = https://github.com/shahzad744/firstrunwizard
+	url = https://github.com/vimaec/nextcloud-firstrunwizard
 [submodule "apps/notifications"]
 	path = apps/notifications
-	url = https://github.com/shahzad744/notifications
+	url = https://github.com/vimaec/nextcloud-notifications
 [submodule "apps/password_policy"]
 	path = apps/password_policy
-	url = https://github.com/shahzad744/password_policy
+	url = https://github.com/vimaec/nextcloud-password_policy
 [submodule "apps/viewer"]
 	path = apps/viewer
-	url = https://github.com/nextcloud/viewer
+	url = https://github.com/vimaec/nextcloud-viewer
 [submodule "apps/files_pdfviewer"]
 	path = apps/files_pdfviewer
-	url = https://github.com/shahzad744/files_pdfviewer
+	url = https://github.com/vimaec/nextcloud-files_pdfviewer
 [submodule "apps/recommendations"]
 	path = apps/recommendations
-	url = https://github.com/shahzad744/recommendations
+	url = https://github.com/vimaec/nextcloud-recommendations
 [submodule "apps/files_rightclick"]
 	path = apps/files_rightclick
-	url = https://github.com/shahzad744/files_rightclick
+	url = https://github.com/vimaec/nextcloud-files_rightclick
 [submodule "apps/user_saml"]
 	path = apps/user_saml
-	url = https://github.com/shahzad744/user_saml
+	url = https://github.com/vimaec/nextcloud-user_saml
 [submodule "apps/text"]
 	path = apps/text
-	url = https://github.com/shahzad744/text
+	url = https://github.com/vimaec/nextcloud-text
 [submodule "apps/customproperties"]
 	path = apps/customproperties
-	url = https://github.com/shahzad744/customproperties
+	url = https://github.com/vimaec/nextcloud-customproperties
