@@ -71,7 +71,7 @@ class Application extends App implements IBootstrap {
 				'appname' => 'files_trashbin',
 				'script' => 'list.php',
 				'order' => 50,
-				'name' => $l->t('Deleted files'),
+				'name' => $l->t('Archived files'),
 				'classes' => 'pinned',
 			];
 		});

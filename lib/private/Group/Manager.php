@@ -304,6 +304,10 @@ class Manager extends PublicEmitter implements IGroupManager {
 		}
 		return $this->isInGroup($userId, 'admin');
 	}
+	public function isDMSAdmin($userId)
+	{
+		return $this->isInGroup($userId,'dmsadmin');
+	}
 
 	/**
 	 * Checks if a userId is in a group

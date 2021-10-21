@@ -198,7 +198,7 @@ class GroupsController extends AUserData {
 		}
 
 		// Check subadmin has access to this group
-		if ($this->groupManager->isAdmin($currentUser->getUID()) || $isSubadminOfGroup) {
+		if ($this->groupManager->isAdmin($currentUser->getUID()) || $this->groupManager->isDMSAdmin($currentUser->getUID()) || $isSubadminOfGroup) {
 			$users = $group->searchUsers($search, $limit, $offset);
 
 			// Extract required number

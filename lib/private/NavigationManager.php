@@ -194,7 +194,7 @@ class NavigationManager implements INavigationManager {
 				'type' => 'settings',
 				'id' => 'help',
 				'order' => 6,
-				'href' => $this->urlGenerator->linkToRoute('settings.Help.help'),
+				'href' => 'https://support.vimaec.com/',
 				'name' => $l->t('Help'),
 				'icon' => $this->urlGenerator->imagePath('settings', 'help.svg'),
 			]);
@@ -321,8 +321,9 @@ class NavigationManager implements INavigationManager {
 	private function isSubadmin() {
 		$user = $this->userSession->getUser();
 		if ($user !== null) {
-			return $this->groupManager->getSubAdmin()->isSubAdmin($user);
+			return $this->groupManager->getSubAdmin()->isSubAdmin($user) || $this->groupManager->isDMSAdmin($user->getUID());
 		}
+
 		return false;
 	}
 

@@ -470,6 +470,14 @@ export default {
 	},
 }
 </script>
+<style lang="css">
+	@media (max-width: 767px) {
+		#app-sidebar-vue, #rich-workspace {
+			display: none;
+			position: static;
+		}
+	}
+</style>
 <style lang="scss" scoped>
 .app-sidebar {
 	&--has-preview::v-deep {

@@ -47,6 +47,8 @@ class ProvisioningApiMiddleware extends Middleware {
 	/** @var bool */
 	private $isSubAdmin;
 
+	private $isDMSAdmin;
+
 	/**
 	 * ProvisioningApiMiddleware constructor.
 	 *
@@ -57,10 +59,12 @@ class ProvisioningApiMiddleware extends Middleware {
 	public function __construct(
 		IControllerMethodReflector $reflector,
 		bool $isAdmin,
-		bool $isSubAdmin) {
+		bool $isSubAdmin,
+		bool $isDMSAdmin) {
 		$this->reflector = $reflector;
 		$this->isAdmin = $isAdmin;
 		$this->isSubAdmin = $isSubAdmin;
+		$this->isDMSAdmin = $isDMSAdmin;
 	}
 
 	/**
@@ -70,7 +74,7 @@ class ProvisioningApiMiddleware extends Middleware {
 	 * @throws NotSubAdminException
 	 */
 	public function beforeController($controller, $methodName) {
-		if (!$this->isAdmin && !$this->reflector->hasAnnotation('NoSubAdminRequired') && !$this->isSubAdmin) {
+		if (!$this->isAdmin && !$this->reflector->hasAnnotation('NoSubAdminRequired') && !$this->isSubAdmin && !$this->isDMSAdmin) {
 			throw new NotSubAdminException();
 		}
 	}

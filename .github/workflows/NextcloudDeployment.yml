@@ -1,0 +1,70 @@
+# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+on:
+  push:
+    branches:
+      - master
+env: 
+  AZURE_DEVOPS_EXT_PAT:  ${{ secrets.AZURE_DEVOPS_PAT }}
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      
+    - name: Checkout submodules
+      run: git submodule update --init --recursive
+    
+    - name: Make Release Folder
+      run: mkdir Release
+      
+    - name: Runner Versions
+      run: echo "$GITHUB_RUN_NUMBER"
+    
+    - name: Zip Folder
+      run: zip -r ./Release/release.zip . -x '*.git*'
+      
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v1
+      with:
+        name: nextcloud-artifact
+        path: ${{ github.workspace }}/Release/release.zip
+        
+    - name: Publish package
+      uses: Azure/cli@1.0.4
+      with:
+        azcliversion: 2.0.72
+        inlineScript: |
+          pip install --upgrade pip
+          pip install --upgrade pip --target /opt/az/lib/python3.6/site-packages/
+          az extension add --name azure-devops
+          echo ${{ secrets.AZURE_DEVOPS_PAT }} | az devops login --organization https://dev.azure.com/Vimaec
+          az artifacts universal publish --organization https://dev.azure.com/Vimaec/ --project="dms-production" --scope project --feed nextcloud-devel --name nextcloud --version 0.0.${GITHUB_RUN_NUMBER} --description "Feed from github" --path ./Release/
+          
+    - name: Set pipeline variable for DB script
+      uses: Azure/cli@1.0.4
+      with:
+        azcliversion: 2.0.72
+        inlineScript: |
+          pip install --upgrade pip
+          pip install --upgrade pip --target /opt/az/lib/python3.6/site-packages/
+          az extension add --name azure-devops
+          echo ${{ secrets.AZURE_DEVOPS_PAT }} | az devops login --organization https://dev.azure.com/Vimaec
+          az pipelines variable update --name update_db_schema --organization https://dev.azure.com/Vimaec/ --project="dms-production" --pipeline-name vimaec-nextcloud-devel-release --value "false"
+          
+    - name: Azure Pipelines Action
+      uses: Azure/pipelines@v1.1
+      with:
+        # FQDN to the Azure DevOps organization with project name
+        azure-devops-project-url: 'https://dev.azure.com/Vimaec/dms-production'
+        # Name of the Azure Pipeline to be triggered
+        azure-pipeline-name: 'vimaec-nextcloud-devel-release'
+        # PAT
+        azure-devops-token: ${{ secrets.AZURE_DEVOPS_PAT }}
+        azure-pipeline-variables:  '{"update_db_schema": "true"}' 
+        

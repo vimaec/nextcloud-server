@@ -386,7 +386,7 @@
 				}
 			});
 
-			this.$fileList.on('click','td.filename>a.name, td.filesize, td.date', _.bind(this._onClickFile, this));
+			this.$fileList.on('click','td.filename>a.name, td.filesize, td.date', _.bind(this._onClickFile_new, this));
 
 			this.$fileList.on("droppedOnFavorites", function (event, file) {
 				self.fileActions.triggerAction('Favorite', self.getModelForFile(file), self);
@@ -413,6 +413,7 @@
 					self.scrollTo(options.scrollTo);
 				});
 			}
+			OCA.Files.Sidebar.setActiveTab("customproperties")
 
 			if(options.openFile) {
 				// Wait for some initialisation process to be over before triggering the default action.
@@ -433,6 +434,7 @@
 						}
 
 						OCA.Files.Sidebar.open(fileInfo.path);
+						OCA.Files.Sidebar.setActiveTab("customproperties")
 					} catch (error) {
 						console.error(`Failed to trigger default action on the file for URL: ${location.href}`, error)
 					}
@@ -704,6 +706,7 @@
 			// open sidebar and set file
 			if (typeof show === 'undefined' || !!show || (OCA.Files.Sidebar.file !== '')) {
 				OCA.Files.Sidebar.open(path.replace('//', '/'))
+				OCA.Files.Sidebar.setActiveTab("customproperties")
 			}
 		},
 
@@ -901,6 +904,96 @@
 		/**
 		 * Event handler for when clicking on files to select them
 		 */
+		_onClickFile_new: function(event){
+			event.preventDefault();
+			var $tr = $(event.target).closest('tr');
+			if($tr.data('alreadyclicked')){
+				$tr.data('alreadyclicked',false);
+				if($tr.data('alreadyclickedTimeout')){
+					clearTimeout($tr.data('alreadyclickedTimeout'));
+				}
+				//debugger;
+
+				var $tr = $(event.target).closest('tr');
+				//window.location=$(event.target).closest('a').attr('href');
+				if ($tr.hasClass('dragging')) {
+					return;
+				}
+				if (this._allowSelection && event.shiftKey) {
+					event.preventDefault();
+					this._selectRange($tr);
+					this._lastChecked = $tr;
+					this.updateSelectionSummary();
+				} else if (!event.ctrlKey) {
+					// clicked directly on the name
+					if (!this._detailsView || $(event.target).is('.nametext, .name, .thumbnail') || $(event.target).closest('.nametext').length) {
+						var filename = $tr.attr('data-file');
+						var renaming = $tr.data('renaming');
+						if (this._defaultFileActionsDisabled) {
+							event.preventDefault();
+						} else if (!renaming) {
+							this.fileActions.currentFile = $tr.find('td');
+							var spec = this.fileActions.getCurrentDefaultFileAction();
+							if (spec && spec.action) {
+								event.preventDefault();
+								spec.action(filename, {
+									$file: $tr,
+									fileList: this,
+									fileActions: this.fileActions,
+									dir: $tr.attr('data-path') || this.getCurrentDirectory()
+								});
+							}
+							// deselect row
+							$(event.target).closest('a').blur();
+						}
+					} else {
+						// Even if there is no Details action the default event
+						// handler is prevented for consistency (although there
+						// should always be a Details action); otherwise the link
+						// would be downloaded by the browser when the user expected
+						// the details to be shown.
+						event.preventDefault();
+						var filename = $tr.attr('data-file');
+						this.fileActions.currentFile = $tr.find('td');
+						var mime = this.fileActions.getCurrentMimeType();
+						var type = this.fileActions.getCurrentType();
+						var permissions = this.fileActions.getCurrentPermissions();
+						var action = this.fileActions.get(mime, type, permissions)['Details'];
+						if (action) {
+							action(filename, {
+								$file: $tr,
+								fileList: this,
+								fileActions: this.fileActions,
+								dir: $tr.attr('data-path') || this.getCurrentDirectory()
+							});
+						}
+					}
+				}
+			}
+			else{
+				$tr.data('alreadyclicked',true);
+				var _this=this;
+				var alreadyclickedTimeout=setTimeout(function(){
+					$tr.data('alreadyclicked', false); // reset when it happens
+					//debugger;
+					if ($tr.hasClass('dragging')) {
+						return;
+					}
+					if (_this._allowSelection && !event.shiftKey && !event.ctrlKey){
+						var dir = $tr.attr('data-path')+"/"+$tr.attr('data-file');
+						_.defer(() => {
+							try {
+								OCA.Files.Sidebar.open(dir);
+								//OCA.Files.Sidebar.setActiveTab("customproperties")
+							} catch (error) {
+								console.error(`Failed to trigger default action on the file for URL: ${location.href}`, error)
+							}
+						})
+					}
+				},300);
+			}
+
+		},
 		_onClickFile: function(event) {
 			var $tr = $(event.target).closest('tr');
 			if ($tr.hasClass('dragging')) {
@@ -945,7 +1038,7 @@
 					var mime = this.fileActions.getCurrentMimeType();
 					var type = this.fileActions.getCurrentType();
 					var permissions = this.fileActions.getCurrentPermissions();
-					var action = this.fileActions.get(mime, type, permissions, filename)['Details'];
+					var action = this.fileActions.get(mime, type, permissions)['Details'];
 					if (action) {
 						action(filename, {
 							$file: $tr,
@@ -2059,6 +2152,15 @@
 		 * @param {string} [fileId] optional file id, if known, to be appended in the URL
 		 */
 		changeDirectory: function(targetDir, changeUrl, force, fileId) {
+			_.defer(() => {
+				try {
+					OCA.Files.Sidebar.open(targetDir);
+					//OCA.Files.Sidebar.setActiveTab("customproperties")
+				} catch (error) {
+					console.error(`Failed to trigger default action on the file for URL: ${location.href}`, error)
+				}
+			})
+
 			var self = this;
 			var currentDir = this.getCurrentDirectory();
 			targetDir = targetDir || '/';
@@ -2945,7 +3047,7 @@
 				} catch (error) {
 					input.attr('title', error);
 					input.tooltip({placement: 'right', trigger: 'manual'});
-					input.tooltip('_fixTitle');
+					input.tooltip('fixTitle');
 					input.tooltip('show');
 					input.addClass('error');
 				}
@@ -3829,6 +3931,7 @@
 		},
 
 		_onClickNewButton: function(event) {
+			this._newButton.toggleClass('active');
 			var $target = $(event.target);
 			if (!$target.hasClass('.button')) {
 				$target = $target.closest('.button');

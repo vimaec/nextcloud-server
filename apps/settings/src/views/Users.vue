@@ -23,14 +23,15 @@
 <template>
 	<Content app-name="settings" :navigation-class="{ 'icon-loading': loadingAddGroup }">
 		<AppNavigation>
-			<AppNavigationNew button-id="new-user-button"
+			<AppNavigationNew v-if="settings.isAdmin"
+				button-id="new-user-button"
 				:text="t('settings','New user')"
 				button-class="icon-add"
 				@click="showNewUserMenu"
 				@keyup.enter="showNewUserMenu"
 				@keyup.space="showNewUserMenu" />
 			<template #list>
-				<AppNavigationItem
+				<AppNavigationItem v-if="settings.isAdmin"
 					id="addgroup"
 					ref="addGroup"
 					:edit-placeholder="t('settings', 'Enter group name')"
@@ -50,7 +51,7 @@
 						{{ userCount }}
 					</AppNavigationCounter>
 				</AppNavigationItem>
-				<AppNavigationItem
+				<AppNavigationItem 
 					v-if="settings.isAdmin"
 					id="admin"
 					:exact="true"
@@ -97,7 +98,7 @@
 				</AppNavigationItem>
 			</template>
 			<template #footer>
-				<AppNavigationSettings>
+				<AppNavigationSettings v-if="settings.isAdmin">
 					<div>
 						<p>{{ t('settings', 'Default quota:') }}</p>
 						<Multiselect :value="defaultQuota"

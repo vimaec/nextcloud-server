@@ -109,8 +109,8 @@
 						OCA.Files.FileList.MultiSelectMenuActions.ToggleSelectionModeAction,
 						{
 							name: 'delete',
-							displayName: t('files', 'Delete'),
-							iconClass: 'icon-delete',
+							displayName: t('files', 'Archive'),
+							iconClass: 'icon-archive',
 							order: 99,
 						},
 						{

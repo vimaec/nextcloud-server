@@ -22,6 +22,7 @@
 
 <template>
 	<div :class="{ 'icon-loading': loading }">
+		
 		<!-- error message -->
 		<div v-if="error" class="emptycontent">
 			<div class="icon icon-error" />
@@ -40,6 +41,7 @@
 						tooltip-message="" />
 				</template>
 			</SharingEntrySimple>
+			<h3>Share with:</h3>
 
 			<!-- add new share input -->
 			<SharingInput v-if="!loading"

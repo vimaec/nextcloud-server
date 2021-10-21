@@ -70,12 +70,6 @@
 			<setting>OCA\DAV\CardDAV\Activity\Setting</setting>
 		</settings>
 
-		<filters>
-			<filter>OCA\DAV\CalDAV\Activity\Filter\Calendar</filter>
-			<filter>OCA\DAV\CalDAV\Activity\Filter\Todo</filter>
-			<filter>OCA\DAV\CardDAV\Activity\Filter</filter>
-		</filters>
-
 		<providers>
 			<provider>OCA\DAV\CalDAV\Activity\Provider\Calendar</provider>
 			<provider>OCA\DAV\CalDAV\Activity\Provider\Event</provider>

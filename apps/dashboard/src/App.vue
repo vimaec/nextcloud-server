@@ -26,13 +26,13 @@
 			</div>
 		</Draggable>
 
-		<div class="footer">
+		<!--div class="footer">
 			<a class="edit-panels icon-rename"
 				tabindex="0"
 				@click="showModal"
 				@keyup.enter="showModal"
 				@keyup.space="showModal">{{ t('dashboard', 'Customize') }}</a>
-		</div>
+		</div-->
 
 		<Modal v-if="modal" @close="closeModal">
 			<div class="modal__content">
@@ -636,5 +636,14 @@ export default {
 	& > div {
 		margin: 8px;
 	}
+}
+</style>
+<style scoped>
+@media (max-width: 767px) {
+  .panel, .panels > div {
+    width: 100%;
+    margin: 16px 24px;
+    max-width: calc(100% - 48px);
+  }
 }
 </style>

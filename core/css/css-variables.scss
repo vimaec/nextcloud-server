@@ -36,6 +36,9 @@
 	--color-success: #{$color-success};
 	--color-success-hover: #{$color-success-hover};
 
+	--color-list-selected: #{$color-tertiary-light-blue};
+	--color-list-hover: #{$color-tertiary-light-yellow};
+
 	--color-text-maxcontrast: #{$color-text-maxcontrast};
 	--color-text-light: #{$color-main-text};
 	--color-text-lighter: #{$color-text-maxcontrast};
@@ -60,6 +63,7 @@
 
 	--font-face: #{$font-face};
 	--default-font-size: #{$default-font-size};
+	--sidebar-h3-size: #{$default-font-size};
 
 	--default-line-height: #{$default-line-height};
 
@@ -67,5 +71,13 @@
 	--animation-slow: #{$animation-slow};
 
 	--header-height: #{$header-height};
-}
 
+	--color-btn: #{$color-primary-text}; 
+	--color-btn-hover: #{$color-primary-royal};  //-VIM
+
+	--c-main: #0590CC;
+	--c-main-dark: #167CC0;
+
+	--c-light-gray: #D1D3D8;
+	--color-dark-gray-cool: #56585F;
+}

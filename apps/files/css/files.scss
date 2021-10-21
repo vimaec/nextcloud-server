@@ -147,12 +147,6 @@
 .nav-icon-extstoragemounts {
 	@include icon-color('external', 'files', $color-black);
 }
-.nav-icon-trashbin {
-	@include icon-color('delete', 'files', $color-black);
-}
-.nav-icon-trashbin-starred {
-	@include icon-color('delete', 'files', #ff0000);
-}
 .nav-icon-deletedshares {
 	@include icon-color('unshare', 'files', $color-black);
 }
@@ -688,7 +682,10 @@ a.action > img {
 	vertical-align: middle;
 	margin-left: 6px;
 }
-
+#fileList .action.action-share.permanent.shared-style span.avatar {
+	overflow: visible;
+	vertical-align: baseline;
+}
 #fileList .remoteAddress .userDomain {
 	margin-left: 0 !important;
 }
@@ -792,11 +789,13 @@ table.dragshadow td.size {
 .newFileMenu {
 	font-weight: 300;
 	top: 100%;
-	left: -48px !important;
+	left: -48px;
 	margin-top: 4px;
 	min-width: 100px;
 	z-index: 1001;
-
+	&.menu.menu-left {
+		left: -48px;
+	}
 	/* Center triangle */
 	&::after {
 		left: 57px !important;
@@ -1238,3 +1237,36 @@ table.dragshadow td.size {
 	}
 }
 
+@media (max-width: 767px) {
+	.actions.creatable {
+		position: fixed;
+		align-items: flex-end;
+		right: 10px;
+		bottom: 10px;
+		flex-direction: row-reverse;
+		height: auto;
+	}
+	.newFileMenu {
+		bottom: 0;
+		right: 0;
+	
+		/* Center triangle */
+		&::after {
+			display: none;
+		}
+		&.menu.menu-left {
+			top: auto;
+			left: auto;
+			right: 10px;
+			bottom: 74px;
+			margin: 0;
+		}
+	}
+	#fileList .action.action-share.permanent.shared-style span.avatar {
+		display: none;
+	}
+	.b-sidebar .avatardiv:not(.avatardiv--unknown).bg-success {
+		box-shadow: none!important;
+		background-color: #73D665!important;
+	}
+}

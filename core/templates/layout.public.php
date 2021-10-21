@@ -92,17 +92,6 @@
 	<?php if (isset($template) && $template->getFooterVisible()) { ?>
 	<footer>
 		<p><?php print_unescaped($theme->getLongFooter()); ?></p>
-		<?php
-		if ($_['showSimpleSignUpLink']) {
-			?>
-			<p>
-				<a href="https://nextcloud.com/signup/" target="_blank" rel="noreferrer noopener">
-					<?php p($l->t('Get your own free account')); ?>
-				</a>
-			</p>
-			<?php
-		}
-		?>
 	</footer>
 	<?php } ?>
 

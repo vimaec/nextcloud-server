@@ -1,1 +1,126 @@
-<svg width="256" height="128" version="1.1" viewBox="0 0 256 128" xmlns="http://www.w3.org/2000/svg"><path d="m128 7c-25.871 0-47.817 17.485-54.713 41.209-5.9795-12.461-18.642-21.209-33.287-21.209-20.304 0-37 16.696-37 37s16.696 37 37 37c14.645 0 27.308-8.7481 33.287-21.209 6.8957 23.724 28.842 41.209 54.713 41.209s47.817-17.485 54.713-41.209c5.9795 12.461 18.642 21.209 33.287 21.209 20.304 0 37-16.696 37-37s-16.696-37-37-37c-14.645 0-27.308 8.7481-33.287 21.209-6.8957-23.724-28.842-41.209-54.713-41.209zm0 22c19.46 0 35 15.54 35 35s-15.54 35-35 35-35-15.54-35-35 15.54-35 35-35zm-88 20c8.4146 0 15 6.5854 15 15s-6.5854 15-15 15-15-6.5854-15-15 6.5854-15 15-15zm176 0c8.4146 0 15 6.5854 15 15s-6.5854 15-15 15-15-6.5854-15-15 6.5854-15 15-15z" color="#000000" fill="#fff" style="-inkscape-stroke:none"/></svg>
+<svg id="_logo-white-landscape" data-name="🌑 logo-white-landscape" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="239.971" height="90" viewBox="0 0 239.971 90">
+  <defs>
+    <style>
+      .cls-1, .cls-10, .cls-13, .cls-14, .cls-17, .cls-2, .cls-5, .cls-8 {
+        fill: #fff;
+      }
+
+      .cls-2 {
+        opacity: 0.4;
+      }
+
+      .cls-3 {
+        clip-path: url(#clip-path);
+      }
+
+      .cls-4 {
+        opacity: 0.8;
+      }
+
+      .cls-12, .cls-16, .cls-4, .cls-7 {
+        fill: url(#radial-gradient);
+      }
+
+      .cls-5 {
+        opacity: 0.5;
+      }
+
+      .cls-6 {
+        clip-path: url(#clip-path-2);
+      }
+
+      .cls-8 {
+        opacity: 0.65;
+      }
+
+      .cls-9 {
+        clip-path: url(#clip-path-3);
+      }
+
+      .cls-10 {
+        opacity: 0.2;
+      }
+
+      .cls-11 {
+        clip-path: url(#clip-path-4);
+      }
+
+      .cls-12 {
+        opacity: 0.6;
+      }
+
+      .cls-13 {
+        opacity: 0.1;
+      }
+
+      .cls-14 {
+        opacity: 0.3;
+      }
+
+      .cls-15 {
+        clip-path: url(#clip-path-5);
+      }
+
+      .cls-16 {
+        opacity: 0.85;
+      }
+
+      .cls-17 {
+        opacity: 0.15;
+      }
+    </style>
+    <clipPath id="clip-path">
+      <path id="V-Solid" class="cls-1" d="M113.492,114.783l-51.962-30,51.962,90,51.962-90Z" transform="translate(-61.531 -84.783)"/>
+    </clipPath>
+    <radialGradient id="radial-gradient" cx="0.5" cy="0.5" r="0.5" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset="0.925" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="clip-path-2">
+      <path id="R-B-Full" class="cls-1" d="M158.882,144.483v30.3l51.962-90Z" transform="translate(-158.882 -84.783)"/>
+    </clipPath>
+    <clipPath id="clip-path-3">
+      <path id="Mask" class="cls-1" d="M87.512,129.783l8.776-5.067L61.531,84.783Z" transform="translate(-61.531 -84.783)"/>
+    </clipPath>
+    <clipPath id="clip-path-4">
+      <path id="B-L-Full" class="cls-1" d="M113.493,174.783v-30.3l-51.962-59.7Z" transform="translate(-61.531 -84.783)"/>
+    </clipPath>
+    <clipPath id="clip-path-5">
+      <path id="Mask-2" data-name="Mask" class="cls-2" d="M126.649,150.921l17.2,19.767v-29.7Z" transform="translate(-126.649 -140.988)"/>
+    </clipPath>
+  </defs>
+  <g id="VIM" transform="translate(112.5 30.115)">
+    <path id="Path_14183" data-name="Path 14183" class="cls-1" d="M290.871,176.579l-11.282-34.866h-9.306l15.871,45h9.306l15.871-45h-9.178Z" transform="translate(-270.284 -141.713)"/>
+    <rect id="Rectangle_16968" data-name="Rectangle 16968" class="cls-1" width="8.541" height="44.617" transform="translate(47.486 0)"/>
+    <path id="Path_14184" data-name="Path 14184" class="cls-1" d="M423.22,141.713l-11.027,33.718L401.23,141.713H389.247l-2.295,44.617h8.031l1.594-34.419,11.345,34.482h8.35l11.41-34.355,1.53,34.292h8.477l-2.295-44.617Z" transform="translate(-323.915 -141.713)"/>
+    <path id="Path_14185" data-name="Path 14185" class="cls-1" d="M489.7,217.885h1.257v3.141h1.064v-3.141h1.257v-.925H489.7Z" transform="translate(-371.145 -176.303)"/>
+    <path id="Path_14186" data-name="Path 14186" class="cls-1" d="M500.374,216.96l-.8,2.583-.8-2.583h-1.431l-.21,4.066h.995l.122-2.583.82,2.583h1l.821-2.583.122,2.583h1.029l-.227-4.066Z" transform="translate(-374.561 -176.303)"/>
+  </g>
+  <g id="Mark" transform="translate(0)">
+    <g id="Background" class="cls-3" transform="translate(0 0)">
+      <ellipse id="Gradient" class="cls-4" cx="35.472" cy="49.84" rx="35.472" ry="49.84" transform="translate(16.585 -22.256)"/>
+      <path id="V-Solid-2" data-name="V-Solid" class="cls-5" d="M113.492,114.783l-51.962-30,51.962,90,51.962-90Z" transform="translate(-61.531 -84.783)"/>
+    </g>
+    <g id="B-R-Full" class="cls-6" transform="translate(51.962 0)">
+      <ellipse id="Gradient-2" data-name="Gradient" class="cls-7" cx="23.752" cy="80.597" rx="23.752" ry="80.597" transform="translate(32.703 -35.046) rotate(30)"/>
+      <path id="R-B-Full-2" data-name="R-B-Full" class="cls-5" d="M158.882,144.483v30.3l51.962-90Z" transform="translate(-158.882 -84.783)"/>
+    </g>
+    <path id="B-R-Half" class="cls-8" d="M199.891,129.783l-8.776-5.067,34.757-39.933Z" transform="translate(-121.949 -84.783)"/>
+    <g id="B-L-Half" class="cls-9" transform="translate(0 0)">
+      <ellipse id="Gradient-3" data-name="Gradient" class="cls-4" cx="32.698" cy="51.806" rx="32.698" ry="51.806" transform="translate(-50.83 -27.307) rotate(-27)"/>
+      <path id="B-L-Half-2" data-name="B-L-Half" class="cls-10" d="M87.512,129.783l8.776-5.067L61.531,84.783Z" transform="translate(-61.531 -84.783)"/>
+    </g>
+    <g id="B-L-Full-2" data-name="B-L-Full" class="cls-11" transform="translate(0 0)">
+      <ellipse id="Gradient-4" data-name="Gradient" class="cls-12" cx="17.219" cy="74.192" rx="17.219" ry="74.192" transform="matrix(0.866, -0.5, 0.5, 0.866, -23.515, -5.636)"/>
+      <path id="B-L-Full-3" data-name="B-L-Full" class="cls-13" d="M113.493,174.783v-30.3l-51.962-59.7Z" transform="translate(-61.531 -84.783)"/>
+    </g>
+    <path id="T-R-Full" class="cls-2" d="M210.843,84.783l-51.962,30v29.7Z" transform="translate(-106.92 -84.783)"/>
+    <path id="T-R-Mid" class="cls-14" d="M176.086,150.921l-17.2,19.767v-29.7Z" transform="translate(-106.92 -110.988)"/>
+    <g id="T-L-Mid" class="cls-15" transform="translate(34.757 30)">
+      <ellipse id="Gradient-5" data-name="Gradient" class="cls-16" cx="21.581" cy="21.28" rx="21.581" ry="21.28" transform="translate(-16.822 -15.743)"/>
+      <path id="T-L-Mid-2" data-name="T-L-Mid" class="cls-17" d="M126.649,150.921l17.2,19.767v-29.7Z" transform="translate(-126.649 -140.988)"/>
+    </g>
+    <path id="T-L-Full" class="cls-2" d="M96.288,124.716l17.2-9.933-51.962-30Z" transform="translate(-61.531 -84.783)"/>
+  </g>
+</svg>

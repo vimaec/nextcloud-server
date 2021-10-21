@@ -127,10 +127,10 @@ export default {
 			}
 			// We can always search with email addresses for users too
 			if (!allowRemoteSharing) {
-				return t('files_sharing', 'Name or email …')
+				return t('files_sharing', 'Name …')
 			}
 
-			return t('files_sharing', 'Name, email, or Federated Cloud ID …')
+			return t('files_sharing', 'Name …') // -VIM removed "or Federated Cloud ID"
 		},
 
 		isValidQuery() {

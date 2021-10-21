@@ -652,53 +652,58 @@
 					}
 				}
 			});
+			if(OC.isUserAdmin()){
 
-			this.registerAction({
-				name: 'Rename',
-				displayName: t('files', 'Rename'),
-				mime: 'all',
-				order: -30,
-				permissions: OC.PERMISSION_UPDATE,
-				iconClass: 'icon-rename',
-				actionHandler: function (filename, context) {
-					context.fileList.rename(filename);
-				}
-			});
-
-			this.registerAction({
-				name: 'MoveCopy',
-				displayName: function(context) {
-					var permissions = context.fileInfoModel.attributes.permissions;
-					if (permissions & OC.PERMISSION_UPDATE) {
-						return t('files', 'Move or copy');
+				this.registerAction({
+					name: 'Rename',
+					displayName: t('files', 'Rename'),
+					mime: 'all',
+					order: -30,
+					permissions: OC.PERMISSION_UPDATE,
+					iconClass: 'icon-rename',
+					actionHandler: function (filename, context) {
+						context.fileList.rename(filename);
 					}
-					return t('files', 'Copy');
-				},
-				mime: 'all',
-				order: -25,
-				permissions: $('#isPublic').val() ? OC.PERMISSION_UPDATE : OC.PERMISSION_READ,
-				iconClass: 'icon-external',
-				actionHandler: function (filename, context) {
-					var permissions = context.fileInfoModel.attributes.permissions;
-					var actions = OC.dialogs.FILEPICKER_TYPE_COPY;
-					if (permissions & OC.PERMISSION_UPDATE) {
-						actions = OC.dialogs.FILEPICKER_TYPE_COPY_MOVE;
-					}
-					var dialogDir = context.dir;
-					if (typeof context.fileList.dirInfo.dirLastCopiedTo !== 'undefined') {
-						dialogDir = context.fileList.dirInfo.dirLastCopiedTo;
-					}
-					OC.dialogs.filepicker(t('files', 'Choose target folder'), function(targetPath, type) {
-						if (type === OC.dialogs.FILEPICKER_TYPE_COPY) {
-							context.fileList.copy(filename, targetPath, false, context.dir);
+				});
+	
+				this.registerAction({
+					name: 'MoveCopy',
+					displayName: function(context) {
+						var permissions = context.fileInfoModel.attributes.permissions;
+						if (permissions & OC.PERMISSION_UPDATE) {
+							return t('files', 'Move or copy');
 						}
-							if (type === OC.dialogs.FILEPICKER_TYPE_MOVE) {
-								context.fileList.move(filename, targetPath, false, context.dir);
+						return t('files', 'Copy');
+					},
+					mime: 'all',
+					order: -25,
+					permissions: $('#isPublic').val() ? OC.PERMISSION_UPDATE : OC.PERMISSION_READ,
+					iconClass: 'icon-external',
+					actionHandler: function (filename, context) {
+						var permissions = context.fileInfoModel.attributes.permissions;
+						var actions = OC.dialogs.FILEPICKER_TYPE_COPY;
+						if (permissions & OC.PERMISSION_UPDATE) {
+							actions = OC.dialogs.FILEPICKER_TYPE_COPY_MOVE;
+						}
+						var dialogDir = context.dir;
+						if (typeof context.fileList.dirInfo.dirLastCopiedTo !== 'undefined') {
+							dialogDir = context.fileList.dirInfo.dirLastCopiedTo;
+						}
+						OC.dialogs.filepicker(t('files', 'Choose target folder'), function(targetPath, type) {
+							if (type === OC.dialogs.FILEPICKER_TYPE_COPY) {
+								context.fileList.copy(filename, targetPath, false, context.dir);
 							}
-							context.fileList.dirInfo.dirLastCopiedTo = targetPath;
-						}, false, "httpd/unix-directory", true, actions, dialogDir);
-				}
-			});
+								if (type === OC.dialogs.FILEPICKER_TYPE_MOVE) {
+									context.fileList.move(filename, targetPath, false, context.dir);
+								}
+								context.fileList.dirInfo.dirLastCopiedTo = targetPath;
+							}, false, "httpd/unix-directory", true, actions, dialogDir);
+					}
+				});
+
+			}
+
+			
 
 			this.registerAction({
 				name: 'Open',
@@ -730,8 +735,8 @@
 					var mountType = context.$file.attr('data-mounttype');
 					var type = context.$file.attr('data-type');
 					var deleteTitle = (type && type === 'file')
-						? t('files', 'Delete file')
-						: t('files', 'Delete folder')
+						? t('files', 'Archive file')
+						: t('files', 'Archive folder')
 					if (mountType === 'external-root') {
 						deleteTitle = t('files', 'Disconnect storage');
 					} else if (mountType === 'shared-root') {
@@ -743,7 +748,7 @@
 				order: 1000,
 				// permission is READ because we show a hint instead if there is no permission
 				permissions: OC.PERMISSION_DELETE,
-				iconClass: 'icon-delete',
+				iconClass: 'icon-archive',
 				actionHandler: function(fileName, context) {
 					// if there is no permission to delete do nothing
 					if((context.$file.data('permissions') & OC.PERMISSION_DELETE) === 0) {
