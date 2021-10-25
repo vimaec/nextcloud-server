@@ -31,8 +31,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     steps:
-    - name: 'List files'
-      run: ls
     - uses: actions/checkout@v2
     - name: Zip Folder
       run: zip -r release.zip .
@@ -40,5 +38,5 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: nextcloud-artifact
-        path: ${{ github.workspace }}/**
+        path: ${{ github.workspace }}
 
