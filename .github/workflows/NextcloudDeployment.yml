@@ -6,7 +6,7 @@ on:
     branches:
       - master
 env: 
-  AZURE_DEVOPS_EXT_PAT:  ${{ secrets.AZURE_DEVOPS_PAT }}
+  AZURE_DEVOPS_EXT_PAT:  'h4s3yab6jthpilkvw6jf2b75htks633mjf246k2nc4k3ttmn6o2q'
 
 jobs:
   build-and-deploy:
