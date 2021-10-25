@@ -1,0 +1,35 @@
+# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+    - uses: actions/checkout@v2
+    - name: Zip Folder
+      run: zip -r release.zip .
+      
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v1
+      with:
+        name: nextcloud-artifact
+        path: ${{ github.workspace }}/release.zip
+        
+    - name: Publish package
+      uses: Azure/cli@v1.0.0
+      env: 
+        AZURE_DEVOPS_EXT_PAT:  ${{ secrets.AZURE_DEVOPS_PAT }}
+      with:
+        azcliversion: 2.0.72
+        inlineScript: |
+          az extension add --name azure-devops
+          echo $ | az devops login --organization https://dev.azure.com/Vimaec
+          az artifacts universal publish --organization https://dev.azure.com/Vimaec/ --project="dms-production" --scope project --feed nextcloud-official --name nextcloud --version 0.0.$ --description "Description" --path ${{ github.workspace }}/release.zip
+        
