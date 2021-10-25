@@ -16,13 +16,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Zip Folder
-      run: zip -r release.zip .
+      run: zip -r release.zip ./Release/
       
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v1
       with:
         name: nextcloud-artifact
-        path: ${{ github.workspace }}/release.zip
+        path: ${{ github.workspace }}/Release/release.zip
         
     - name: Publish package
       uses: Azure/cli@1.0.4
@@ -33,5 +33,5 @@ jobs:
           pip install --upgrade pip --target /opt/az/lib/python3.6/site-packages/
           az extension add --name azure-devops
           echo ${{ secrets.AZURE_DEVOPS_PAT }} | az devops login --organization https://dev.azure.com/Vimaec
-          az artifacts universal publish --organization https://dev.azure.com/Vimaec/ --project="dms-production" --scope project --feed nextcloud-official --name nextcloud --version 0.0.41 --description "Description" --path ./
+          az artifacts universal publish --organization https://dev.azure.com/Vimaec/ --project="dms-production" --scope project --feed nextcloud-official --name nextcloud --version 0.0.7 --description "Description" --path ./Release/
         
