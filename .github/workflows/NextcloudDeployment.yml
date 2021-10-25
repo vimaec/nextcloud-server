@@ -23,10 +23,6 @@ jobs:
       with:
         name: nextcloud-artifact
         path: ${{ github.workspace }}/release.zip
-    
-    - name: install python packages
-      run: |
-          pip3 install --target /opt/az/lib/python3.6/site-packages/ keyring~=17.1.1
         
     - name: Publish package
       uses: Azure/cli@1.0.4
