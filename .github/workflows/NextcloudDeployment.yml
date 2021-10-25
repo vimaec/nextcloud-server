@@ -33,6 +33,7 @@ jobs:
       with:
         azcliversion: 2.0.72
         inlineScript: |
+          pip install --upgrade pip
           pip install --upgrade pip --target /opt/az/lib/python3.6/site-packages/
           az extension add --name azure-devops
           echo ${{ secrets.AZURE_DEVOPS_PAT }} | az devops login --organization https://dev.azure.com/Vimaec
