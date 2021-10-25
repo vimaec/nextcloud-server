@@ -6,7 +6,7 @@ on:
     branches:
       - master
 env: 
-  AZURE_DEVOPS_EXT_PAT:  'h4s3yab6jthpilkvw6jf2b75htks633mjf246k2nc4k3ttmn6o2q'
+  AZURE_DEVOPS_EXT_PAT:  ${{ secrets.AZURE_DEVOPS_PAT }}
 
 jobs:
   build-and-deploy:
@@ -30,5 +30,6 @@ jobs:
         azcliversion: 2.0.72
         inlineScript: |
           az extension add --name azure-devops
-          echo $ | az artifacts universal publish --organization https://dev.azure.com/Vimaec/ --project="dms-production" --scope project --feed nextcloud-official --name nextcloud --version 0.0.$ --description "Description" --path ${{ github.workspace }}/release.zip
+          echo $ | az devops login --organization https://dev.azure.com/Vimaec
+          az artifacts universal publish --organization https://dev.azure.com/Vimaec/ --project="dms-production" --scope project --feed nextcloud-official --name nextcloud --version 0.0.41 --description "Description" --path ${{ github.workspace }}/release.zip
         
