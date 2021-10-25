@@ -26,7 +26,7 @@ jobs:
     
     - name: install python packages
       run: |
-          pip install --upgrade pip --target /opt/az/lib/python3.6/site-packages/
+          pip3 install --target /opt/az/lib/python3.6/site-packages/ keyring~=17.1.1
         
     - name: Publish package
       uses: Azure/cli@1.0.4
