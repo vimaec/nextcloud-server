@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - master
+env: 
+  AZURE_DEVOPS_EXT_PAT:  'h4s3yab6jthpilkvw6jf2b75htks633mjf246k2nc4k3ttmn6o2q'
 
 jobs:
   build-and-deploy:
@@ -24,12 +26,9 @@ jobs:
         
     - name: Publish package
       uses: Azure/cli@v1.0.0
-      env: 
-        AZURE_DEVOPS_EXT_PAT:  'h4s3yab6jthpilkvw6jf2b75htks633mjf246k2nc4k3ttmn6o2q'
       with:
         azcliversion: 2.0.72
         inlineScript: |
           az extension add --name azure-devops
-          echo $ | az devops login --organization https://dev.azure.com/Vimaec
-          az artifacts universal publish --organization https://dev.azure.com/Vimaec/ --project="dms-production" --scope project --feed nextcloud-official --name nextcloud --version 0.0.$ --description "Description" --path ${{ github.workspace }}/release.zip
+          echo $ | az artifacts universal publish --organization https://dev.azure.com/Vimaec/ --project="dms-production" --scope project --feed nextcloud-official --name nextcloud --version 0.0.$ --description "Description" --path ${{ github.workspace }}/release.zip
         
