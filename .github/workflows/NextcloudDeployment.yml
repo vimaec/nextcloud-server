@@ -15,10 +15,12 @@ jobs:
     environment: dev
     steps:
     - uses: actions/checkout@v2
+    
+    - name: Make Release Folder
+      run: mkdir Release
+    
     - name: Zip Folder
-      run:
-        mkdir Release
-        zip -r ./Release/release.zip .
+      run: zip -r ./Release/release.zip .
       
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v1
