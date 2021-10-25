@@ -16,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Zip Folder
-      run: zip -r release.zip ./Release/
+      run: zip -r ./Release/release.zip .
       
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v1
