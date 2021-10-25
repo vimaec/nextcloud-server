@@ -40,12 +40,5 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: nextcloud-artifact
-        path: ${{ github.workspace }}/release.zip
-        
-    - name: Upload a Build Artifact to Azure Blob Storage
-      uses: fixpoint/azblob-upload-artifact@v4
-      with:
-        connection-string: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
-        name: nextcloud-artifact
-        path: ${{ github.workspace }}/release.zip
+        path: ${{ github.workspace }}/**
 
