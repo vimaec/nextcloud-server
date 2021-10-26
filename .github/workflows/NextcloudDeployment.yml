@@ -14,7 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Checkout submodules
+      run: git submodule update --init --recursive
     
     - name: Make Release Folder
       run: mkdir Release
