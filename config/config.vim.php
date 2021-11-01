@@ -9,6 +9,7 @@ $CONFIG = array (
   array (
     0 => '*',
   ),
+  'tempdirectory' => '/media/extdisk',
   'overwriteprotocol' => 'https',
   'datadirectory' => '/mnt/nxdata/data',
   'dbtype' => 'mysql',  
