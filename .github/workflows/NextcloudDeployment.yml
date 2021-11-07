@@ -46,7 +46,7 @@ jobs:
           az artifacts universal publish --organization https://dev.azure.com/Vimaec/ --project="dms-production" --scope project --feed nextcloud-devel --name nextcloud --version 0.0.${GITHUB_RUN_NUMBER} --description "Feed from github" --path ./Release/
           
     - name: Azure Pipelines Action
-      uses: Azure/pipelines@v1
+      uses: Azure/pipelines@v1.1
       with:
         # FQDN to the Azure DevOps organization with project name
         azure-devops-project-url: 'https://dev.azure.com/Vimaec/dms-production'
