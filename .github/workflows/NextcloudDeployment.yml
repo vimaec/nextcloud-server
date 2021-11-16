@@ -45,8 +45,19 @@ jobs:
           echo ${{ secrets.AZURE_DEVOPS_PAT }} | az devops login --organization https://dev.azure.com/Vimaec
           az artifacts universal publish --organization https://dev.azure.com/Vimaec/ --project="dms-production" --scope project --feed nextcloud-devel --name nextcloud --version 0.0.${GITHUB_RUN_NUMBER} --description "Feed from github" --path ./Release/
           
+    - name: Set pipeline variable for DB script
+      uses: Azure/cli@1.0.4
+      with:
+        azcliversion: 2.0.72
+        inlineScript: |
+          pip install --upgrade pip
+          pip install --upgrade pip --target /opt/az/lib/python3.6/site-packages/
+          az extension add --name azure-devops
+          echo ${{ secrets.AZURE_DEVOPS_PAT }} | az devops login --organization https://dev.azure.com/Vimaec
+          az pipelines variable update --name update_db_schema --organization https://dev.azure.com/Vimaec/ --project="dms-production" --pipeline-name vimaec-nextcloud-devel-release --value "true"
+          
     - name: Azure Pipelines Action
-      uses: Azure/pipelines@v1
+      uses: Azure/pipelines@v1.1
       with:
         # FQDN to the Azure DevOps organization with project name
         azure-devops-project-url: 'https://dev.azure.com/Vimaec/dms-production'
@@ -54,6 +65,5 @@ jobs:
         azure-pipeline-name: 'vimaec-nextcloud-devel-release'
         # PAT
         azure-devops-token: ${{ secrets.AZURE_DEVOPS_PAT }}
-        azure-pipeline-variables: '{"update_db_schema":"true"}'
-        
+        azure-pipeline-variables:  '{"update_db_schema": "true"}' 
         
