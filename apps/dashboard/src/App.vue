@@ -27,11 +27,11 @@
 		</Draggable>
 
 		<div class="footer">
-			<a class="edit-panels icon-rename"
+			<!--a class="edit-panels icon-rename"
 				tabindex="0"
 				@click="showModal"
 				@keyup.enter="showModal"
-				@keyup.space="showModal">{{ t('dashboard', 'Customize') }}</a>
+				@keyup.space="showModal">{{ t('dashboard', 'Customize') }}</a-->
 		</div>
 
 		<Modal v-if="modal" @close="closeModal">
