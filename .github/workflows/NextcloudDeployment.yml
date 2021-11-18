@@ -54,7 +54,7 @@ jobs:
           pip install --upgrade pip --target /opt/az/lib/python3.6/site-packages/
           az extension add --name azure-devops
           echo ${{ secrets.AZURE_DEVOPS_PAT }} | az devops login --organization https://dev.azure.com/Vimaec
-          az pipelines variable update --name update_db_schema --organization https://dev.azure.com/Vimaec/ --project="dms-production" --pipeline-name vimaec-nextcloud-devel-release --value "true"
+          az pipelines variable update --name update_db_schema --organization https://dev.azure.com/Vimaec/ --project="dms-production" --pipeline-name vimaec-nextcloud-devel-release --value "false"
           
     - name: Azure Pipelines Action
       uses: Azure/pipelines@v1.1
