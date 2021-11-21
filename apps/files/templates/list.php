@@ -1,5 +1,8 @@
 <div id="controls">
 		<div class="actions creatable hidden">
+			<div id="sams-club">
+				
+			</div>
 			<div id="uploadprogresswrapper">
 			</div>
 		</div>
