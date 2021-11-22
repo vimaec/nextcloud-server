@@ -204,7 +204,7 @@
 		padding: 0;
 		vertical-align: middle;
 	}
-
+	
 	#header-left, .header-left,
 	#header-right, .header-right {
 		display: inline-flex;
@@ -215,11 +215,14 @@
 		flex: 1 0;
 		white-space: nowrap;
 		min-width: 0;
+		/* ------------------------------------------ VIM Branding */
+		background: linear-gradient(123deg, rgba(8,190,217,1) 0%, rgba(5,144,204,1) 50%, rgba(57,78,174,1) 100%);
 	}
 
 	#header-right, .header-right {
 		justify-content: flex-end;
 		flex-shrink: 1;
+		background-color: rgba(57,78,174,1);
 	}
 
 	/* Right header standard */
