@@ -14569,6 +14569,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _nextcloud_axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/axios */ "./node_modules/@nextcloud/axios/dist/index.js");
 /* harmony import */ var _nextcloud_axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_nextcloud_axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _utils_davUtils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/davUtils */ "./apps/files/src/utils/davUtils.js");
+/* harmony import */ var _nextcloud_auth__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @nextcloud/auth */ "./node_modules/@nextcloud/auth/dist/index.js");
+/* harmony import */ var _nextcloud_auth__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_nextcloud_auth__WEBPACK_IMPORTED_MODULE_3__);
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -14621,12 +14624,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       NameValue: '',
+      ShowWarning: false,
+      WarningText: '',
       knownProperties: []
     };
   },
@@ -14636,7 +14644,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     Close: Function
   },
   mounted: function mounted() {
-    var _this = this;
+    var _this2 = this;
 
     return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
       return regeneratorRuntime.wrap(function _callee$(_context) {
@@ -14644,9 +14652,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           switch (_context.prev = _context.next) {
             case 0:
               _context.next = 2;
-              return _this.update();
+              return _this2.update();
 
             case 2:
+              _this2.ShowWarning = false;
+
+            case 3:
             case "end":
               return _context.stop();
           }
@@ -14656,7 +14667,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   },
   methods: {
     update: function update() {
-      var _this2 = this;
+      var _this3 = this;
 
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
@@ -14664,10 +14675,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             switch (_context2.prev = _context2.next) {
               case 0:
                 _context2.next = 2;
-                return _this2.retrieveCustomProperties();
+                return _this3.retrieveCustomProperties();
 
               case 2:
-                _this2.knownProperties = _context2.sent;
+                _this3.knownProperties = _context2.sent;
 
               case 3:
               case "end":
@@ -14708,16 +14719,97 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }))();
     },
     CreateSC: function CreateSC() {
+      var _this4 = this;
+
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+        var validate, prom, _this;
+
         return regeneratorRuntime.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
+                validate = true;
+
+                _this4.knownProperties.forEach(function (element) {
+                  if (element.propertyvalue === null || element.propertyvalue === undefined || element.propertyvalue === "") {
+                    validate = false;
+                  }
+                });
+
+                if (!(!validate || _this4.NameValue === '')) {
+                  _context4.next = 6;
+                  break;
+                }
+
+                _this4.WarningText = "Please fill all fields";
+                _this4.ShowWarning = true;
+                return _context4.abrupt("return");
+
+              case 6:
+                if (!OCA.Files.App.currentFileList.findFileEl(_this4.NameValue).exists()) {
+                  _context4.next = 10;
+                  break;
+                }
+
+                _this4.WarningText = "File Already Exists";
+                _this4.ShowWarning = true;
+                return _context4.abrupt("return");
+
+              case 10:
+                prom = OCA.Files.App.currentFileList.createDirectory(_this4.NameValue);
+                _this = _this4;
+                prom.done(function () {
+                  _this.knownProperties.forEach(function (element) {
+                    _this.updateProperty(element);
+                  });
+
+                  _this.Close();
+                });
+
+              case 13:
               case "end":
                 return _context4.stop();
             }
           }
         }, _callee4);
+      }))();
+    },
+    updateProperty: function updateProperty(property) {
+      var _this5 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
+        var uid, path, url, propTag;
+        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                uid = Object(_nextcloud_auth__WEBPACK_IMPORTED_MODULE_3__["getCurrentUser"])().uid;
+                path = "/files/".concat(uid, "/").concat(Object(_utils_davUtils__WEBPACK_IMPORTED_MODULE_2__["getCurrentDirectory"])(), "/").concat(_this5.NameValue).replace(/\/+/ig, '/');
+                url = Object(_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__["generateRemoteUrl"])('dav') + path;
+                propTag = "".concat(property.prefix, ":").concat(property.propertyname);
+                _context5.prev = 4;
+                _context5.next = 7;
+                return _nextcloud_axios__WEBPACK_IMPORTED_MODULE_1___default.a.request({
+                  method: 'PROPPATCH',
+                  url: url,
+                  data: "\n            <d:propertyupdate xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\">\n             <d:set>\n               <d:prop>\n                <".concat(propTag, ">").concat(property.propertyvalue, "</").concat(propTag, ">\n               </d:prop>\n             </d:set>\n            </d:propertyupdate>")
+                });
+
+              case 7:
+                _context5.next = 12;
+                break;
+
+              case 9:
+                _context5.prev = 9;
+                _context5.t0 = _context5["catch"](4);
+                console.error(_context5.t0);
+
+              case 12:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5, null, [[4, 9]]);
       }))();
     }
   }
@@ -34593,6 +34685,10 @@ var render = function() {
       _c("h2", [_vm._v(_vm._s(_vm.Title))]),
       _vm._v(" "),
       _c("p", [_vm._v("All fields are required")]),
+      _vm._v(" "),
+      _vm.ShowWarning
+        ? _c("p", { staticClass: "warning" }, [_vm._v(_vm._s(_vm.WarningText))])
+        : _vm._e(),
       _vm._v(" "),
       _c("br"),
       _vm._v(" "),

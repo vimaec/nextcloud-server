@@ -2,6 +2,7 @@
     <div class="modal__content">
 		<h2>{{Title}}</h2>
 		<p>All fields are required</p>
+        <p class="warning" v-if="ShowWarning">{{WarningText}}</p>
 				
 		<br/>
 
@@ -50,11 +51,14 @@
 
 import { generateRemoteUrl, generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
-
+import { getCurrentDirectory } from '../utils/davUtils'
+import { getCurrentUser } from '@nextcloud/auth'
 export default{
     data() {
         return {
             NameValue : '',
+            ShowWarning: false,
+            WarningText:'',
             knownProperties:[]
         }
         
@@ -66,6 +70,7 @@ export default{
     },
     async mounted() {
 		await this.update()
+        this.ShowWarning=false
 	},
     methods:{
         async update(){
@@ -83,7 +88,58 @@ export default{
 		},
         async CreateSC(){
 
-        }
+            var validate=true;
+            this.knownProperties.forEach(element => {
+                if(element.propertyvalue===null || element.propertyvalue===undefined || element.propertyvalue===""){
+                    validate=false
+                }
+            });
+
+            if(!validate || this.NameValue===''){
+                this.WarningText="Please fill all fields"
+                this.ShowWarning=true
+                return;
+            }
+            if(OCA.Files.App.currentFileList.findFileEl(this.NameValue).exists()){
+                this.WarningText="File Already Exists"
+                this.ShowWarning=true
+                return;
+
+            }
+            var prom= OCA.Files.App.currentFileList.createDirectory(this.NameValue)
+            var _this= this
+            prom.done(function(){
+                _this.knownProperties.forEach(element => {
+                    _this.updateProperty(element)             
+                });
+                _this.Close()
+            })
+
+            
+
+        },
+        async updateProperty(property) {
+			const uid = getCurrentUser().uid
+			const path = `/files/${uid}/${getCurrentDirectory()}/${this.NameValue}`.replace(/\/+/ig, '/')
+			const url = generateRemoteUrl('dav') + path
+			const propTag = `${property.prefix}:${property.propertyname}`
+			try {
+				await axios.request({
+					method: 'PROPPATCH',
+					url,
+					data: `
+            <d:propertyupdate xmlns:d="DAV:" xmlns:oc="http://owncloud.org/ns">
+             <d:set>
+               <d:prop>
+                <${propTag}>${property.propertyvalue}</${propTag}>
+               </d:prop>
+             </d:set>
+            </d:propertyupdate>`,
+				})
+			} catch (e) {
+				console.error(e)
+			}
+		}
     }
 }
 </script>
