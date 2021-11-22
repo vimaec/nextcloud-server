@@ -14625,6 +14625,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -34731,9 +34738,9 @@ var render = function() {
             _vm._v(_vm._s(pp.propertylabel))
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "input-group" }, [
-            pp.propertytype === "checkbox"
-              ? _c("input", {
+          pp.propertytype === "textarea"
+            ? _c("div", { staticClass: "input-group" }, [
+                _c("textarea", {
                   directives: [
                     {
                       name: "model",
@@ -34744,80 +34751,9 @@ var render = function() {
                   ],
                   staticClass: "customproperty-form-control",
                   attrs: {
-                    id: "property_" + pp.propertyname,
-                    "aria-disabled": "disabled",
+                    id: "textproperty_" + pp.propertyname,
                     name: pp.propertyname,
-                    type: "checkbox"
-                  },
-                  domProps: {
-                    checked: Array.isArray(pp.propertyvalue)
-                      ? _vm._i(pp.propertyvalue, null) > -1
-                      : pp.propertyvalue
-                  },
-                  on: {
-                    change: function($event) {
-                      var $$a = pp.propertyvalue,
-                        $$el = $event.target,
-                        $$c = $$el.checked ? true : false
-                      if (Array.isArray($$a)) {
-                        var $$v = null,
-                          $$i = _vm._i($$a, $$v)
-                        if ($$el.checked) {
-                          $$i < 0 &&
-                            _vm.$set(pp, "propertyvalue", $$a.concat([$$v]))
-                        } else {
-                          $$i > -1 &&
-                            _vm.$set(
-                              pp,
-                              "propertyvalue",
-                              $$a.slice(0, $$i).concat($$a.slice($$i + 1))
-                            )
-                        }
-                      } else {
-                        _vm.$set(pp, "propertyvalue", $$c)
-                      }
-                    }
-                  }
-                })
-              : pp.propertytype === "radio"
-              ? _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: pp.propertyvalue,
-                      expression: "pp.propertyvalue"
-                    }
-                  ],
-                  staticClass: "customproperty-form-control",
-                  attrs: {
-                    id: "property_" + pp.propertyname,
-                    "aria-disabled": "disabled",
-                    name: pp.propertyname,
-                    type: "radio"
-                  },
-                  domProps: { checked: _vm._q(pp.propertyvalue, null) },
-                  on: {
-                    change: function($event) {
-                      return _vm.$set(pp, "propertyvalue", null)
-                    }
-                  }
-                })
-              : _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: pp.propertyvalue,
-                      expression: "pp.propertyvalue"
-                    }
-                  ],
-                  staticClass: "customproperty-form-control",
-                  attrs: {
-                    id: "property_" + pp.propertyname,
-                    "aria-disabled": "disabled",
-                    name: pp.propertyname,
-                    type: pp.propertytype
+                    rows: "6"
                   },
                   domProps: { value: pp.propertyvalue },
                   on: {
@@ -34829,7 +34765,106 @@ var render = function() {
                     }
                   }
                 })
-          ])
+              ])
+            : _c("div", { staticClass: "input-group" }, [
+                pp.propertytype === "checkbox"
+                  ? _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: pp.propertyvalue,
+                          expression: "pp.propertyvalue"
+                        }
+                      ],
+                      staticClass: "customproperty-form-control",
+                      attrs: {
+                        id: "property_" + pp.propertyname,
+                        "aria-disabled": "disabled",
+                        name: pp.propertyname,
+                        type: "checkbox"
+                      },
+                      domProps: {
+                        checked: Array.isArray(pp.propertyvalue)
+                          ? _vm._i(pp.propertyvalue, null) > -1
+                          : pp.propertyvalue
+                      },
+                      on: {
+                        change: function($event) {
+                          var $$a = pp.propertyvalue,
+                            $$el = $event.target,
+                            $$c = $$el.checked ? true : false
+                          if (Array.isArray($$a)) {
+                            var $$v = null,
+                              $$i = _vm._i($$a, $$v)
+                            if ($$el.checked) {
+                              $$i < 0 &&
+                                _vm.$set(pp, "propertyvalue", $$a.concat([$$v]))
+                            } else {
+                              $$i > -1 &&
+                                _vm.$set(
+                                  pp,
+                                  "propertyvalue",
+                                  $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                                )
+                            }
+                          } else {
+                            _vm.$set(pp, "propertyvalue", $$c)
+                          }
+                        }
+                      }
+                    })
+                  : pp.propertytype === "radio"
+                  ? _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: pp.propertyvalue,
+                          expression: "pp.propertyvalue"
+                        }
+                      ],
+                      staticClass: "customproperty-form-control",
+                      attrs: {
+                        id: "property_" + pp.propertyname,
+                        "aria-disabled": "disabled",
+                        name: pp.propertyname,
+                        type: "radio"
+                      },
+                      domProps: { checked: _vm._q(pp.propertyvalue, null) },
+                      on: {
+                        change: function($event) {
+                          return _vm.$set(pp, "propertyvalue", null)
+                        }
+                      }
+                    })
+                  : _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: pp.propertyvalue,
+                          expression: "pp.propertyvalue"
+                        }
+                      ],
+                      staticClass: "customproperty-form-control",
+                      attrs: {
+                        id: "property_" + pp.propertyname,
+                        "aria-disabled": "disabled",
+                        name: pp.propertyname,
+                        type: pp.propertytype
+                      },
+                      domProps: { value: pp.propertyvalue },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(pp, "propertyvalue", $event.target.value)
+                        }
+                      }
+                    })
+              ])
         ])
       }),
       _vm._v(" "),

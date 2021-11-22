@@ -26,7 +26,14 @@
             :key="pp.id"
             :id="'prop' + pp">
             <label :for="'property_'+pp.propertyname">{{ pp.propertylabel }}</label>
-            <div class="input-group">
+            <div v-if="pp.propertytype ==='textarea'" class="input-group">
+			<textarea :id="'textproperty_'+pp.propertyname"
+				v-model="pp.propertyvalue"
+				:name="pp.propertyname"
+                rows="6"
+				class="customproperty-form-control"></textarea>
+		    </div>
+            <div v-else class="input-group">
 			<input :id="'property_'+pp.propertyname"
 				v-model="pp.propertyvalue"
 				aria-disabled="disabled"
