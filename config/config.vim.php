@@ -38,5 +38,9 @@ $CONFIG = array (
   'config_is_read_only' => true,
   'appstoreenabled' => false,
   'log_type' => 'syslog',
+  'app_install_overwrite' => 
+  array (
+    0 => 'customproperties',
+  ),
 
 );
