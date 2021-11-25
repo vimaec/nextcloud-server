@@ -196,6 +196,7 @@ window.addEventListener('DOMContentLoaded', function () {
   });
   AppSamsClub.$mount('#sams-club');
   $('#app-content-files').on('changeDirectory', AppSamsClub.directoryChanged);
+  window.OCA.Files.retrieveSpecialProp = AppSamsClub.retrieveSpecialProp;
 });
 
 /***/ }),
@@ -204,7 +205,7 @@ window.addEventListener('DOMContentLoaded', function () {
 /*!******************************************!*\
   !*** ./apps/files/src/utils/davUtils.js ***!
   \******************************************/
-/*! exports provided: getRootPath, isPublic, getToken, getCurrentDirectory */
+/*! exports provided: getRootPath, isPublic, getToken, getCurrentDirectory, xmlToTagList, isEmptyObject */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -213,10 +214,32 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isPublic", function() { return isPublic; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getToken", function() { return getToken; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCurrentDirectory", function() { return getCurrentDirectory; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "xmlToTagList", function() { return xmlToTagList; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isEmptyObject", function() { return isEmptyObject; });
 /* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @nextcloud/router */ "./node_modules/@nextcloud/router/dist/index.js");
 /* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _nextcloud_auth__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/auth */ "./node_modules/@nextcloud/auth/dist/index.js");
 /* harmony import */ var _nextcloud_auth__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_nextcloud_auth__WEBPACK_IMPORTED_MODULE_1__);
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 /**
  * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>
  *
@@ -267,6 +290,117 @@ var getCurrentDirectory = function getCurrentDirectory() {
   }; // Make sure we don't have double slashes
 
   return "".concat(currentDirInfo.path, "/").concat(currentDirInfo.name).replace(/\/\//gi, '/');
+};
+
+var parseXml = function parseXml(xml) {
+  var dom = null;
+
+  try {
+    dom = new DOMParser().parseFromString(xml, 'text/xml');
+  } catch (e) {
+    console.error('Failed to parse xml document', e);
+  }
+
+  return dom;
+};
+
+var xmlToJson = function xmlToJson(xml, documentElement) {
+  var obj = {};
+
+  if (xml === null || xml === undefined) {
+    return obj;
+  }
+
+  if (xml.nodeType === 1) {
+    obj['@prefix'] = xml.prefix;
+    obj['@namespaceURI'] = xml.prefix ? xml.lookupNamespaceURI(xml.prefix) : undefined;
+
+    if (xml.attributes.length > 0) {
+      obj['@attributes'] = {};
+
+      for (var j = 0; j < xml.attributes.length; j++) {
+        var attribute = xml.attributes.item(j);
+        obj['@attributes'][attribute.nodeName] = attribute.nodeValue;
+      }
+    }
+  } else if (xml.nodeType === 3) {
+    obj = xml.nodeValue;
+  }
+
+  if (xml.hasChildNodes()) {
+    for (var i = 0; i < xml.childNodes.length; i++) {
+      var item = xml.childNodes.item(i);
+      var nodeName = item.nodeName;
+
+      if (typeof obj[nodeName] === 'undefined') {
+        obj[nodeName] = xmlToJson(item, documentElement);
+      } else {
+        if (typeof obj[nodeName].push === 'undefined') {
+          var old = obj[nodeName];
+          obj[nodeName] = [];
+          obj[nodeName].push(old);
+        }
+
+        obj[nodeName].push(xmlToJson(item, documentElement));
+      }
+    }
+  }
+
+  return obj;
+};
+
+var xmlToTagList = function xmlToTagList(xmlString) {
+  var xml = parseXml(xmlString);
+  var json = xmlToJson(xml, xml);
+
+  if (json['d:multistatus']) {
+    var list = json['d:multistatus']['d:response'];
+    var listElement;
+
+    if (Array.isArray(list)) {
+      listElement = list[0]['d:propstat'];
+    } else {
+      listElement = list['d:propstat'];
+    }
+
+    listElement = Array.isArray(listElement) ? listElement : [listElement];
+    return _toConsumableArray(listElement).filter(function (propstat) {
+      return propstat['d:status']['#text'] === 'HTTP/1.1 200 OK';
+    }).map(function (tag) {
+      return tag['d:prop'];
+    }).flatMap(function (tag) {
+      return Object.entries(tag).map(function (a) {
+        return a;
+      }).filter(function (_ref) {
+        var _ref2 = _slicedToArray(_ref, 2),
+            nodeType = _ref2[0],
+            content = _ref2[1];
+
+        return content['@prefix'] !== undefined;
+      });
+    }).map(function (_ref3) {
+      var _ref4 = _slicedToArray(_ref3, 2),
+          propertyname = _ref4[0],
+          value = _ref4[1];
+
+      var namespaceURI = value['@namespaceURI'];
+      var propertyvalue = value['#text'];
+      return {
+        propertyname: propertyname,
+        propertyvalue: propertyvalue,
+        namespaceURI: namespaceURI
+      };
+    });
+  }
+
+  return [];
+};
+var isEmptyObject = function isEmptyObject(fileInfo) {
+  if (fileInfo === null || fileInfo === undefined) {
+    return true;
+  }
+
+  return fileInfo && Object.keys(fileInfo).length === 0 && fileInfo.constructor === Object;
 };
 
 /***/ }),
@@ -14844,10 +14978,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils_davUtils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/davUtils */ "./apps/files/src/utils/davUtils.js");
-/* harmony import */ var _nextcloud_vue_dist_Components_Modal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/vue/dist/Components/Modal */ "./node_modules/@nextcloud/vue/dist/Components/Modal.js");
-/* harmony import */ var _nextcloud_vue_dist_Components_Modal__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_nextcloud_vue_dist_Components_Modal__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _components_SamsClubModel__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/SamsClubModel */ "./apps/files/src/components/SamsClubModel.vue");
-/* harmony import */ var _nextcloud_dialogs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @nextcloud/dialogs */ "./node_modules/@nextcloud/dialogs/dist/index.es.js");
+/* harmony import */ var _nextcloud_auth__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/auth */ "./node_modules/@nextcloud/auth/dist/index.js");
+/* harmony import */ var _nextcloud_auth__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_nextcloud_auth__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _nextcloud_vue_dist_Components_Modal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @nextcloud/vue/dist/Components/Modal */ "./node_modules/@nextcloud/vue/dist/Components/Modal.js");
+/* harmony import */ var _nextcloud_vue_dist_Components_Modal__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_nextcloud_vue_dist_Components_Modal__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _components_SamsClubModel__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/SamsClubModel */ "./apps/files/src/components/SamsClubModel.vue");
+/* harmony import */ var _nextcloud_dialogs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @nextcloud/dialogs */ "./node_modules/@nextcloud/dialogs/dist/index.es.js");
+/* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @nextcloud/router */ "./node_modules/@nextcloud/router/dist/index.js");
+/* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_nextcloud_router__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _nextcloud_axios__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @nextcloud/axios */ "./node_modules/@nextcloud/axios/dist/index.js");
+/* harmony import */ var _nextcloud_axios__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_nextcloud_axios__WEBPACK_IMPORTED_MODULE_6__);
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -14871,11 +15011,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
-//
-//
-//
+
+
+
 
 
 
@@ -14883,67 +15021,187 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'SamsClub',
   components: {
-    Modal: _nextcloud_vue_dist_Components_Modal__WEBPACK_IMPORTED_MODULE_1___default.a,
-    SamsClubModel: _components_SamsClubModel__WEBPACK_IMPORTED_MODULE_2__["default"]
+    Modal: _nextcloud_vue_dist_Components_Modal__WEBPACK_IMPORTED_MODULE_2___default.a,
+    SamsClubModel: _components_SamsClubModel__WEBPACK_IMPORTED_MODULE_3__["default"]
   },
   props: {},
   data: function data() {
     return {
       TextName: 'Sams Clubs',
-      IsShowButton: false,
-      IsShowAddClub: false,
-      IsShowAddProject: false
+      IsShowModel: false,
+      ModelDetail: 'Club'
     };
   },
-  computed: {},
+  computed: {
+    IsShowButton: function IsShowButton() {
+      if (this.ModelDetail === '') {
+        return false;
+      } else {
+        return true;
+      }
+    }
+  },
   methods: {
     buttonClicked: function buttonClicked() {
-      this.IsShowAddClub = true;
+      var _this = this;
+
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                _this.IsShowModel = true;
+
+              case 1:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }))();
     },
     directoryChanged: function directoryChanged(el) {
-      if (el.dir === "/") {
-        this.IsShowButton = true;
-      } else {
-        this.IsShowButton = false;
-      }
+      var _this2 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                if (!(el.dir === "/")) {
+                  _context2.next = 4;
+                  break;
+                }
+
+                _this2.ModelDetail = 'Club';
+                _context2.next = 6;
+                break;
+
+              case 4:
+                _context2.next = 6;
+                return _this2.retrieveSpecialProp(el.dir);
+
+              case 6:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }))();
     },
-    addClubModelClosed: function addClubModelClosed() {
-      this.IsShowAddClub = false;
+    ModelClosed: function ModelClosed() {
+      var _this3 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                _this3.IsShowModel = false;
+
+              case 1:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }))();
     },
-    addProjectModelClosed: function addProjectModelClosed() {}
+    retrieveSpecialProp: function retrieveSpecialProp(filepath) {
+      var _this4 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+        var uid, path, url, result, specialprop, values;
+        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                _context4.prev = 0;
+                uid = Object(_nextcloud_auth__WEBPACK_IMPORTED_MODULE_1__["getCurrentUser"])().uid;
+                path = "/files/".concat(uid, "/").concat(filepath).replace(/\/+/ig, '/');
+                url = Object(_nextcloud_router__WEBPACK_IMPORTED_MODULE_5__["generateRemoteUrl"])('dav') + path;
+                _context4.next = 6;
+                return _nextcloud_axios__WEBPACK_IMPORTED_MODULE_6___default.a.request({
+                  method: 'PROPFIND',
+                  url: url,
+                  data: '<d:propfind xmlns:d="DAV:"></d:propfind>'
+                });
+
+              case 6:
+                result = _context4.sent;
+                specialprop = '';
+                values = Object(_utils_davUtils__WEBPACK_IMPORTED_MODULE_0__["xmlToTagList"])(result.data);
+                values.forEach(function (element) {
+                  if (element.propertyname === 'oc:vimfilecategoryproperty') {
+                    specialprop = element.propertyvalue;
+                  }
+                });
+
+                if (specialprop === "Club") {
+                  _this4.ModelDetail = "Project";
+                } else {
+                  _this4.ModelDetail = "";
+                }
+
+                _context4.next = 17;
+                break;
+
+              case 13:
+                _context4.prev = 13;
+                _context4.t0 = _context4["catch"](0);
+                console.error(_context4.t0);
+                return _context4.abrupt("return", '');
+
+              case 17:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4, null, [[0, 13]]);
+      }))();
+    }
   },
   watch: {},
   mounted: function mounted() {
-    var _this = this;
+    var _this5 = this;
 
-    return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-      return regeneratorRuntime.wrap(function _callee$(_context) {
+    return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
+      return regeneratorRuntime.wrap(function _callee5$(_context5) {
         while (1) {
-          switch (_context.prev = _context.next) {
+          switch (_context5.prev = _context5.next) {
             case 0:
-              if (Object(_utils_davUtils__WEBPACK_IMPORTED_MODULE_0__["getCurrentDirectory"])() === "/") {
-                _this.IsShowButton = true;
+              if (!(Object(_utils_davUtils__WEBPACK_IMPORTED_MODULE_0__["getCurrentDirectory"])() === "/")) {
+                _context5.next = 4;
+                break;
               }
 
-            case 1:
+              his.ModelDetail = 'Club';
+              _context5.next = 6;
+              break;
+
+            case 4:
+              _context5.next = 6;
+              return _this5.retrieveSpecialProp(Object(_utils_davUtils__WEBPACK_IMPORTED_MODULE_0__["getCurrentDirectory"])());
+
+            case 6:
             case "end":
-              return _context.stop();
+              return _context5.stop();
           }
         }
-      }, _callee);
+      }, _callee5);
     }))();
   },
   beforeDestroy: function beforeDestroy() {
-    return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-      return regeneratorRuntime.wrap(function _callee2$(_context2) {
+    return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
+      return regeneratorRuntime.wrap(function _callee6$(_context6) {
         while (1) {
-          switch (_context2.prev = _context2.next) {
+          switch (_context6.prev = _context6.next) {
             case 0:
             case "end":
-              return _context2.stop();
+              return _context6.stop();
           }
         }
-      }, _callee2);
+      }, _callee6);
     }))();
   }
 });
@@ -34920,41 +35178,20 @@ var render = function() {
           ])
         : _vm._e(),
       _vm._v(" "),
-      _vm.IsShowAddClub
+      _vm.IsShowModel
         ? _c(
             "Modal",
             {
-              attrs: { size: "large", title: "Add Club" },
-              on: { close: _vm.addClubModelClosed }
+              attrs: { size: "large", title: "Add " + _vm.ModelDetail },
+              on: { close: _vm.ModelClosed }
             },
             [
               _c("SamsClubModel", {
                 attrs: {
-                  Title: "Add Club",
-                  NameTitle: "Club Name",
-                  SpecialProperty: "Club",
-                  Close: _vm.addClubModelClosed
-                }
-              })
-            ],
-            1
-          )
-        : _vm._e(),
-      _vm._v(" "),
-      _vm.IsShowAddProject
-        ? _c(
-            "Modal",
-            {
-              attrs: { size: "large", title: "Add Project" },
-              on: { close: _vm.addProjectModelClosed }
-            },
-            [
-              _c("SamsClubModel", {
-                attrs: {
-                  Title: "Add Project",
-                  NameTitle: "Project Name",
-                  SpecialProperty: "Project",
-                  Close: _vm.addClubModelClosed
+                  Title: "Add " + _vm.ModelDetail,
+                  NameTitle: _vm.ModelDetail + "Name",
+                  SpecialProperty: _vm.ModelDetail,
+                  Close: _vm.ModelClosed
                 }
               })
             ],

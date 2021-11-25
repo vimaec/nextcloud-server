@@ -14,6 +14,7 @@ window.addEventListener('DOMContentLoaded', function() {
 	AppSamsClub.$mount('#sams-club')
 
 	$('#app-content-files').on('changeDirectory', AppSamsClub.directoryChanged);
+	window.OCA.Files.retrieveSpecialProp = AppSamsClub.retrieveSpecialProp;
 
 	
 })

@@ -6,13 +6,8 @@
 			v-if="IsShowButton">
 			{{TextName}}
 		</button>
-		<Modal v-if="IsShowAddClub" @close="addClubModelClosed" size="large" title="Add Club">
-            <SamsClubModel Title="Add Club" NameTitle="Club Name" SpecialProperty="Club" :Close="addClubModelClosed"/>
-			
-		</Modal>
-
-		<Modal v-if="IsShowAddProject" @close="addProjectModelClosed" size="large" title="Add Project">
-			<SamsClubModel Title="Add Project" NameTitle="Project Name" SpecialProperty="Project" :Close="addClubModelClosed"/>
+		<Modal v-if="IsShowModel" @close="ModelClosed" size="large" :title="'Add '+ ModelDetail">
+            <SamsClubModel :Title="'Add '+ModelDetail" :NameTitle="ModelDetail + 'Name'" :SpecialProperty="ModelDetail" :Close="ModelClosed"/>			
 		</Modal>
 		
 	</div>
@@ -23,10 +18,13 @@
 
 
 <script>
-import { getCurrentDirectory } from '../utils/davUtils'
+import { getCurrentDirectory, xmlToTagList } from '../utils/davUtils'
+import { getCurrentUser } from '@nextcloud/auth'
 import Modal from '@nextcloud/vue/dist/Components/Modal'
 import SamsClubModel from '../components/SamsClubModel'
 import { showError } from '@nextcloud/dialogs'
+import { generateRemoteUrl, generateUrl } from '@nextcloud/router'
+import axios from '@nextcloud/axios'
 
 export default {
 	name: 'SamsClub',
@@ -42,34 +40,73 @@ export default {
 	data() {
 		return {
 			TextName: 'Sams Clubs',
-			IsShowButton: false,
-			IsShowAddClub: false,
-			IsShowAddProject: false
+			IsShowModel: false,
+			ModelDetail: 'Club',
 		}
 	},
 
 	computed: {
-	},
-	methods: {
-		buttonClicked: function(){
-			this.IsShowAddClub=true;
-
-		},
-		directoryChanged: function(el){
-			if(el.dir==="/"){
-				this.IsShowButton=true
+		IsShowButton(){
+			if(this.ModelDetail===''){
+				return false
 			}
 			else{
-				this.IsShowButton=false
+				return true
 			}
+		}
+	},
+	methods: {
+		async buttonClicked(){
+			this.IsShowModel=true			
 
 		},
-		addClubModelClosed: function(){
-			this.IsShowAddClub=false;
+		async directoryChanged(el){
+			if(el.dir==="/"){
+				this.ModelDetail='Club'
+			}
+			else{
+				await this.retrieveSpecialProp(el.dir)
+			}
+			
 
 		},
-		addProjectModelClosed: function(){
+		async ModelClosed(){
+			this.IsShowModel=false;
 
+		},
+		async retrieveSpecialProp(filepath) {
+			try {
+				const uid = getCurrentUser().uid
+				const path = `/files/${uid}/${filepath}`.replace(/\/+/ig, '/')
+				const url = generateRemoteUrl('dav') + path
+				const result = await axios.request({
+					method: 'PROPFIND',
+					url,
+					data: '<d:propfind xmlns:d="DAV:"></d:propfind>',
+				})
+
+				let specialprop=''
+
+				let values = xmlToTagList(result.data)
+				values.forEach(element => {
+					if (element.propertyname === 'oc:vimfilecategoryproperty') {
+						specialprop = element.propertyvalue
+
+					}
+					
+				})
+				if(specialprop==="Club"){
+					this.ModelDetail="Project"
+				}
+				else{
+					this.ModelDetail=""
+				}
+
+				
+			} catch (e) {
+				console.error(e)
+				return ''
+			}
 		}
 
 	},
@@ -79,8 +116,13 @@ export default {
 
 	async mounted() {
 		if(getCurrentDirectory()==="/"){
-			this.IsShowButton=true
+				his.ModelDetail='Club'
 		}
+		else{
+			await this.retrieveSpecialProp(getCurrentDirectory())
+
+		}
+		
 
 	},
 

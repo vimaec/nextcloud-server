@@ -473,7 +473,7 @@ var initTemplatesFolder = /*#__PURE__*/function () {
 /*!******************************************!*\
   !*** ./apps/files/src/utils/davUtils.js ***!
   \******************************************/
-/*! exports provided: getRootPath, isPublic, getToken, getCurrentDirectory */
+/*! exports provided: getRootPath, isPublic, getToken, getCurrentDirectory, xmlToTagList, isEmptyObject */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -482,10 +482,32 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isPublic", function() { return isPublic; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getToken", function() { return getToken; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCurrentDirectory", function() { return getCurrentDirectory; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "xmlToTagList", function() { return xmlToTagList; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isEmptyObject", function() { return isEmptyObject; });
 /* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @nextcloud/router */ "./node_modules/@nextcloud/router/dist/index.js");
 /* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _nextcloud_auth__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/auth */ "./node_modules/@nextcloud/auth/dist/index.js");
 /* harmony import */ var _nextcloud_auth__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_nextcloud_auth__WEBPACK_IMPORTED_MODULE_1__);
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 /**
  * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>
  *
@@ -536,6 +558,117 @@ var getCurrentDirectory = function getCurrentDirectory() {
   }; // Make sure we don't have double slashes
 
   return "".concat(currentDirInfo.path, "/").concat(currentDirInfo.name).replace(/\/\//gi, '/');
+};
+
+var parseXml = function parseXml(xml) {
+  var dom = null;
+
+  try {
+    dom = new DOMParser().parseFromString(xml, 'text/xml');
+  } catch (e) {
+    console.error('Failed to parse xml document', e);
+  }
+
+  return dom;
+};
+
+var xmlToJson = function xmlToJson(xml, documentElement) {
+  var obj = {};
+
+  if (xml === null || xml === undefined) {
+    return obj;
+  }
+
+  if (xml.nodeType === 1) {
+    obj['@prefix'] = xml.prefix;
+    obj['@namespaceURI'] = xml.prefix ? xml.lookupNamespaceURI(xml.prefix) : undefined;
+
+    if (xml.attributes.length > 0) {
+      obj['@attributes'] = {};
+
+      for (var j = 0; j < xml.attributes.length; j++) {
+        var attribute = xml.attributes.item(j);
+        obj['@attributes'][attribute.nodeName] = attribute.nodeValue;
+      }
+    }
+  } else if (xml.nodeType === 3) {
+    obj = xml.nodeValue;
+  }
+
+  if (xml.hasChildNodes()) {
+    for (var i = 0; i < xml.childNodes.length; i++) {
+      var item = xml.childNodes.item(i);
+      var nodeName = item.nodeName;
+
+      if (typeof obj[nodeName] === 'undefined') {
+        obj[nodeName] = xmlToJson(item, documentElement);
+      } else {
+        if (typeof obj[nodeName].push === 'undefined') {
+          var old = obj[nodeName];
+          obj[nodeName] = [];
+          obj[nodeName].push(old);
+        }
+
+        obj[nodeName].push(xmlToJson(item, documentElement));
+      }
+    }
+  }
+
+  return obj;
+};
+
+var xmlToTagList = function xmlToTagList(xmlString) {
+  var xml = parseXml(xmlString);
+  var json = xmlToJson(xml, xml);
+
+  if (json['d:multistatus']) {
+    var list = json['d:multistatus']['d:response'];
+    var listElement;
+
+    if (Array.isArray(list)) {
+      listElement = list[0]['d:propstat'];
+    } else {
+      listElement = list['d:propstat'];
+    }
+
+    listElement = Array.isArray(listElement) ? listElement : [listElement];
+    return _toConsumableArray(listElement).filter(function (propstat) {
+      return propstat['d:status']['#text'] === 'HTTP/1.1 200 OK';
+    }).map(function (tag) {
+      return tag['d:prop'];
+    }).flatMap(function (tag) {
+      return Object.entries(tag).map(function (a) {
+        return a;
+      }).filter(function (_ref) {
+        var _ref2 = _slicedToArray(_ref, 2),
+            nodeType = _ref2[0],
+            content = _ref2[1];
+
+        return content['@prefix'] !== undefined;
+      });
+    }).map(function (_ref3) {
+      var _ref4 = _slicedToArray(_ref3, 2),
+          propertyname = _ref4[0],
+          value = _ref4[1];
+
+      var namespaceURI = value['@namespaceURI'];
+      var propertyvalue = value['#text'];
+      return {
+        propertyname: propertyname,
+        propertyvalue: propertyvalue,
+        namespaceURI: namespaceURI
+      };
+    });
+  }
+
+  return [];
+};
+var isEmptyObject = function isEmptyObject(fileInfo) {
+  if (fileInfo === null || fileInfo === undefined) {
+    return true;
+  }
+
+  return fileInfo && Object.keys(fileInfo).length === 0 && fileInfo.constructor === Object;
 };
 
 /***/ }),
