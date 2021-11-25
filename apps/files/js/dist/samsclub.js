@@ -14648,7 +14648,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   props: {
     Title: String,
     NameTitle: String,
-    Close: Function
+    Close: Function,
+    SpecialProperty: String
   },
   mounted: function mounted() {
     var _this2 = this;
@@ -14696,6 +14697,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }))();
     },
     retrieveCustomProperties: function retrieveCustomProperties() {
+      var _this4 = this;
+
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
         var customPropertiesUrl, customPropertiesResponse;
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
@@ -14703,7 +14706,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             switch (_context3.prev = _context3.next) {
               case 0:
                 _context3.prev = 0;
-                customPropertiesUrl = Object(_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__["generateUrl"])('/apps/customproperties/customproperties');
+                customPropertiesUrl = Object(_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__["generateUrl"])('/apps/customproperties/customproperties?category=' + _this4.SpecialProperty);
                 _context3.next = 4;
                 return _nextcloud_axios__WEBPACK_IMPORTED_MODULE_1___default.a.get(customPropertiesUrl);
 
@@ -14726,10 +14729,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }))();
     },
     CreateSC: function CreateSC() {
-      var _this4 = this;
+      var _this5 = this;
 
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
-        var validate, prom, _this;
+        var validate, prom, _this, specialproperty;
 
         return regeneratorRuntime.wrap(function _callee4$(_context4) {
           while (1) {
@@ -14737,34 +14740,34 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 validate = true;
 
-                _this4.knownProperties.forEach(function (element) {
+                _this5.knownProperties.forEach(function (element) {
                   if (element.propertyvalue === null || element.propertyvalue === undefined || element.propertyvalue === "") {
                     validate = false;
                   }
                 });
 
-                if (!(!validate || _this4.NameValue === '')) {
+                if (!(!validate || _this5.NameValue === '')) {
                   _context4.next = 6;
                   break;
                 }
 
-                _this4.WarningText = "Please fill all fields";
-                _this4.ShowWarning = true;
+                _this5.WarningText = "Please fill all fields";
+                _this5.ShowWarning = true;
                 return _context4.abrupt("return");
 
               case 6:
-                if (!OCA.Files.App.currentFileList.findFileEl(_this4.NameValue).exists()) {
+                if (!OCA.Files.App.currentFileList.findFileEl(_this5.NameValue).exists()) {
                   _context4.next = 10;
                   break;
                 }
 
-                _this4.WarningText = "File Already Exists";
-                _this4.ShowWarning = true;
+                _this5.WarningText = "File Already Exists";
+                _this5.ShowWarning = true;
                 return _context4.abrupt("return");
 
               case 10:
-                prom = OCA.Files.App.currentFileList.createDirectory(_this4.NameValue);
-                _this = _this4;
+                prom = OCA.Files.App.currentFileList.createDirectory(_this5.NameValue);
+                _this = _this5;
                 prom.done(function () {
                   _this.knownProperties.forEach(function (element) {
                     _this.updateProperty(element);
@@ -14772,8 +14775,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                   _this.Close();
                 });
+                specialproperty = {
+                  prefix: 'oc',
+                  propertyname: 'vimfilecategoryproperty',
+                  propertyvalue: _this5.SpecialProperty
+                };
 
-              case 13:
+                _this5.updateProperty(specialproperty);
+
+              case 15:
               case "end":
                 return _context4.stop();
             }
@@ -14782,7 +14792,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }))();
     },
     updateProperty: function updateProperty(property) {
-      var _this5 = this;
+      var _this6 = this;
 
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
         var uid, path, url, propTag;
@@ -14791,7 +14801,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             switch (_context5.prev = _context5.next) {
               case 0:
                 uid = Object(_nextcloud_auth__WEBPACK_IMPORTED_MODULE_3__["getCurrentUser"])().uid;
-                path = "/files/".concat(uid, "/").concat(Object(_utils_davUtils__WEBPACK_IMPORTED_MODULE_2__["getCurrentDirectory"])(), "/").concat(_this5.NameValue).replace(/\/+/ig, '/');
+                path = "/files/".concat(uid, "/").concat(Object(_utils_davUtils__WEBPACK_IMPORTED_MODULE_2__["getCurrentDirectory"])(), "/").concat(_this6.NameValue).replace(/\/+/ig, '/');
                 url = Object(_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__["generateRemoteUrl"])('dav') + path;
                 propTag = "".concat(property.prefix, ":").concat(property.propertyname);
                 _context5.prev = 4;
@@ -34922,6 +34932,7 @@ var render = function() {
                 attrs: {
                   Title: "Add Club",
                   NameTitle: "Club Name",
+                  SpecialProperty: "Club",
                   Close: _vm.addClubModelClosed
                 }
               })
@@ -34942,6 +34953,7 @@ var render = function() {
                 attrs: {
                   Title: "Add Project",
                   NameTitle: "Project Name",
+                  SpecialProperty: "Project",
                   Close: _vm.addClubModelClosed
                 }
               })

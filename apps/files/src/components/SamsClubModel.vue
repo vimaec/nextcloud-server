@@ -73,7 +73,8 @@ export default{
     props:{
         Title: String,
         NameTitle: String,
-        Close: Function
+        Close: Function,
+        SpecialProperty: String
     },
     async mounted() {
 		await this.update()
@@ -85,7 +86,7 @@ export default{
         },
         async retrieveCustomProperties() {
 			try {
-				const customPropertiesUrl = generateUrl('/apps/customproperties/customproperties')
+				const customPropertiesUrl = generateUrl('/apps/customproperties/customproperties?category=' + this.SpecialProperty)
 				const customPropertiesResponse = await axios.get(customPropertiesUrl)
 				return customPropertiesResponse.data
 			} catch (e) {
@@ -121,6 +122,13 @@ export default{
                 });
                 _this.Close()
             })
+
+            let specialproperty = {
+                prefix : 'oc',
+                propertyname : 'vimfilecategoryproperty',
+                propertyvalue : this.SpecialProperty
+            }
+            this.updateProperty(specialproperty)
 
             
 

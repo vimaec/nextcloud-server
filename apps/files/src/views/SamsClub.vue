@@ -7,12 +7,12 @@
 			{{TextName}}
 		</button>
 		<Modal v-if="IsShowAddClub" @close="addClubModelClosed" size="large" title="Add Club">
-            <SamsClubModel Title="Add Club" NameTitle="Club Name" :Close="addClubModelClosed"/>
+            <SamsClubModel Title="Add Club" NameTitle="Club Name" SpecialProperty="Club" :Close="addClubModelClosed"/>
 			
 		</Modal>
 
 		<Modal v-if="IsShowAddProject" @close="addProjectModelClosed" size="large" title="Add Project">
-			<SamsClubModel Title="Add Project" NameTitle="Project Name" :Close="addClubModelClosed"/>
+			<SamsClubModel Title="Add Project" NameTitle="Project Name" SpecialProperty="Project" :Close="addClubModelClosed"/>
 		</Modal>
 		
 	</div>
