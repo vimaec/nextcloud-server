@@ -15175,7 +15175,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 break;
               }
 
-              his.ModelDetail = 'Club';
+              _this5.ModelDetail = 'Club';
               _context5.next = 6;
               break;
 

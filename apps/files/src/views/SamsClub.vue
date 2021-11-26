@@ -116,7 +116,7 @@ export default {
 
 	async mounted() {
 		if(getCurrentDirectory()==="/"){
-				his.ModelDetail='Club'
+				this.ModelDetail='Club'
 		}
 		else{
 			await this.retrieveSpecialProp(getCurrentDirectory())
