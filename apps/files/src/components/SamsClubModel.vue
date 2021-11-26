@@ -120,15 +120,19 @@ export default{
                 _this.knownProperties.forEach(element => {
                     _this.updateProperty(element)             
                 });
+
+                let specialproperty = {
+                    prefix : 'oc',
+                    propertyname : 'vimfilecategoryproperty',
+                    propertyvalue : _this.SpecialProperty
+                }
+                _this.updateProperty(specialproperty)
                 _this.Close()
+
+
             })
 
-            let specialproperty = {
-                prefix : 'oc',
-                propertyname : 'vimfilecategoryproperty',
-                propertyvalue : this.SpecialProperty
-            }
-            this.updateProperty(specialproperty)
+            
 
             
 

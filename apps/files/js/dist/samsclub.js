@@ -14866,7 +14866,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _this5 = this;
 
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
-        var validate, prom, _this, specialproperty;
+        var validate, prom, _this;
 
         return regeneratorRuntime.wrap(function _callee4$(_context4) {
           while (1) {
@@ -14907,17 +14907,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                     _this.updateProperty(element);
                   });
 
+                  var specialproperty = {
+                    prefix: 'oc',
+                    propertyname: 'vimfilecategoryproperty',
+                    propertyvalue: _this.SpecialProperty
+                  };
+
+                  _this.updateProperty(specialproperty);
+
                   _this.Close();
                 });
-                specialproperty = {
-                  prefix: 'oc',
-                  propertyname: 'vimfilecategoryproperty',
-                  propertyvalue: _this5.SpecialProperty
-                };
 
-                _this5.updateProperty(specialproperty);
-
-              case 15:
+              case 13:
               case "end":
                 return _context4.stop();
             }
@@ -15068,20 +15069,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                if (!(el.dir === "/")) {
-                  _context2.next = 4;
-                  break;
-                }
+                _this2.directoryChangedInternal(el.dir);
 
-                _this2.ModelDetail = 'Club';
-                _context2.next = 6;
-                break;
-
-              case 4:
-                _context2.next = 6;
-                return _this2.retrieveSpecialProp(el.dir);
-
-              case 6:
+              case 1:
               case "end":
                 return _context2.stop();
             }
@@ -15159,49 +15149,69 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           }
         }, _callee4, null, [[0, 13]]);
       }))();
+    },
+    directoryChangedInternal: function directoryChangedInternal(dir) {
+      var _this5 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
+        return regeneratorRuntime.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                if (!(dir === "/")) {
+                  _context5.next = 4;
+                  break;
+                }
+
+                _this5.ModelDetail = 'Club';
+                _context5.next = 6;
+                break;
+
+              case 4:
+                _context5.next = 6;
+                return _this5.retrieveSpecialProp(dir);
+
+              case 6:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5);
+      }))();
     }
   },
   watch: {},
   mounted: function mounted() {
-    var _this5 = this;
+    var _this6 = this;
 
-    return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
-      return regeneratorRuntime.wrap(function _callee5$(_context5) {
-        while (1) {
-          switch (_context5.prev = _context5.next) {
-            case 0:
-              if (!(Object(_utils_davUtils__WEBPACK_IMPORTED_MODULE_0__["getCurrentDirectory"])() === "/")) {
-                _context5.next = 4;
-                break;
-              }
-
-              _this5.ModelDetail = 'Club';
-              _context5.next = 6;
-              break;
-
-            case 4:
-              _context5.next = 6;
-              return _this5.retrieveSpecialProp(Object(_utils_davUtils__WEBPACK_IMPORTED_MODULE_0__["getCurrentDirectory"])());
-
-            case 6:
-            case "end":
-              return _context5.stop();
-          }
-        }
-      }, _callee5);
-    }))();
-  },
-  beforeDestroy: function beforeDestroy() {
     return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
       return regeneratorRuntime.wrap(function _callee6$(_context6) {
         while (1) {
           switch (_context6.prev = _context6.next) {
             case 0:
+              setTimeout(function () {
+                this.directoryChangedInternal(Object(_utils_davUtils__WEBPACK_IMPORTED_MODULE_0__["getCurrentDirectory"])());
+              }.bind(_this6), 1000);
+
+            case 1:
             case "end":
               return _context6.stop();
           }
         }
       }, _callee6);
+    }))();
+  },
+  beforeDestroy: function beforeDestroy() {
+    return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7() {
+      return regeneratorRuntime.wrap(function _callee7$(_context7) {
+        while (1) {
+          switch (_context7.prev = _context7.next) {
+            case 0:
+            case "end":
+              return _context7.stop();
+          }
+        }
+      }, _callee7);
     }))();
   }
 });

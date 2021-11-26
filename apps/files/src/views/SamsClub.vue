@@ -61,14 +61,7 @@ export default {
 
 		},
 		async directoryChanged(el){
-			if(el.dir==="/"){
-				this.ModelDetail='Club'
-			}
-			else{
-				await this.retrieveSpecialProp(el.dir)
-			}
-			
-
+			this.directoryChangedInternal(el.dir)			
 		},
 		async ModelClosed(){
 			this.IsShowModel=false;
@@ -107,6 +100,14 @@ export default {
 				console.error(e)
 				return ''
 			}
+		},
+		async directoryChangedInternal(dir){
+			if(dir==="/"){
+				this.ModelDetail='Club'
+			}
+			else{
+				await this.retrieveSpecialProp(dir)
+			}
 		}
 
 	},
@@ -115,13 +116,7 @@ export default {
 	},
 
 	async mounted() {
-		if(getCurrentDirectory()==="/"){
-				this.ModelDetail='Club'
-		}
-		else{
-			await this.retrieveSpecialProp(getCurrentDirectory())
-
-		}
+		setTimeout(function () { this.directoryChangedInternal(getCurrentDirectory()) }.bind(this), 1000)
 		
 
 	},
