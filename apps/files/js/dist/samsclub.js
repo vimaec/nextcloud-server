@@ -14766,6 +14766,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
 
 
 
@@ -14875,7 +14877,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 validate = true;
 
                 _this5.knownProperties.forEach(function (element) {
-                  if (element.propertyvalue === null || element.propertyvalue === undefined || element.propertyvalue === "") {
+                  if ((element.propertyvalue === null || element.propertyvalue === undefined || element.propertyvalue === "") && element.propertyisrequired) {
                     validate = false;
                   }
                 });
@@ -14885,7 +14887,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   break;
                 }
 
-                _this5.WarningText = "Please fill all fields";
+                _this5.WarningText = "Please fill all required fields";
                 _this5.ShowWarning = true;
                 return _context4.abrupt("return");
 
@@ -34969,8 +34971,6 @@ var render = function() {
     [
       _c("h2", [_vm._v(_vm._s(_vm.Title))]),
       _vm._v(" "),
-      _c("p", [_vm._v("All fields are required")]),
-      _vm._v(" "),
       _vm.ShowWarning
         ? _c("p", { staticClass: "warning" }, [_vm._v(_vm._s(_vm.WarningText))])
         : _vm._e(),
@@ -34978,7 +34978,10 @@ var render = function() {
       _c("br"),
       _vm._v(" "),
       _c("div", {}, [
-        _c("label", { attrs: { for: "" } }, [_vm._v(_vm._s(_vm.NameTitle))]),
+        _c("label", { attrs: { for: "" } }, [
+          _vm._v(_vm._s(_vm.NameTitle)),
+          _c("span", { staticStyle: { color: "red" } }, [_vm._v("*")])
+        ]),
         _vm._v(" "),
         _c("div", { staticClass: "input-group" }, [
           _c("input", {
@@ -34995,7 +34998,8 @@ var render = function() {
               id: "id_" + _vm.NameTitle,
               "aria-disabled": "disabled",
               name: "propertyname",
-              type: "text"
+              type: "text",
+              required: ""
             },
             domProps: { value: _vm.NameValue },
             on: {
@@ -35013,7 +35017,10 @@ var render = function() {
       _vm._l(_vm.knownProperties, function(pp) {
         return _c("div", { key: pp.id, attrs: { id: "prop" + pp } }, [
           _c("label", { attrs: { for: "property_" + pp.propertyname } }, [
-            _vm._v(_vm._s(pp.propertylabel))
+            _vm._v(_vm._s(pp.propertylabel) + " "),
+            pp.propertyisrequired
+              ? _c("span", { staticStyle: { color: "red" } }, [_vm._v("*")])
+              : _vm._e()
           ]),
           _vm._v(" "),
           pp.propertytype === "textarea"
@@ -35031,7 +35038,8 @@ var render = function() {
                   attrs: {
                     id: "textproperty_" + pp.propertyname,
                     name: pp.propertyname,
-                    rows: "6"
+                    rows: "6",
+                    required: pp.propertyisrequired
                   },
                   domProps: { value: pp.propertyvalue },
                   on: {
@@ -35060,6 +35068,7 @@ var render = function() {
                         id: "property_" + pp.propertyname,
                         "aria-disabled": "disabled",
                         name: pp.propertyname,
+                        required: pp.propertyisrequired,
                         type: "checkbox"
                       },
                       domProps: {
@@ -35107,6 +35116,7 @@ var render = function() {
                         id: "property_" + pp.propertyname,
                         "aria-disabled": "disabled",
                         name: pp.propertyname,
+                        required: pp.propertyisrequired,
                         type: "radio"
                       },
                       domProps: { checked: _vm._q(pp.propertyvalue, null) },
@@ -35130,6 +35140,7 @@ var render = function() {
                         id: "property_" + pp.propertyname,
                         "aria-disabled": "disabled",
                         name: pp.propertyname,
+                        required: pp.propertyisrequired,
                         type: pp.propertytype
                       },
                       domProps: { value: pp.propertyvalue },

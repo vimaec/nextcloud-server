@@ -1,13 +1,12 @@
 <template>
     <div class="modal__content">
 		<h2>{{Title}}</h2>
-		<p>All fields are required</p>
         <p class="warning" v-if="ShowWarning">{{WarningText}}</p>
 				
 		<br/>
 
         <div class="">
-            <label for="">{{NameTitle}}</label>
+            <label for="">{{NameTitle}}<span style="color:red">*</span></label>
             <div class="input-group">
                 <input 
                     :id="'id_' + NameTitle"
@@ -15,6 +14,7 @@
                     aria-disabled="disabled"
 				    name="propertyname"
 				    type="text"
+                    required
 				    class="customproperty-form-control"
                     >
             </div>
@@ -25,12 +25,13 @@
         <div v-for="pp in knownProperties" class=""
             :key="pp.id"
             :id="'prop' + pp">
-            <label :for="'property_'+pp.propertyname">{{ pp.propertylabel }}</label>
+            <label :for="'property_'+pp.propertyname">{{ pp.propertylabel }} <span v-if="pp.propertyisrequired" style="color:red">*</span></label>
             <div v-if="pp.propertytype ==='textarea'" class="input-group">
 			<textarea :id="'textproperty_'+pp.propertyname"
 				v-model="pp.propertyvalue"
 				:name="pp.propertyname"
                 rows="6"
+                :required="pp.propertyisrequired"
 				class="customproperty-form-control"></textarea>
 		    </div>
             <div v-else class="input-group">
@@ -39,6 +40,7 @@
 				aria-disabled="disabled"
 				:name="pp.propertyname"
 				:type="pp.propertytype"
+                :required="pp.propertyisrequired"
 				class="customproperty-form-control">
 		    </div>
 
@@ -98,13 +100,13 @@ export default{
 
             var validate=true;
             this.knownProperties.forEach(element => {
-                if(element.propertyvalue===null || element.propertyvalue===undefined || element.propertyvalue===""){
+                if((element.propertyvalue===null || element.propertyvalue===undefined || element.propertyvalue==="") && element.propertyisrequired){
                     validate=false
                 }
             });
 
             if(!validate || this.NameValue===''){
-                this.WarningText="Please fill all fields"
+                this.WarningText="Please fill all required fields"
                 this.ShowWarning=true
                 return;
             }
