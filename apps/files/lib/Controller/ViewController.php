@@ -35,6 +35,7 @@
  */
 namespace OCA\Files\Controller;
 
+use OCA\DAV\CalDAV\Principal\User;
 use OCA\Files\Activity\Helper;
 use OCA\Files\Event\LoadAdditionalScriptsEvent;
 use OCA\Files\Event\LoadSidebar;
@@ -169,6 +170,18 @@ class ViewController extends Controller {
 		} catch (NotFoundException $e) {
 			return new RedirectResponse($this->urlGenerator->linkToRoute('files.view.index', ['fileNotFound' => true]));
 		}
+	}
+	public function copyprojectstructure($path) {
+		$users = $this->userSession->getUser()->getUID();
+		$CONFIG_DATADIRECTORY = \OC::$server->getConfig()->getSystemValue('datadirectory', \OC::$SERVERROOT . '/data');
+		$plainSkeletonDirectory = \OC::$server->getConfig()->getSystemValue('projectskeletondirecty','/vimadmin/files/ProjectTemplate');
+		if(file_exists($CONFIG_DATADIRECTORY.$plainSkeletonDirectory)){
+			$userFolder = \OC::$server->getUserFolder($users);
+			$userFolderFinal = $userFolder->get($path);
+			\OC_Util::copyr($CONFIG_DATADIRECTORY.$plainSkeletonDirectory,$userFolderFinal);
+		}
+		
+		return 0;
 	}
 
 	/**

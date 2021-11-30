@@ -12,6 +12,7 @@ $CONFIG = array (
   'tempdirectory' => '/media/extdisk',
   'overwriteprotocol' => 'https',
   'datadirectory' => '/mnt/nxdata/data',
+  'projectskeletondirecty' => '/shahzadAdmin/files/ProjectTemplate',
   'dbtype' => 'mysql',  
   'dbname' => 'nextcloud_db',
   'dbhost' => 'DB_HOST',

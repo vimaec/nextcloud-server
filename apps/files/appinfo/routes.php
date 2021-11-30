@@ -57,6 +57,12 @@ $application->registerRoutes(
 				'requirements' => ['file' => '.+']
 			],
 			[
+				'name' => 'View#copyprojectstructure',
+				'url' => '/copyprojectstructure/{path}',
+				'verb' => 'POST',
+				'requirements' => ['path' => '.+'],
+			],
+			[
 				'name' => 'API#updateFileTags',
 				'url' => '/api/v1/files/{path}',
 				'verb' => 'POST',

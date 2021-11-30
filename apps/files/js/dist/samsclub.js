@@ -14917,6 +14917,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                   _this.updateProperty(specialproperty);
 
+                  _this.copyprojectstructure();
+
                   _this.Close();
                 });
 
@@ -14928,21 +14930,43 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee4);
       }))();
     },
-    updateProperty: function updateProperty(property) {
+    copyprojectstructure: function copyprojectstructure() {
       var _this6 = this;
 
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
-        var uid, path, url, propTag;
+        var urls, customPropertiesResponse;
         return regeneratorRuntime.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
+                if (_this6.SpecialProperty === "Project") {
+                  urls = Object(_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__["generateUrl"])('/apps/files/copyprojectstructure/' + Object(_utils_davUtils__WEBPACK_IMPORTED_MODULE_2__["getCurrentDirectory"])() + '/' + encodeURIComponent(_this6.NameValue));
+                  customPropertiesResponse = _nextcloud_axios__WEBPACK_IMPORTED_MODULE_1___default.a.post(urls);
+                }
+
+              case 1:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5);
+      }))();
+    },
+    updateProperty: function updateProperty(property) {
+      var _this7 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
+        var uid, path, url, propTag;
+        return regeneratorRuntime.wrap(function _callee6$(_context6) {
+          while (1) {
+            switch (_context6.prev = _context6.next) {
+              case 0:
                 uid = Object(_nextcloud_auth__WEBPACK_IMPORTED_MODULE_3__["getCurrentUser"])().uid;
-                path = "/files/".concat(uid, "/").concat(Object(_utils_davUtils__WEBPACK_IMPORTED_MODULE_2__["getCurrentDirectory"])(), "/").concat(_this6.NameValue).replace(/\/+/ig, '/');
+                path = "/files/".concat(uid, "/").concat(Object(_utils_davUtils__WEBPACK_IMPORTED_MODULE_2__["getCurrentDirectory"])(), "/").concat(_this7.NameValue).replace(/\/+/ig, '/');
                 url = Object(_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__["generateRemoteUrl"])('dav') + path;
                 propTag = "".concat(property.prefix, ":").concat(property.propertyname);
-                _context5.prev = 4;
-                _context5.next = 7;
+                _context6.prev = 4;
+                _context6.next = 7;
                 return _nextcloud_axios__WEBPACK_IMPORTED_MODULE_1___default.a.request({
                   method: 'PROPPATCH',
                   url: url,
@@ -14950,20 +14974,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 });
 
               case 7:
-                _context5.next = 12;
+                _context6.next = 12;
                 break;
 
               case 9:
-                _context5.prev = 9;
-                _context5.t0 = _context5["catch"](4);
-                console.error(_context5.t0);
+                _context6.prev = 9;
+                _context6.t0 = _context6["catch"](4);
+                console.error(_context6.t0);
 
               case 12:
               case "end":
-                return _context5.stop();
+                return _context6.stop();
             }
           }
-        }, _callee5, null, [[4, 9]]);
+        }, _callee6, null, [[4, 9]]);
       }))();
     }
   }

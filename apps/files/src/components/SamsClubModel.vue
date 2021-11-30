@@ -129,8 +129,8 @@ export default{
                     propertyvalue : _this.SpecialProperty
                 }
                 _this.updateProperty(specialproperty)
+                _this.copyprojectstructure()               
                 _this.Close()
-
 
             })
 
@@ -138,6 +138,13 @@ export default{
 
             
 
+        },
+        async copyprojectstructure(){
+
+            if(this.SpecialProperty==="Project"){
+                    const urls = generateUrl('/apps/files/copyprojectstructure/'+getCurrentDirectory()+'/'+encodeURIComponent(this.NameValue))
+                    const customPropertiesResponse = axios.post(urls)
+                }
         },
         async updateProperty(property) {
 			const uid = getCurrentUser().uid
