@@ -1,1 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" height="128" width="128" viewBox="0 0 128 128"><rect height="128" width="128" fill="#0082c9"/><path style="text-decoration-color:#000;isolation:auto;mix-blend-mode:normal;block-progression:tb;text-decoration-line:none;text-indent:0;text-transform:none;text-decoration-style:solid" d="M64.09 37.368c-12.5 0-23 8.56-26.207 20.078-2.8-6.16-8.962-10.525-16.122-10.525C12.016 46.923 4 54.937 4 64.684c-.002 9.75 8.013 17.764 17.76 17.766 7.162-.002 13.32-4.37 16.12-10.53C41.086 83.438 51.588 92 64.092 92c12.434.002 22.88-8.467 26.153-19.886 2.845 6.046 8.913 10.334 15.99 10.335 9.75 0 17.767-8.016 17.766-17.767 0-9.75-8.015-17.764-17.764-17.762-7.078.002-13.15 4.29-15.994 10.336-3.274-11.42-13.717-19.89-26.15-19.888zm0 10.427a16.81 16.81 0 0 1 16.89 16.888c0 9.39-7.5 16.892-16.89 16.89a16.81 16.81 0 0 1-16.886-16.89c0-9.39 7.5-16.887 16.887-16.888zm-42.33 9.552c4.114 0 7.335 3.222 7.336 7.335 0 4.114-3.22 7.34-7.335 7.34-4.113 0-7.335-3.226-7.334-7.34 0-4.113 3.222-7.335 7.335-7.335zm84.475 0c4.114 0 7.338 3.22 7.338 7.335s-3.223 7.34-7.338 7.34c-4.114 0-7.336-3.226-7.335-7.34 0-4.113 3.222-7.335 7.335-7.335z" fill="#fff" color="#000" white-space="normal"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <defs>
+    <clipPath id="a">
+      <path d="m43.119 48.822-7.5-4.33 7.5 12.99 7.5-12.99Z" transform="translate(-35.619 -44.492)" fill="none"/>
+    </clipPath>
+    <clipPath id="c">
+      <path data-name="mask" d="M87.583 53.109v4.373l7.5-12.99Z" transform="translate(-87.583 -44.492)" fill="none"/>
+    </clipPath>
+    <clipPath id="d">
+      <path data-name="mask" d="m39.37 50.987 1.267-.731-5.017-5.764Z" transform="translate(-35.62 -44.492)" fill="none"/>
+    </clipPath>
+    <clipPath id="e">
+      <path data-name="mask" d="M43.12 57.482v-4.373l-7.5-8.617Z" transform="translate(-35.62 -44.492)" fill="none"/>
+    </clipPath>
+    <clipPath id="f">
+      <path data-name="mask" d="m70.377 75.926 2.482 2.853v-4.286Z" transform="translate(-70.377 -74.493)" fill="none"/>
+    </clipPath>
+    <radialGradient id="b" cx=".5" cy=".5" r=".5" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <path data-name="Path 10" d="M0 0h16v16H0Z" fill="#0590cc"/>
+  <g transform="translate(.502 1.505)" clip-path="url(#a)">
+    <path d="M57.325 22.236c2.828 0 5.12 3.221 5.12 7.193s-2.292 7.193-5.12 7.193-5.12-3.221-5.12-7.193 2.292-7.193 5.12-7.193" transform="translate(-49.811 -25.448)" opacity=".8" fill="url(#b)"/>
+    <path d="M7.5 4.33 0 0l7.5 12.99L15 0Z" fill="#fff" opacity=".5"/>
+  </g>
+  <g transform="translate(8.001 1.505)" clip-path="url(#c)">
+    <ellipse data-name="gradient" cx="2.326" cy="10.83" rx="2.326" ry="10.83" transform="rotate(34 11.14355 7.81103)" opacity=".83" fill="url(#b)"/>
+    <path data-name="fill" d="M0 8.617v4.373L7.5 0Z" fill="#fff" opacity=".65"/>
+  </g>
+  <path d="m11.751 8-1.267-.731L15.5 1.505Z" fill="#fff" opacity=".65"/>
+  <g transform="translate(.502 1.505)" clip-path="url(#d)">
+    <ellipse data-name="gradient" cx="4.907" cy="7.51" rx="4.907" ry="7.51" transform="rotate(-31 -9.92872 12.20076)" opacity=".6" fill="url(#b)"/>
+    <path data-name="fill" d="m3.75 6.495 1.267-.731L0 0Z" fill="#fff" opacity=".2"/>
+  </g>
+  <g transform="translate(.502 1.505)" clip-path="url(#e)">
+    <ellipse data-name="Ellipse 1" cx="1.515" cy="10.252" rx="1.515" ry="10.252" transform="rotate(-31 -3.97037 4.382)" opacity=".6" fill="url(#b)"/>
+    <path data-name="fill" d="M7.5 12.99V8.617L0 0Z" fill="#fff" opacity=".1"/>
+  </g>
+  <path d="m15.501 1.505-7.5 4.33v4.287Z" fill="#fff" opacity=".4"/>
+  <path d="m10.484 7.269-2.482 2.853V5.835Z" fill="#fff" opacity=".3"/>
+  <g transform="translate(5.518 5.835)" clip-path="url(#f)">
+    <circle data-name="gradient" cx="3.175" cy="3.175" r="3.175" transform="translate(-2.223 -2.39)" opacity=".85" fill="url(#b)"/>
+    <path data-name="fill" d="m.001 1.434 2.482 2.853V0Z" fill="#fff" opacity=".15"/>
+  </g>
+  <path d="M5.518 7.269 8 5.835.5 1.505Z" fill="#fff" opacity=".4"/>
+</svg>

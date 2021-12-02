@@ -1,1 +1,120 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 32 32" width="32" height="32"><rect rx="5" ry="5" height="32" width="32" fill="#0082c9"/><g transform="matrix(.12 0 0 .12 .64 8.32)" stroke="#fff" stroke-width="22" fill="none"><circle cy="64" cx="40" r="26"/><circle cy="64" cx="216" r="26"/><circle cy="64" cx="128" r="46"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <defs>
+    <radialGradient id="a" cx=".081" cy=".093" r="1.09" gradientTransform="matrix(1 0 0 1.351 0 -.008)" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#0590cc"/>
+      <stop offset="1" stop-color="#54cbff"/>
+    </radialGradient>
+    <radialGradient id="c" cx=".572" cy=".464" r=".408" gradientTransform="matrix(1 0 0 1.435 0 -.173)" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#56c59c"/>
+      <stop offset=".325" stop-color="#56c59c"/>
+      <stop offset="1" stop-color="#0590cc"/>
+    </radialGradient>
+    <radialGradient id="d" cx=".5" cy=".352" r=".305" gradientTransform="matrix(1 0 0 1.199 0 -.07)" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#00b0ed"/>
+      <stop offset=".175" stop-color="#00aeea"/>
+      <stop offset="1" stop-color="#00afec" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="e" cx=".5" cy=".285" r=".487" gradientTransform="matrix(1 0 0 1.174 0 -.061)" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#0590cc" stop-opacity="0"/>
+      <stop offset=".276" stop-color="#0590cc" stop-opacity=".275"/>
+      <stop offset="1" stop-color="#201894"/>
+    </radialGradient>
+    <radialGradient id="g" cx=".5" cy=".5" r=".5" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="i" cx=".5" cy=".5" r=".5" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#67cbff"/>
+      <stop offset="1" stop-color="#67cbff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="j" cx=".5" cy=".5" r=".5" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset=".59" stop-color="#c5daff" stop-opacity=".737"/>
+      <stop offset="1" stop-color="#2474ff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="l" cx=".5" cy=".5" r=".5" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#38b8e6"/>
+      <stop offset="1" stop-color="#2bb8e8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="n" cx=".5" cy=".5" r=".5" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#0dc6ff"/>
+      <stop offset="1" stop-color="#17c9ff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="p" cx="1.093" cy=".246" r=".939" gradientTransform="matrix(1 0 0 .386 0 .213)" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#8ddcff"/>
+      <stop offset="1" stop-color="#68cfff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="r" cx=".5" cy=".5" r=".5" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#a4ebff"/>
+      <stop offset="1" stop-color="#acedff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="t" cx=".5" cy=".5" r=".5" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#60dcff"/>
+      <stop offset="1" stop-color="#60dcff" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="b">
+      <path d="m43.119 48.822-7.5-4.33 7.5 12.99 7.5-12.99Z" transform="translate(-35.619 -44.492)" fill="none"/>
+    </clipPath>
+    <clipPath id="f">
+      <path data-name="mask" d="M87.583 53.109v4.373l7.5-12.99Z" transform="translate(-87.583 -44.492)" fill="none"/>
+    </clipPath>
+    <clipPath id="h">
+      <path data-name="mask" d="M43.12 57.482v-4.373l-7.5-8.617Z" transform="translate(-35.62 -44.492)" fill="none"/>
+    </clipPath>
+    <clipPath id="k">
+      <path data-name="mask" d="m39.37 50.987 1.267-.731-5.017-5.764Z" transform="translate(-35.62 -44.492)" fill="none"/>
+    </clipPath>
+    <clipPath id="m">
+      <path data-name="mask" d="m95.081 44.492-7.5 4.33v4.287Z" transform="translate(-87.581 -44.492)" fill="#0590cc"/>
+    </clipPath>
+    <clipPath id="o">
+      <path data-name="mask" d="m90.069 75.926-2.482 2.853v-4.287Z" transform="translate(-87.586 -74.492)" fill="#8ddcff" opacity=".16"/>
+    </clipPath>
+    <clipPath id="q">
+      <path data-name="mask" d="m70.377 75.926 2.482 2.853v-4.286Z" transform="translate(-70.377 -74.493)" fill="none"/>
+    </clipPath>
+    <clipPath id="s">
+      <path data-name="mask" d="m40.633 50.256 2.482-1.434-7.5-4.33Z" transform="translate(-35.616 -44.492)" opacity=".53" fill="url(#a)"/>
+    </clipPath>
+  </defs>
+  <g transform="translate(.501 1.505)" clip-path="url(#b)">
+    <path d="m43.119 48.822-7.5-4.33 7.5 12.99 7.5-12.99Z" transform="translate(-35.619 -44.492)" fill="url(#c)"/>
+    <path data-name="fill" d="m43.119 48.822-7.5-4.33 7.5 12.99 7.5-12.99Z" transform="translate(-35.619 -44.492)" opacity=".7" fill="url(#d)"/>
+    <path data-name="fill" d="m43.119 48.822-7.5-4.33 7.5 12.99 7.5-12.99Z" transform="translate(-35.619 -44.492)" opacity=".5" fill="url(#e)" style="mix-blend-mode:multiply;isolation:isolate"/>
+  </g>
+  <g transform="translate(8 1.505)" clip-path="url(#f)">
+    <path data-name="fill" d="M87.582 53.109v4.373l7.5-12.99Z" transform="translate(-87.583 -44.492)" fill="#fff" opacity=".35" style="mix-blend-mode:overlay;isolation:isolate"/>
+    <path data-name="fill" d="M-.001 8.617v4.373L7.499 0Z" fill="#fff" opacity=".1"/>
+    <ellipse cx="2.361" cy="10.837" rx="2.361" ry="10.837" transform="rotate(32 11.73208 7.7923)" opacity=".6" fill="url(#g)"/>
+    <ellipse data-name="gradient" cx="1.119" cy="6.359" rx="1.119" ry="6.359" transform="rotate(29 2.91738 12.37338)" opacity=".45" fill="url(#g)"/>
+    <ellipse data-name="gradient" cx="3.395" cy="4.479" rx="3.395" ry="4.479" transform="rotate(8 -41.58354 -27.7137)" opacity=".5" fill="url(#g)" style="mix-blend-mode:hard-light;isolation:isolate"/>
+  </g>
+  <path d="m11.75 8-1.267-.731 5.016-5.764Z" fill="#fff" opacity=".16"/>
+  <g transform="translate(.501 1.505)" clip-path="url(#h)">
+    <path data-name="fill" d="M7.5 12.99V8.617L0 .001Z" fill="#0590cc" opacity=".5"/>
+    <ellipse data-name="gradient" cx="1.853" cy="7.938" rx="1.853" ry="7.938" transform="rotate(-27 -2.81856 3.95986)" opacity=".62" fill="url(#i)" style="mix-blend-mode:overlay;isolation:isolate"/>
+    <ellipse data-name="gradient" cx="2.292" cy="6.306" rx="2.292" ry="6.306" transform="rotate(-27 3.71954 5.61769)" opacity=".62" fill="url(#j)"/>
+  </g>
+  <g transform="translate(.501 1.505)" clip-path="url(#k)">
+    <path data-name="fill" d="m3.75 6.495 1.267-.731L0 0Z" fill="#64daff" opacity=".08"/>
+    <ellipse data-name="gradient" cx="4.314" cy="4.826" rx="4.314" ry="4.826" transform="rotate(-31 -4.46672 8.67121)" opacity=".87" fill="url(#l)"/>
+    <ellipse data-name="gradient" cx="2.234" cy="2.982" rx="2.234" ry="2.982" transform="rotate(-31 7.55581 -.32577)" opacity=".21" fill="url(#g)"/>
+  </g>
+  <g transform="translate(8 1.505)" clip-path="url(#m)">
+    <path data-name="mask" d="M7.5 0 0 4.33v4.287Z" fill="#aee7ff" opacity=".3"/>
+    <ellipse data-name="gradient" cx="3.418" cy="5.52" rx="3.418" ry="5.52" transform="rotate(51 5.67279 .97321)" fill="url(#n)"/>
+  </g>
+  <g transform="translate(8.001 5.835)" clip-path="url(#o)">
+    <path data-name="gradient" d="m90.069 75.926-2.482 2.853v-4.287Z" transform="translate(-87.586 -74.492)" opacity=".49" fill="url(#p)"/>
+  </g>
+  <g transform="translate(5.517 5.835)" clip-path="url(#q)">
+    <path data-name="fill" d="m.001 1.434 2.482 2.853V0Z" fill="#1ec9ff" opacity=".2"/>
+    <ellipse data-name="gradient" cx="3.009" cy="3.058" rx="3.009" ry="3.058" transform="translate(-3.442 -2.967)" opacity=".67" fill="url(#r)"/>
+    <path data-name="fill" d="m.001 1.434 2.482 2.853V0Z" fill="#fff" opacity=".1"/>
+  </g>
+  <g transform="translate(.5 1.505)" clip-path="url(#s)">
+    <path data-name="top-left" d="m40.633 50.256 2.482-1.434-7.5-4.33Z" transform="translate(-35.616 -44.492)" opacity=".3" fill="url(#a)"/>
+    <path data-name="top-left" d="m40.633 50.256 2.482-1.434-7.5-4.33Z" transform="translate(-35.616 -44.492)" fill="#8ed8ff" opacity=".24" style="mix-blend-mode:screen;isolation:isolate"/>
+    <ellipse data-name="gradient" cx="3.009" cy="3.058" rx="3.009" ry="3.058" transform="translate(4.028 .369)" opacity=".3" fill="url(#t)"/>
+  </g>
+</svg>
