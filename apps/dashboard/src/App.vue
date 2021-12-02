@@ -26,13 +26,13 @@
 			</div>
 		</Draggable>
 
-		<div class="footer">
-			<!--a class="edit-panels icon-rename"
+		<!--div class="footer">
+			<a class="edit-panels icon-rename"
 				tabindex="0"
 				@click="showModal"
 				@keyup.enter="showModal"
-				@keyup.space="showModal">{{ t('dashboard', 'Customize') }}</a-->
-		</div>
+				@keyup.space="showModal">{{ t('dashboard', 'Customize') }}</a>
+		</div-->
 
 		<Modal v-if="modal" @close="closeModal">
 			<div class="modal__content">
