@@ -19,21 +19,22 @@
 /* BASE STYLING ------------------------------------------------------------ */
 // no h1 allowed since h1 = logo
 h2 {
+	font-family: $font-face-alt;
 	font-weight: bold;
-	font-size: 20px;
-	margin-bottom: 12px;
-	line-height: 30px;
+	font-size: 2rem; // -VIM
+	margin-top:1.25rem;
+	margin-bottom: 0.75rem;
+	line-height: 1.15rem;
 	color: var(--color-text-light);
 }
 
 h3 {
-	font-size: 16px;
-	margin: 12px 0;
+	font-size: 1.5rem; // -VIM	margin: 12px 0;
 	color: var(--color-text-light);
 }
 
 h4 {
-	font-size: 14px;
+	font-size: 1.5rem; // -VIM
 }
 
 /* do not use italic typeface style, instead lighter color */

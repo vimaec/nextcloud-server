@@ -36,6 +36,9 @@
 	--color-success: #{$color-success};
 	--color-success-hover: #{$color-success-hover};
 
+	--color-list-selected: #{$color-tertiary-light-blue};
+	--color-list-hover: #{$color-tertiary-light-yellow};
+
 	--color-text-maxcontrast: #{$color-text-maxcontrast};
 	--color-text-light: #{$color-main-text};
 	--color-text-lighter: #{$color-text-maxcontrast};
@@ -67,5 +70,6 @@
 	--animation-slow: #{$animation-slow};
 
 	--header-height: #{$header-height};
-}
 
+	--color-btn-hover: #{$color-primary-royal};  //-VIM
+}

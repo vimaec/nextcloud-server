@@ -716,8 +716,8 @@ nav[role='navigation'] {
 header #emptycontent,
 header .emptycontent {
 	h2 {
-		font-weight: normal;
-		font-size: 16px;
+		font-weight: $h-font-weight-semibold; //-VIM
+		font-size: 1.5rem !important;
 	}
 	[class^='icon-'],
 	[class*='icon-'] {
@@ -725,4 +725,5 @@ header .emptycontent {
 		height: 48px;
 		width: 48px;
 	}
+	
 }

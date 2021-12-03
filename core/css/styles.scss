@@ -26,18 +26,27 @@ html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pr
 	cursor: default;
 	scrollbar-color: var(--color-border-dark) transparent;
 	scrollbar-width: thin;
+	-webkit-text-size-adjust: 100%;
 }
 
 html, body {
 	height: 100%;
+	line-height: 1.5;
+}
+
+body {
+	text-align: left;
+	background-color: var(--color-main-background);
+	font-weight: 400;
+	/* bring the default font size up to 15px */
+	font-size: var(--default-font-size); //1rem
+	line-height: var(--default-line-height);
+	font-family: var(--font-face);
+	color: var(--color-main-text);
 }
 
 article, aside, dialog, figure, footer, header, hgroup, nav, section {
 	display: block;
-}
-
-body {
-	line-height: 1.5;
 }
 
 table {
@@ -85,15 +94,6 @@ ul {
 	list-style: none;
 }
 
-body {
-	background-color: var(--color-main-background);
-	font-weight: normal;
-	/* bring the default font size up to 15px */
-	font-size: var(--default-font-size);
-	line-height: var(--default-line-height);
-	font-family: var(--font-face);
-	color: var(--color-main-text);
-}
 
 .two-factor-header {
 	text-align: center;
@@ -148,7 +148,7 @@ body {
 	}
 }
 
-/* SCROLLING */
+/* SCROLLING ------------------------------------------------------------------ */
 
 ::-webkit-scrollbar {
 	width: 12px;
@@ -167,10 +167,10 @@ body {
 }
 
 
-/* SELECTION */
+/* SELECTION ------------------------------------------------------------------ */
 
 ::selection {
-	background-color: var(--color-primary-element);
+	background-color: var(--color-list-selected); // -VIM
 	color: var(--color-primary-text);
 }
 
@@ -272,7 +272,7 @@ body {
 	user-select: none;
 }
 
-/* Show password toggle */
+/* Show password toggle ------------------------------------------------------------------ */
 
 #show, #dbpassword {
 	position: absolute;
@@ -302,7 +302,7 @@ body {
 	opacity: .3;
 }
 
-/* Feedback for keyboard focus and mouse hover */
+/* Feedback for keyboard focus and mouse hover ------------------------------------------------------------------ */
 #show,
 #dbpassword,
 #personal-show {
@@ -335,7 +335,7 @@ body {
 	padding: 22px;
 }
 
-/* Warnings and errors are the same */
+/* Warnings and errors are the same ------------------------------------------------------------------ */
 
 #body-user .warning, #body-settings .warning {
 	margin-top: 8px;
@@ -383,7 +383,7 @@ body {
 /* fixes for update page TODO should be fixed some time in a proper way */
 /* this is just for an error while updating the ownCloud instance */
 
-/* Alternative Logins */
+/* Alternative Logins ------------------------------------------------------------------ */
 
 #alternative-logins {
 	legend {
@@ -1283,4 +1283,101 @@ fieldset {
 	width: 0;
 	height: 0;
 	opacity: 0;
+}
+
+/* override empty content hints in the app-sidebar -VIM */
+.empty-content h2 {
+	font-size: 1rem !important;
+	font-weight: lighter !important;
+	text-align: center !important;
+	color: $color-gray !important;
+}
+
+/*.modal-container {
+	padding:0;
+	margin:0;
+	background:red;
+}*/
+
+.modal__content {
+	//min-width: $modal-min-width;
+	//max-width: $modal-max-width;
+	width: 400px;
+	padding: 40px;
+	text-align: left;
+
+	label {
+		color: var(--color-primary);
+		text-transform: uppercase;
+		font-size: 0.75rem;
+		letter-spacing: 0.05rem;
+		font-weight: bolder;
+
+		.field-required {
+			color: var(--color-error);
+		}
+	}
+
+	a {
+		-webkit-border-radius: 2rem;
+		-moz-border-radius: 2rem;
+		border:none;
+		border-radius: 2rem;
+		padding: 10px 24px 9px 24px;
+		font-size: 0.75rem;
+		font-weight: bold !important;
+		letter-spacing: 0.05rem;
+		text-transform: uppercase;
+		text-decoration: none;
+		margin-right:10px;
+	}
+
+	.modal__description {
+		margin-top: 30px !important;
+		margin-bottom: 40px;
+	}
+
+	.btn-group{
+		margin-top:50px;
+		text-align:right !important;
+	}
+
+	.btn-primary {
+		color: white !important;
+		background: var(--color-primary) !important;
+	}
+	.btn-primary:hover {
+		background: #284ea2 !important;
+		text-decoration: none !important;
+	}
+
+	.btn-secondary {
+		border: 2px solid var(--color-primary);
+		color: var(--color-primary)!important;
+		background: none !important;
+		padding: 8px 22px 8px 22px !important;
+	}
+	.btn-seconardy:hover {
+		border:0 solid var(--color-primary);
+		background: #284ea2 !important;
+		color: white !important;
+		padding: 10px 24px 10px 24px;
+		text-decoration: none !important;
+	}
+
+	.input-group {
+		width:400px;
+	}
+	
+	input{
+		width:400px;
+	}
+
+	.customproperty-form-control {
+		border-color: var(--color-primary);
+		border-style: none none solid none;
+		border-radius: 0 !important;
+		border-width: 2px;
+		background: #f9f9f9;
+	}
 }

@@ -3,10 +3,10 @@
 		<h2>{{Title}}</h2>
         <p class="warning" v-if="ShowWarning">{{WarningText}}</p>
 				
-		<br/>
+        <p class="modal__description">We've made it easy to manage and share your projects for each job site. Simply fill in the form below to get started. In the next step you will setup your first project for your site.</p>
 
-        <div class="">
-            <label for="">{{NameTitle}}<span style="color:red">*</span></label>
+        <div>
+            <label for="">{{NameTitle}}<span class="field-required"> *</span></label>
             <div class="input-group">
                 <input 
                     :id="'id_' + NameTitle"
@@ -22,7 +22,7 @@
 
 
         
-        <div v-for="pp in knownProperties" class=""
+        <div v-for="pp in knownProperties" class="field-input"
             :key="pp.id"
             :id="'prop' + pp">
             <label :for="'property_'+pp.propertyname">{{ pp.propertylabel }} <span v-if="pp.propertyisrequired" style="color:red">*</span></label>
@@ -48,9 +48,13 @@
 
         <br/>
 
-        <div>
+        <div class="btn-group">
+            <!--
             <button @click="Close">Cancel</button>
             <button @click="CreateSC">Create</button>
+            -->
+            <a class="btn-secondary" @click="Close">Cancel</a>
+            <a class="btn-primary"  @click="CreateSC">Create</a>
         </div>
 				
 	</div>
@@ -174,8 +178,5 @@ export default{
 
 
 <style scoped>
-    .modal__content {
-		margin: 10px;
-		text-align: left;
-	}
+    
 </style>
