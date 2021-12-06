@@ -44,7 +44,6 @@ export default {
 			ModelDetail: 'Club',
 		}
 	},
-
 	computed: {
 		IsShowButton(){
 			if(this.ModelDetail===''){
@@ -108,7 +107,37 @@ export default {
 			else{
 				await this.retrieveSpecialProp(dir)
 			}
+			this.updatePlusButton()
+			this.updateHint()
+			
+		},
+		async updatePlusButton(){
+			if(!OC.isUserAdmin() && this.ModelDetail!==""){
+				$('.actions.creatable').find(".button.new").hide()
+			}
+			else{
+				$('.actions.creatable').find(".button.new").show()
+			}
+
+		},
+		async updateHint(){
+			debugger;
+			if(this.ModelDetail=="Club"){
+				$("#emptycontent").find("h2").text("No Sites in here")
+				$("#emptycontent").find(".uploadmessage").text('select the "SC" button to create your first site')
+
+			}
+			else if(this.ModelDetail=="Project"){
+				$("#emptycontent").find("h2").text("No Projects in here")
+				$("#emptycontent").find(".uploadmessage").text('select the "SC" button to create your first project')
+				
+			}
+			else{
+				$("#emptycontent").find("h2").text("No files in here")
+				$("#emptycontent").find(".uploadmessage").text("Upload some content or sync with your devices!")
+			}
 		}
+
 
 	},
 

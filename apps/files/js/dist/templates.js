@@ -374,17 +374,17 @@ window.addEventListener('DOMContentLoaded', function () {
     var initTemplatesPlugin = {
       attach: function attach(menu) {
         // register the new menu entry
-        menu.addMenuEntry({
-          id: 'template-init',
-          displayName: Object(_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_2__["translate"])('files', 'Set up templates folder'),
-          templateName: Object(_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_2__["translate"])('files', 'Templates'),
-          iconClass: 'icon-template-add',
-          fileType: 'file',
-          actionHandler: function actionHandler(name) {
-            initTemplatesFolder(name);
-            menu.removeMenuEntry('template-init');
-          }
-        });
+        // menu.addMenuEntry({
+        //   id: 'template-init',
+        //   displayName: Object(_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_2__["translate"])('files', 'Set up templates folder'),
+        //   templateName: Object(_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_2__["translate"])('files', 'Templates'),
+        //   iconClass: 'icon-template-add',
+        //   fileType: 'file',
+        //   actionHandler: function actionHandler(name) {
+        //     initTemplatesFolder(name);
+        //     menu.removeMenuEntry('template-init');
+        //   }
+        // });
       }
     };
     OC.Plugins.register('OCA.Files.NewFileMenu', initTemplatesPlugin);
