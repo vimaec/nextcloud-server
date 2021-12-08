@@ -127,6 +127,68 @@
 	width: 44px;
 	height: 44px;
 }
+
+
+
+// -VIM updates
 .app-sidebar {
-	background-color: $color-gray-lightest !important; // -VIM
+	background-color: $color-gray-lightest !important;
+}
+.app-sidebar__tab{
+	padding:20px !important;
+
+	h3{
+		font-size: 0.75rem;
+		font-weight: bold;
+		text-transform: uppercase;
+		color: var(--color-primary);
+	}
+
+	li{
+		margin-bottom:15px;
+	}
+
+	.comment {
+		padding: 0px 0px 20px 0px !important;
+	}
+
+	.activity-entry__content__subject, .comment__author {
+		color: var(--color-primary) !important;
+	}
+
+	.activity-entry__content__message, .comment__message {
+		color: var(--color-main-text) !important;
+		line-height: .95rem;
+	}
+	.activity-entry__content__message {
+		margin-top:5px;
+	}
+
+	.rich-contenteditable__input {
+		font-size: 0.9rem !important;
+	}
+
+	.multiselect__tags input {
+		font-size: 0.9rem !important;
+	}
+	.sharing-link-list {
+		margin-top:20px !important;
+	}
+
+	/* placeholder copy size */
+	::-webkit-input-placeholder { /* Webkit */
+		font-size:0.9rem;
+	}
+	
+	:-moz-placeholder { /* Firefox 18-4 */
+		font-size:0.9rem;
+	}
+	
+	::-moz-placeholder {  /* Firefox 19+ */
+		font-size:0.9rem;
+	}
+	
+	:-ms-input-placeholder {  /*  IE10+  */
+		font-size:0.9rem;
+	}
 }
