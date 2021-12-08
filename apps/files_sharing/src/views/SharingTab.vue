@@ -22,6 +22,7 @@
 
 <template>
 	<div :class="{ 'icon-loading': loading }">
+		<p style="font-size:small;">Share with:</p>
 		<!-- error message -->
 		<div v-if="error" class="emptycontent">
 			<div class="icon icon-error" />

@@ -18191,85 +18191,8 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return !_vm.enforceAcceptShares || _vm.allowCustomDirectory
-    ? _c(
-        "div",
-        {
-          staticClass: "section",
-          attrs: { id: "files-sharing-personal-settings" }
-        },
-        [
-          _c("h2", [_vm._v(_vm._s(_vm.t("files_sharing", "Sharing")))]),
-          _vm._v(" "),
-          !_vm.enforceAcceptShares
-            ? _c("p", [
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.accepting,
-                      expression: "accepting"
-                    }
-                  ],
-                  staticClass: "checkbox",
-                  attrs: {
-                    id: "files-sharing-personal-settings-accept",
-                    type: "checkbox"
-                  },
-                  domProps: {
-                    checked: Array.isArray(_vm.accepting)
-                      ? _vm._i(_vm.accepting, null) > -1
-                      : _vm.accepting
-                  },
-                  on: {
-                    change: [
-                      function($event) {
-                        var $$a = _vm.accepting,
-                          $$el = $event.target,
-                          $$c = $$el.checked ? true : false
-                        if (Array.isArray($$a)) {
-                          var $$v = null,
-                            $$i = _vm._i($$a, $$v)
-                          if ($$el.checked) {
-                            $$i < 0 && (_vm.accepting = $$a.concat([$$v]))
-                          } else {
-                            $$i > -1 &&
-                              (_vm.accepting = $$a
-                                .slice(0, $$i)
-                                .concat($$a.slice($$i + 1)))
-                          }
-                        } else {
-                          _vm.accepting = $$c
-                        }
-                      },
-                      _vm.toggleEnabled
-                    ]
-                  }
-                }),
-                _vm._v(" "),
-                _c(
-                  "label",
-                  { attrs: { for: "files-sharing-personal-settings-accept" } },
-                  [
-                    _vm._v(
-                      _vm._s(
-                        _vm.t(
-                          "files_sharing",
-                          "Accept user and group shares by default"
-                        )
-                      )
-                    )
-                  ]
-                )
-              ])
-            : _vm._e(),
-          _vm._v(" "),
-          _vm.allowCustomDirectory
-            ? _c("p", [_c("SelectShareFolderDialogue")], 1)
-            : _vm._e()
-        ]
-      )
+  return false
+    ? undefined
     : _vm._e()
 }
 var staticRenderFns = []
