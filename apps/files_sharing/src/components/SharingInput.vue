@@ -130,7 +130,7 @@ export default {
 				return t('files_sharing', 'Name or email …')
 			}
 
-			return t('files_sharing', 'Name, email, or Federated Cloud ID …')
+			return t('files_sharing', 'Name or email') // -VIM removed "or Federated Cloud ID"
 		},
 
 		isValidQuery() {
