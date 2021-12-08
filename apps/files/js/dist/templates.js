@@ -368,27 +368,26 @@ var TemplatePicker = new View({
 });
 TemplatePicker.$mount('#template-picker'); // Init template engine after load to make sure it's the last injected entry
 
-window.addEventListener('DOMContentLoaded', function () {
-  if (!templatesPath) {
-    logger.debug('Templates folder not initialized');
-    var initTemplatesPlugin = {
-      attach: function attach(menu) {
-        // register the new menu entry
-        // menu.addMenuEntry({
-        //   id: 'template-init',
-        //   displayName: Object(_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_2__["translate"])('files', 'Set up templates folder'),
-        //   templateName: Object(_nextcloud_l10n__WEBPACK_IMPORTED_MODULE_2__["translate"])('files', 'Templates'),
-        //   iconClass: 'icon-template-add',
-        //   fileType: 'file',
-        //   actionHandler: function actionHandler(name) {
-        //     initTemplatesFolder(name);
-        //     menu.removeMenuEntry('template-init');
-        //   }
-        // });
-      }
-    };
-    OC.Plugins.register('OCA.Files.NewFileMenu', initTemplatesPlugin);
-  }
+window.addEventListener('DOMContentLoaded', function () {// if (!templatesPath) {
+  // 	logger.debug('Templates folder not initialized')
+  // 	const initTemplatesPlugin = {
+  // 		attach(menu) {
+  // 			// register the new menu entry
+  // 			menu.addMenuEntry({
+  // 				id: 'template-init',
+  // 				displayName: t('files', 'Set up templates folder'),
+  // 				templateName: t('files', 'Templates'),
+  // 				iconClass: 'icon-template-add',
+  // 				fileType: 'file',
+  // 				actionHandler(name) {
+  // 					initTemplatesFolder(name)
+  // 					menu.removeMenuEntry('template-init')
+  // 				},
+  // 			})
+  // 		},
+  // 	}
+  // 	OC.Plugins.register('OCA.Files.NewFileMenu', initTemplatesPlugin)
+  // }
 }); // Init template files menu
 
 templates.forEach(function (provider, index) {

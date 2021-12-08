@@ -69,26 +69,26 @@ TemplatePicker.$mount('#template-picker')
 
 // Init template engine after load to make sure it's the last injected entry
 window.addEventListener('DOMContentLoaded', function() {
-	if (!templatesPath) {
-		logger.debug('Templates folder not initialized')
-		const initTemplatesPlugin = {
-			attach(menu) {
-				// register the new menu entry
-				menu.addMenuEntry({
-					id: 'template-init',
-					displayName: t('files', 'Set up templates folder'),
-					templateName: t('files', 'Templates'),
-					iconClass: 'icon-template-add',
-					fileType: 'file',
-					actionHandler(name) {
-						initTemplatesFolder(name)
-						menu.removeMenuEntry('template-init')
-					},
-				})
-			},
-		}
-		OC.Plugins.register('OCA.Files.NewFileMenu', initTemplatesPlugin)
-	}
+	// if (!templatesPath) {
+	// 	logger.debug('Templates folder not initialized')
+	// 	const initTemplatesPlugin = {
+	// 		attach(menu) {
+	// 			// register the new menu entry
+	// 			menu.addMenuEntry({
+	// 				id: 'template-init',
+	// 				displayName: t('files', 'Set up templates folder'),
+	// 				templateName: t('files', 'Templates'),
+	// 				iconClass: 'icon-template-add',
+	// 				fileType: 'file',
+	// 				actionHandler(name) {
+	// 					initTemplatesFolder(name)
+	// 					menu.removeMenuEntry('template-init')
+	// 				},
+	// 			})
+	// 		},
+	// 	}
+	// 	OC.Plugins.register('OCA.Files.NewFileMenu', initTemplatesPlugin)
+	// }
 })
 
 // Init template files menu

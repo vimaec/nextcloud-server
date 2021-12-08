@@ -1,15 +1,15 @@
 <template>
     <div class="modal__content">
-		<h2>{{Title}}</h2>
+		<h2>Add {{Title}}</h2>
         <p class="warning" v-if="ShowWarning">{{WarningText}}</p>
 				
         <p class="modal__description">We've made it easy to manage and share your projects for each job site. Simply fill in the form below to get started. In the next step you will setup your first project for your site.</p>
 
         <div>
-            <label for="">{{NameTitle}}<span class="field-required"> *</span></label>
+            <label for="">{{Title}} Name<span class="field-required"> *</span></label>
             <div class="input-group">
                 <input 
-                    :id="'id_' + NameTitle"
+                    :id="'id_' + Title"
                     v-model="NameValue"
                     aria-disabled="disabled"
 				    name="propertyname"
@@ -72,13 +72,12 @@ export default{
             NameValue : '',
             ShowWarning: false,
             WarningText:'',
-            knownProperties:[]
+            knownProperties:[],
+            Title: '',
         }
         
     },
     props:{
-        Title: String,
-        NameTitle: String,
         Close: Function,
         SpecialProperty: String
     },
@@ -88,11 +87,15 @@ export default{
 	},
     methods:{
         async update(){
-            this.knownProperties  = await this.retrieveCustomProperties()           
+            this.knownProperties  = await this.retrieveCustomProperties(this.SpecialProperty)
+            let temp = await this.retrieveCustomProperties(this.SpecialProperty+'Name')
+            this.Title=temp[0].propertylabel
+
+
         },
-        async retrieveCustomProperties() {
+        async retrieveCustomProperties(propertycategory) {
 			try {
-				const customPropertiesUrl = generateUrl('/apps/customproperties/customproperties?category=' + this.SpecialProperty)
+				const customPropertiesUrl = generateUrl('/apps/customproperties/customproperties?category=' + propertycategory)
 				const customPropertiesResponse = await axios.get(customPropertiesUrl)
 				return customPropertiesResponse.data
 			} catch (e) {
@@ -178,5 +181,8 @@ export default{
 
 
 <style scoped>
+textarea{
+    width: 100%;
+}
     
 </style>

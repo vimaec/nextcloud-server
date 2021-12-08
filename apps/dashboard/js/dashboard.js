@@ -31316,8 +31316,6 @@ var render = function() {
         0
       ),
       _vm._v(" "),
-      _c("div", { staticClass: "footer" }),
-      _vm._v(" "),
       _vm.modal
         ? _c("Modal", { on: { close: _vm.closeModal } }, [
             _c(

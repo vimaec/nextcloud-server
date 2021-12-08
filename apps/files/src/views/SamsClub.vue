@@ -6,8 +6,8 @@
 			v-if="IsShowButton">
 			{{TextName}}
 		</button>
-		<Modal v-if="IsShowModel" @close="ModelClosed" size="large" :title="'Add '+ ModelDetail">
-            <SamsClubModel :Title="'Add '+ModelDetail" :NameTitle="ModelDetail + 'Name'" :SpecialProperty="ModelDetail" :Close="ModelClosed"/>			
+		<Modal v-if="IsShowModel" @close="ModelClosed" size="large">
+            <SamsClubModel :SpecialProperty="ModelDetail" :Close="ModelClosed"/>			
 		</Modal>
 		
 	</div>
@@ -121,7 +121,6 @@ export default {
 
 		},
 		async updateHint(){
-			debugger;
 			if(this.ModelDetail=="Club"){
 				$("#emptycontent").find("h2").text("No Sites in here")
 				$("#emptycontent").find(".uploadmessage").text('select the "SC" button to create your first site')
