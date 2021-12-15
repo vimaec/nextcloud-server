@@ -194,7 +194,7 @@ class NavigationManager implements INavigationManager {
 				'type' => 'settings',
 				'id' => 'help',
 				'order' => 6,
-				'href' => 'http://support.vimaec.com/',
+				'href' => 'https://support.vimaec.com/',
 				'name' => $l->t('Help'),
 				'icon' => $this->urlGenerator->imagePath('settings', 'help.svg'),
 			]);

@@ -39,7 +39,6 @@ $CONFIG = array (
   'config_is_read_only' => true,
   'appstoreenabled' => false,
   'log_type' => 'syslog',
-  'sharing.enable_share_mail'=> false,
   'app_install_overwrite' => 
   array (
     0 => 'customproperties',
