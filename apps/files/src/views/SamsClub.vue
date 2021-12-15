@@ -1,13 +1,8 @@
 
 <template>
 	<div>
-		<button 
-			@click="buttonClicked"
-			v-if="IsShowButton">
-			{{TextName}}
-		</button>
 		<Modal v-if="IsShowModel" @close="ModelClosed" size="large">
-            <SamsClubModel :SpecialProperty="ModelDetail" :Close="ModelClosed"/>			
+            <SamsClubModel :SpecialProperty="ModelDetail" :Close="ModelClosed" :Name="ModelName" :Title="Title"/>			
 		</Modal>
 		
 	</div>
@@ -39,9 +34,12 @@ export default {
 	},
 	data() {
 		return {
-			TextName: 'Sams Clubs',
 			IsShowModel: false,
 			ModelDetail: 'Club',
+			ModelName: null,
+			Title:null,
+			MenuItems: [],
+			AddClubMenuItem: {}			
 		}
 	},
 	computed: {
@@ -55,8 +53,10 @@ export default {
 		}
 	},
 	methods: {
-		async buttonClicked(){
-			this.IsShowModel=true			
+
+		async buttonClicked(name){
+			this.ModelName=name
+			this.IsShowModel=true					
 
 		},
 		async directoryChanged(el){
@@ -107,18 +107,11 @@ export default {
 			else{
 				await this.retrieveSpecialProp(dir)
 			}
-			this.updatePlusButton()
-			this.updateHint()
+			await this.updateHint()
+			await this.updateTitle()
+			await this.updateNewFileMenu()
 			
-		},
-		async updatePlusButton(){
-			if(!OC.isUserAdmin() && this.ModelDetail!==""){
-				$('.actions.creatable').find(".button.new").hide()
-			}
-			else{
-				$('.actions.creatable').find(".button.new").show()
-			}
-
+			
 		},
 		async updateHint(){
 			if(this.ModelDetail=="Club"){
@@ -135,7 +128,63 @@ export default {
 				$("#emptycontent").find("h2").text("No files in here")
 				$("#emptycontent").find(".uploadmessage").text("Upload some content or sync with your devices!")
 			}
-		}
+		},
+		async updateNewFileMenu(){
+			let _this=this
+			debugger;
+			if(OCA.Files.App.currentFileList._newFileMenu !== undefined){
+				OCA.Files.App.currentFileList._newFileMenu.removeMenuEntry('SamsClub-init')
+			}
+			const templatePlugin =
+			{
+				id: 'SamsClub-init',
+				displayName: t('files', 'Add '+_this.Title),
+				templateName: t('files', 'Add Template'+_this.Title),
+				iconClass: 'icon-folder',
+				fileType: 'file',
+				actionHandler(name) {
+					_this.buttonClicked(name)
+				},
+			}
+			const initTemplatesPlugin = {
+				attach(menu) {
+						// register the new menu entry
+					menu.addMenuEntry(templatePlugin)
+				},
+			}
+			if(_this.ModelDetail!==""){
+				if(OCA.Files.App.currentFileList._newFileMenu !== undefined){
+					OCA.Files.App.currentFileList._newFileMenu.addMenuEntry(templatePlugin)
+				}
+				else{
+					OC.Plugins.register('OCA.Files.NewFileMenu', initTemplatesPlugin)
+				}
+
+			}
+			
+			
+		},
+		async updateTitle(){
+			if(this.ModelDetail===""){
+				this.Title=""
+				return
+			}
+            let temp = await this.retrieveCustomProperties(this.ModelDetail+'Name')
+            this.Title=temp[0].propertylabel
+
+
+        },
+		async retrieveCustomProperties(propertycategory) {
+			try {
+				const customPropertiesUrl = generateUrl('/apps/customproperties/customproperties?category=' + propertycategory)
+				const customPropertiesResponse = await axios.get(customPropertiesUrl)
+				return customPropertiesResponse.data
+			} catch (e) {
+				console.error(e)
+				return []
+			}
+		},
+
 
 
 	},

@@ -3,6 +3,9 @@ import SamsClub from './views/SamsClub.vue'
 import { translate as t } from '@nextcloud/l10n'
 Vue.prototype.t = t
 
+const SamsClubRoot = document.createElement('div')
+SamsClubRoot.id = 'sams-club'
+document.body.appendChild(SamsClubRoot)
 
 window.addEventListener('DOMContentLoaded', function() {
 

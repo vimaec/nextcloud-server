@@ -72,24 +72,26 @@ export default{
             NameValue : '',
             ShowWarning: false,
             WarningText:'',
-            knownProperties:[],
-            Title: '',
+            knownProperties:[]
         }
         
     },
     props:{
         Close: Function,
-        SpecialProperty: String
+        SpecialProperty: String,
+        Name: String,
+        Title: String
     },
     async mounted() {
-		await this.update()
+        await this.update()
+        this.NameValue = this.Name
         this.ShowWarning=false
+        
 	},
     methods:{
+
         async update(){
             this.knownProperties  = await this.retrieveCustomProperties(this.SpecialProperty)
-            let temp = await this.retrieveCustomProperties(this.SpecialProperty+'Name')
-            this.Title=temp[0].propertylabel
 
 
         },

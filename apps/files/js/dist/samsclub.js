@@ -188,6 +188,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 vue__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.t = _nextcloud_l10n__WEBPACK_IMPORTED_MODULE_2__["translate"];
+var SamsClubRoot = document.createElement('div');
+SamsClubRoot.id = 'sams-club';
+document.body.appendChild(SamsClubRoot);
 window.addEventListener('DOMContentLoaded', function () {
   // Init vue app
   var View = vue__WEBPACK_IMPORTED_MODULE_0__["default"].extend(_views_SamsClub_vue__WEBPACK_IMPORTED_MODULE_1__["default"]);
@@ -14782,13 +14785,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       NameValue: '',
       ShowWarning: false,
       WarningText: '',
-      knownProperties: [],
-      Title: ''
+      knownProperties: []
     };
   },
   props: {
     Close: Function,
-    SpecialProperty: String
+    SpecialProperty: String,
+    Name: String,
+    Title: String
   },
   mounted: function mounted() {
     var _this2 = this;
@@ -14802,9 +14806,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               return _this2.update();
 
             case 2:
+              _this2.NameValue = _this2.Name;
               _this2.ShowWarning = false;
 
-            case 3:
+            case 4:
             case "end":
               return _context.stop();
           }
@@ -14817,7 +14822,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _this3 = this;
 
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-        var temp;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -14827,14 +14831,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               case 2:
                 _this3.knownProperties = _context2.sent;
-                _context2.next = 5;
-                return _this3.retrieveCustomProperties(_this3.SpecialProperty + 'Name');
 
-              case 5:
-                temp = _context2.sent;
-                _this3.Title = temp[0].propertylabel;
-
-              case 7:
+              case 3:
               case "end":
                 return _context2.stop();
             }
@@ -15041,11 +15039,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
-//
-//
-//
 
 
 
@@ -15062,9 +15055,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   props: {},
   data: function data() {
     return {
-      TextName: 'Sams Clubs',
       IsShowModel: false,
-      ModelDetail: 'Club'
+      ModelDetail: 'Club',
+      ModelName: null,
+      Title: null,
+      MenuItems: [],
+      AddClubMenuItem: {}
     };
   },
   computed: {
@@ -15077,17 +15073,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }
   },
   methods: {
-    buttonClicked: function buttonClicked() {
-      var _this = this;
+    buttonClicked: function buttonClicked(name) {
+      var _this2 = this;
 
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _this.IsShowModel = true;
+                _this2.ModelName = name;
+                _this2.IsShowModel = true;
 
-              case 1:
+              case 2:
               case "end":
                 return _context.stop();
             }
@@ -15096,14 +15093,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }))();
     },
     directoryChanged: function directoryChanged(el) {
-      var _this2 = this;
+      var _this3 = this;
 
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _this2.directoryChangedInternal(el.dir);
+                _this3.directoryChangedInternal(el.dir);
 
               case 1:
               case "end":
@@ -15114,14 +15111,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }))();
     },
     ModelClosed: function ModelClosed() {
-      var _this3 = this;
+      var _this4 = this;
 
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                _this3.IsShowModel = false;
+                _this4.IsShowModel = false;
 
               case 1:
               case "end":
@@ -15132,7 +15129,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }))();
     },
     retrieveSpecialProp: function retrieveSpecialProp(filepath) {
-      var _this4 = this;
+      var _this5 = this;
 
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
         var uid, path, url, result, specialprop, values;
@@ -15162,9 +15159,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 });
 
                 if (specialprop === "Club") {
-                  _this4.ModelDetail = "Project";
+                  _this5.ModelDetail = "Project";
                 } else {
-                  _this4.ModelDetail = "";
+                  _this5.ModelDetail = "";
                 }
 
                 _context4.next = 17;
@@ -15185,7 +15182,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }))();
     },
     directoryChangedInternal: function directoryChangedInternal(dir) {
-      var _this5 = this;
+      var _this6 = this;
 
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
         return regeneratorRuntime.wrap(function _callee5$(_context5) {
@@ -15197,20 +15194,27 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   break;
                 }
 
-                _this5.ModelDetail = 'Club';
+                _this6.ModelDetail = 'Club';
                 _context5.next = 6;
                 break;
 
               case 4:
                 _context5.next = 6;
-                return _this5.retrieveSpecialProp(dir);
+                return _this6.retrieveSpecialProp(dir);
 
               case 6:
-                _this5.updatePlusButton();
-
-                _this5.updateHint();
+                _context5.next = 8;
+                return _this6.updateHint();
 
               case 8:
+                _context5.next = 10;
+                return _this6.updateTitle();
+
+              case 10:
+                _context5.next = 12;
+                return _this6.updateNewFileMenu();
+
+              case 12:
               case "end":
                 return _context5.stop();
             }
@@ -15218,35 +15222,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee5);
       }))();
     },
-    updatePlusButton: function updatePlusButton() {
-      var _this6 = this;
+    updateHint: function updateHint() {
+      var _this7 = this;
 
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
         return regeneratorRuntime.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
-              case 0:
-                if (!OC.isUserAdmin() && _this6.ModelDetail !== "") {
-                  $('.actions.creatable').find(".button.new").hide();
-                } else {
-                  $('.actions.creatable').find(".button.new").show();
-                }
-
-              case 1:
-              case "end":
-                return _context6.stop();
-            }
-          }
-        }, _callee6);
-      }))();
-    },
-    updateHint: function updateHint() {
-      var _this7 = this;
-
-      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7() {
-        return regeneratorRuntime.wrap(function _callee7$(_context7) {
-          while (1) {
-            switch (_context7.prev = _context7.next) {
               case 0:
                 if (_this7.ModelDetail == "Club") {
                   $("#emptycontent").find("h2").text("No Sites in here");
@@ -15261,45 +15243,158 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               case 1:
               case "end":
+                return _context6.stop();
+            }
+          }
+        }, _callee6);
+      }))();
+    },
+    updateNewFileMenu: function updateNewFileMenu() {
+      var _this8 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7() {
+        var _this, templatePlugin, initTemplatesPlugin;
+
+        return regeneratorRuntime.wrap(function _callee7$(_context7) {
+          while (1) {
+            switch (_context7.prev = _context7.next) {
+              case 0:
+                _this = _this8;
+                debugger;
+
+                if (OCA.Files.App.currentFileList._newFileMenu !== undefined) {
+                  OCA.Files.App.currentFileList._newFileMenu.removeMenuEntry('SamsClub-init');
+                }
+
+                templatePlugin = {
+                  id: 'SamsClub-init',
+                  displayName: t('files', 'Add ' + _this.Title),
+                  templateName: t('files', 'Add Template' + _this.Title),
+                  iconClass: 'icon-folder',
+                  fileType: 'file',
+                  actionHandler: function actionHandler(name) {
+                    _this.buttonClicked(name);
+                  }
+                };
+                initTemplatesPlugin = {
+                  attach: function attach(menu) {
+                    // register the new menu entry
+                    menu.addMenuEntry(templatePlugin);
+                  }
+                };
+
+                if (_this.ModelDetail !== "") {
+                  if (OCA.Files.App.currentFileList._newFileMenu !== undefined) {
+                    OCA.Files.App.currentFileList._newFileMenu.addMenuEntry(templatePlugin);
+                  } else {
+                    OC.Plugins.register('OCA.Files.NewFileMenu', initTemplatesPlugin);
+                  }
+                }
+
+              case 6:
+              case "end":
                 return _context7.stop();
             }
           }
         }, _callee7);
       }))();
+    },
+    updateTitle: function updateTitle() {
+      var _this9 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee8() {
+        var temp;
+        return regeneratorRuntime.wrap(function _callee8$(_context8) {
+          while (1) {
+            switch (_context8.prev = _context8.next) {
+              case 0:
+                if (!(_this9.ModelDetail === "")) {
+                  _context8.next = 3;
+                  break;
+                }
+
+                _this9.Title = "";
+                return _context8.abrupt("return");
+
+              case 3:
+                _context8.next = 5;
+                return _this9.retrieveCustomProperties(_this9.ModelDetail + 'Name');
+
+              case 5:
+                temp = _context8.sent;
+                _this9.Title = temp[0].propertylabel;
+
+              case 7:
+              case "end":
+                return _context8.stop();
+            }
+          }
+        }, _callee8);
+      }))();
+    },
+    retrieveCustomProperties: function retrieveCustomProperties(propertycategory) {
+      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee9() {
+        var customPropertiesUrl, customPropertiesResponse;
+        return regeneratorRuntime.wrap(function _callee9$(_context9) {
+          while (1) {
+            switch (_context9.prev = _context9.next) {
+              case 0:
+                _context9.prev = 0;
+                customPropertiesUrl = Object(_nextcloud_router__WEBPACK_IMPORTED_MODULE_5__["generateUrl"])('/apps/customproperties/customproperties?category=' + propertycategory);
+                _context9.next = 4;
+                return _nextcloud_axios__WEBPACK_IMPORTED_MODULE_6___default.a.get(customPropertiesUrl);
+
+              case 4:
+                customPropertiesResponse = _context9.sent;
+                return _context9.abrupt("return", customPropertiesResponse.data);
+
+              case 8:
+                _context9.prev = 8;
+                _context9.t0 = _context9["catch"](0);
+                console.error(_context9.t0);
+                return _context9.abrupt("return", []);
+
+              case 12:
+              case "end":
+                return _context9.stop();
+            }
+          }
+        }, _callee9, null, [[0, 8]]);
+      }))();
     }
   },
   watch: {},
   mounted: function mounted() {
-    var _this8 = this;
+    var _this10 = this;
 
-    return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee8() {
-      return regeneratorRuntime.wrap(function _callee8$(_context8) {
+    return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee10() {
+      return regeneratorRuntime.wrap(function _callee10$(_context10) {
         while (1) {
-          switch (_context8.prev = _context8.next) {
+          switch (_context10.prev = _context10.next) {
             case 0:
               setTimeout(function () {
                 this.directoryChangedInternal(Object(_utils_davUtils__WEBPACK_IMPORTED_MODULE_0__["getCurrentDirectory"])());
-              }.bind(_this8), 1000);
+              }.bind(_this10), 1000);
 
             case 1:
             case "end":
-              return _context8.stop();
+              return _context10.stop();
           }
         }
-      }, _callee8);
+      }, _callee10);
     }))();
   },
   beforeDestroy: function beforeDestroy() {
-    return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee9() {
-      return regeneratorRuntime.wrap(function _callee9$(_context9) {
+    return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee11() {
+      return regeneratorRuntime.wrap(function _callee11$(_context11) {
         while (1) {
-          switch (_context9.prev = _context9.next) {
+          switch (_context11.prev = _context11.next) {
             case 0:
             case "end":
-              return _context9.stop();
+              return _context11.stop();
           }
         }
-      }, _callee9);
+      }, _callee11);
     }))();
   }
 });
@@ -35299,12 +35394,6 @@ var render = function() {
   return _c(
     "div",
     [
-      _vm.IsShowButton
-        ? _c("button", { on: { click: _vm.buttonClicked } }, [
-            _vm._v("\n\t\t\t" + _vm._s(_vm.TextName) + "\n\t\t")
-          ])
-        : _vm._e(),
-      _vm._v(" "),
       _vm.IsShowModel
         ? _c(
             "Modal",
@@ -35313,7 +35402,9 @@ var render = function() {
               _c("SamsClubModel", {
                 attrs: {
                   SpecialProperty: _vm.ModelDetail,
-                  Close: _vm.ModelClosed
+                  Close: _vm.ModelClosed,
+                  Name: _vm.ModelName,
+                  Title: _vm.Title
                 }
               })
             ],
