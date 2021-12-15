@@ -199,6 +199,7 @@ window.addEventListener('DOMContentLoaded', function () {
   });
   AppSamsClub.$mount('#sams-club');
   $('#app-content-files').on('changeDirectory', AppSamsClub.directoryChanged);
+  $('#app-content-files').on('urlChanged', AppSamsClub.directoryChanged);
   window.OCA.Files.retrieveSpecialProp = AppSamsClub.retrieveSpecialProp;
 });
 
@@ -15059,6 +15060,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       ModelDetail: 'Club',
       ModelName: null,
       Title: null,
+      IsMenuAdded: false,
       MenuItems: [],
       AddClubMenuItem: {}
     };
@@ -15260,7 +15262,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             switch (_context7.prev = _context7.next) {
               case 0:
                 _this = _this8;
-                debugger;
 
                 if (OCA.Files.App.currentFileList._newFileMenu !== undefined) {
                   OCA.Files.App.currentFileList._newFileMenu.removeMenuEntry('SamsClub-init');
@@ -15284,14 +15285,23 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 };
 
                 if (_this.ModelDetail !== "") {
-                  if (OCA.Files.App.currentFileList._newFileMenu !== undefined) {
-                    OCA.Files.App.currentFileList._newFileMenu.addMenuEntry(templatePlugin);
+                  if (OC.isUserAdmin()) {
+                    if (OCA.Files.App.currentFileList._newFileMenu !== undefined) {
+                      OCA.Files.App.currentFileList._newFileMenu.addMenuEntry(templatePlugin);
+                    } else if (!_this.IsMenuAdded) {
+                      OC.Plugins.register('OCA.Files.NewFileMenu', initTemplatesPlugin);
+                      _this.IsMenuAdded = true;
+                    }
+
+                    $('#newbuttonId').show();
                   } else {
-                    OC.Plugins.register('OCA.Files.NewFileMenu', initTemplatesPlugin);
+                    $('#newbuttonId').hide();
                   }
+                } else {
+                  $('#newbuttonId').show();
                 }
 
-              case 6:
+              case 5:
               case "end":
                 return _context7.stop();
             }

@@ -38,6 +38,7 @@ export default {
 			ModelDetail: 'Club',
 			ModelName: null,
 			Title:null,
+			IsMenuAdded:false,
 			MenuItems: [],
 			AddClubMenuItem: {}			
 		}
@@ -131,7 +132,6 @@ export default {
 		},
 		async updateNewFileMenu(){
 			let _this=this
-			debugger;
 			if(OCA.Files.App.currentFileList._newFileMenu !== undefined){
 				OCA.Files.App.currentFileList._newFileMenu.removeMenuEntry('SamsClub-init')
 			}
@@ -153,13 +153,24 @@ export default {
 				},
 			}
 			if(_this.ModelDetail!==""){
-				if(OCA.Files.App.currentFileList._newFileMenu !== undefined){
-					OCA.Files.App.currentFileList._newFileMenu.addMenuEntry(templatePlugin)
+				if(OC.isUserAdmin()){
+					if(OCA.Files.App.currentFileList._newFileMenu !== undefined){
+						OCA.Files.App.currentFileList._newFileMenu.addMenuEntry(templatePlugin)
+					}
+					else if(!_this.IsMenuAdded){
+						OC.Plugins.register('OCA.Files.NewFileMenu', initTemplatesPlugin)
+						_this.IsMenuAdded = true
+					}
+					$('#newbuttonId').show()
 				}
-				else{
-					OC.Plugins.register('OCA.Files.NewFileMenu', initTemplatesPlugin)
+				else {
+					$('#newbuttonId').hide()
+
 				}
 
+			}
+			else{
+				$('#newbuttonId').show()
 			}
 			
 			

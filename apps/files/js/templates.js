@@ -415,7 +415,7 @@ templates['template_addbutton'] = template({"compiler":[8,">= 4.3.0"],"main":fun
         return undefined
     };
 
-  return "<a href=\"#\" class=\"button new\">\n	<span class=\"icon "
+  return "<a href=\"#\" class=\"button new\" id=\"newbuttonId\" style=\"display:none;\">\n	<span class=\"icon "
     + alias4(((helper = (helper = lookupProperty(helpers,"iconClass") || (depth0 != null ? lookupProperty(depth0,"iconClass") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"iconClass","hash":{},"data":data,"loc":{"start":{"line":2,"column":19},"end":{"line":2,"column":32}}}) : helper)))
     + "\"></span>\n	<span class=\"hidden-visually\">"
     + alias4(((helper = (helper = lookupProperty(helpers,"addText") || (depth0 != null ? lookupProperty(depth0,"addText") : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"addText","hash":{},"data":data,"loc":{"start":{"line":3,"column":31},"end":{"line":3,"column":42}}}) : helper)))
