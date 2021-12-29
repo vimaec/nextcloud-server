@@ -100,6 +100,15 @@ $invert: luma($color-primary) > 0.6;
 	background-image: url(./img/core/filetypes/folder.svg?v=#{$theming-cachebuster});
 }
 
+.icon-site {
+	background-image: url(./img/core/filetypes/location-menu.svg?v=#{$theming-cachebuster});
+}
+
+.icon-project {
+	background-image: url(./img/core/filetypes/template-add.svg?v=#{$theming-cachebuster});
+}
+
+
 .icon-filetype-folder-drag-accept {
 	background-image: url(./img/core/filetypes/folder-drag-accept.svg?v=#{$theming-cachebuster}) !important;
 }
@@ -164,7 +173,8 @@ $invert: luma($color-primary) > 0.6;
 input.primary,
 .alternative-logins a, {
 	background-color: $color-primary-element;
-	border: 1px solid $color-primary-text;
+	//border: 1px solid $color-primary-text;
+	border: 0px; //-VIM
 	color: $color-primary-text;
 }
 
@@ -272,12 +282,16 @@ input.primary,
 		&.primary:not(:disabled) {
 			background-color: var(--color-background-dark);
 			color: var(--color-main-text);
-			border-color: var(--color-text-lighter);
+			// border-color: var(--color-text-lighter);
+			border-color: none; //-VIM
+			border: 0; // -VIM
 
 			&:hover, &:focus, &:active {
 				background-color: var(--color-background-darker);
 				color: var(--color-main-text);
-				border-color: var(--color-text);
+				//border-color: var(--color-text);
+				border-color: none; //-VIM
+				border: 0; // -VIM
 			}
 		}
 	}
