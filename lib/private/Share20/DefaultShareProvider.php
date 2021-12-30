@@ -318,7 +318,7 @@ class DefaultShareProvider implements IShareProvider {
 		}
 
 		if ($originalShare->getNote() !== $share->getNote() && $share->getNote() !== '') {
-			$this->propagateNote($share);
+			//$this->propagateNote($share);
 		}
 
 
