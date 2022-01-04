@@ -15234,10 +15234,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 if (_this7.ModelDetail == "Club") {
                   $("#emptycontent").find("h2").text("No Sites in here");
-                  $("#emptycontent").find(".uploadmessage").text('select the "SC" button to create your first site');
+                  $("#emptycontent").find(".uploadmessage").text('select the "+" button to create your first site');
                 } else if (_this7.ModelDetail == "Project") {
                   $("#emptycontent").find("h2").text("No Projects in here");
-                  $("#emptycontent").find(".uploadmessage").text('select the "SC" button to create your first project');
+                  $("#emptycontent").find(".uploadmessage").text('select the "+" button to create your first project');
                 } else {
                   $("#emptycontent").find("h2").text("No files in here");
                   $("#emptycontent").find(".uploadmessage").text("Upload some content or sync with your devices!");
@@ -15255,7 +15255,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _this8 = this;
 
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7() {
-        var _this, templatePlugin, initTemplatesPlugin;
+        var _this, icon, templatePlugin, initTemplatesPlugin;
 
         return regeneratorRuntime.wrap(function _callee7$(_context7) {
           while (1) {
@@ -15267,11 +15267,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   OCA.Files.App.currentFileList._newFileMenu.removeMenuEntry('SamsClub-init');
                 }
 
+                icon = 'icon-new-site';
+
+                if (_this8.ModelDetail == "Project") {
+                  icon = 'icon-new-project';
+                }
+
                 templatePlugin = {
                   id: 'SamsClub-init',
                   displayName: t('files', 'Add ' + _this.Title),
                   templateName: t('files', 'Add Template' + _this.Title),
-                  iconClass: 'icon-folder',
+                  iconClass: icon,
                   fileType: 'file',
                   actionHandler: function actionHandler(name) {
                     _this.buttonClicked(name);
@@ -15301,7 +15307,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   $('#newbuttonId').show();
                 }
 
-              case 5:
+              case 7:
               case "end":
                 return _context7.stop();
             }
