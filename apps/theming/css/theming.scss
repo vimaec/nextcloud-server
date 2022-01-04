@@ -100,6 +100,13 @@ $invert: luma($color-primary) > 0.6;
 	background-image: url(./img/core/filetypes/folder.svg?v=#{$theming-cachebuster});
 }
 
+.icon-newsite {
+	background-image: url(./img/core/filetypes/location-menu.svg?v=#{$theming-cachebuster});
+}
+.icon-newproject {
+	background-image: url(./img/core/filetypes/template-add.svg?v=#{$theming-cachebuster});
+}
+
 .icon-site {
 	background-image: url(./img/core/filetypes/location-menu.svg?v=#{$theming-cachebuster});
 }
