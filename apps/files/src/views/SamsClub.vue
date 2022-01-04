@@ -144,7 +144,11 @@ export default {
 				id: 'SamsClub-init',
 				displayName: t('files', 'Add '+_this.Title),
 				templateName: t('files', 'Add Template'+_this.Title),
+<<<<<<< HEAD
 				iconClass: icon,
+=======
+				iconClass: 'icon-newsite',
+>>>>>>> ab19053e7315985b7abbf8acd4a056422f81028d
 				fileType: 'file',
 				actionHandler(name) {
 					_this.buttonClicked(name)
