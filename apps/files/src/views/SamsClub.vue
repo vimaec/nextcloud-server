@@ -117,12 +117,12 @@ export default {
 		async updateHint(){
 			if(this.ModelDetail=="Club"){
 				$("#emptycontent").find("h2").text("No Sites in here")
-				$("#emptycontent").find(".uploadmessage").text('select the "SC" button to create your first site')
+				$("#emptycontent").find(".uploadmessage").text('select the "+" button to create your first site')
 
 			}
 			else if(this.ModelDetail=="Project"){
 				$("#emptycontent").find("h2").text("No Projects in here")
-				$("#emptycontent").find(".uploadmessage").text('select the "SC" button to create your first project')
+				$("#emptycontent").find(".uploadmessage").text('select the "+" button to create your first project')
 				
 			}
 			else{
@@ -135,12 +135,16 @@ export default {
 			if(OCA.Files.App.currentFileList._newFileMenu !== undefined){
 				OCA.Files.App.currentFileList._newFileMenu.removeMenuEntry('SamsClub-init')
 			}
+			let icon = 'icon-new-site'
+			if(this.ModelDetail=="Project"){
+				icon = 'icon-new-project'
+			}
 			const templatePlugin =
 			{
 				id: 'SamsClub-init',
 				displayName: t('files', 'Add '+_this.Title),
 				templateName: t('files', 'Add Template'+_this.Title),
-				iconClass: 'icon-folder',
+				iconClass: icon,
 				fileType: 'file',
 				actionHandler(name) {
 					_this.buttonClicked(name)
