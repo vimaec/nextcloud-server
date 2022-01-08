@@ -28,7 +28,7 @@ module.exports = {
 	entry: {
 		sidebar: path.join(__dirname, 'src', 'sidebar.js'),
 		templates: path.join(__dirname, 'src', 'templates.js'),
-		samsclub: path.join(__dirname, 'src', 'samsclub.js'),
+		dmssite: path.join(__dirname, 'src', 'dmssite.js'),
 		'files-app-settings': path.join(__dirname, 'src', 'files-app-settings.js'),
 		'personal-settings': path.join(__dirname, 'src', 'main-personal-settings.js'),
 	},

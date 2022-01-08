@@ -2,7 +2,7 @@
 <template>
 	<div>
 		<Modal v-if="IsShowModel" @close="ModelClosed" size="large">
-            <SamsClubModel :SpecialProperty="ModelDetail" :Close="ModelClosed" :Name="ModelName" :Title="Title"/>			
+            <DmsSiteModel :SpecialProperty="ModelDetail" :Close="ModelClosed" :Name="ModelName" :Title="Title"/>			
 		</Modal>
 		
 	</div>
@@ -16,17 +16,17 @@
 import { getCurrentDirectory, xmlToTagList } from '../utils/davUtils'
 import { getCurrentUser } from '@nextcloud/auth'
 import Modal from '@nextcloud/vue/dist/Components/Modal'
-import SamsClubModel from '../components/SamsClubModel'
+import DmsSiteModel from '../components/DmsSiteModel'
 import { showError } from '@nextcloud/dialogs'
 import { generateRemoteUrl, generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 
 export default {
-	name: 'SamsClub',
+	name: 'DmsSite',
 
 	components: {
 		Modal,
-        SamsClubModel
+        DmsSiteModel
 	},
 
 	props: {
@@ -133,7 +133,7 @@ export default {
 		async updateNewFileMenu(){
 			let _this=this
 			if(OCA.Files.App.currentFileList._newFileMenu !== undefined){
-				OCA.Files.App.currentFileList._newFileMenu.removeMenuEntry('SamsClub-init')
+				OCA.Files.App.currentFileList._newFileMenu.removeMenuEntry('DmsSite-init')
 			}
 			let icon = 'icon-new-site'
 			if(this.ModelDetail=="Project"){
@@ -141,7 +141,7 @@ export default {
 			}
 			const templatePlugin =
 			{
-				id: 'SamsClub-init',
+				id: 'DmsSite-init',
 				displayName: t('files', 'Add '+_this.Title),
 				templateName: t('files', 'Add Template'+_this.Title),
 				iconClass: icon,
