@@ -19,14 +19,6 @@ jobs:
       
     - name: Checkout submodules
       run: git submodule update --init --recursive
-      
-    - name: build richdocument app 
-      uses: actions/setup-node@v2
-      with:
-       node-version: '14'
-    - run: cd apps/richdocuments
-    - run: npm ci
-    - run: npm run dev
     
     - name: Make Release Folder
       run: mkdir Release
