@@ -34,3 +34,6 @@
 [submodule "apps/customproperties"]
 	path = apps/customproperties
 	url = https://github.com/vimaec/nextcloud-customproperties
+[submodule "apps/richdocuments"]
+	path = apps/richdocuments
+	url = https://github.com/vimaec/nextcloud-richdocuments

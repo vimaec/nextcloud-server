@@ -43,6 +43,7 @@ $CONFIG = array (
   'app_install_overwrite' => 
   array (
     0 => 'customproperties',
+    1 => 'richdocuments'
   ),
 
 );
