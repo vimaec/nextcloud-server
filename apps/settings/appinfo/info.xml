@@ -49,9 +49,6 @@
 			<setting>OCA\Settings\Activity\SecuritySetting</setting>
 			<setting>OCA\Settings\Activity\Setting</setting>
 		</settings>
-		<filters>
-			<filter>OCA\Settings\Activity\SecurityFilter</filter>
-		</filters>
 		<providers>
 			<provider>OCA\Settings\Activity\GroupProvider</provider>
 			<provider>OCA\Settings\Activity\Provider</provider>
