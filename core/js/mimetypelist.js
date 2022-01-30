@@ -130,7 +130,9 @@ OC.MimeTypeList={
     "video",
     "x-office-document",
     "x-office-presentation",
-    "x-office-spreadsheet"
+    "x-office-spreadsheet",
+    "vim",
+    "vimproj"
 ],
 	themes: []
 };
