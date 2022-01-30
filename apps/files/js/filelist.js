@@ -413,6 +413,7 @@
 					self.scrollTo(options.scrollTo);
 				});
 			}
+			OCA.Files.Sidebar.setActiveTab("customproperties")
 
 			if(options.openFile) {
 				// Wait for some initialisation process to be over before triggering the default action.
@@ -983,7 +984,7 @@
 						_.defer(() => {
 							try {
 								OCA.Files.Sidebar.open(dir);
-								OCA.Files.Sidebar.setActiveTab("customproperties")
+								//OCA.Files.Sidebar.setActiveTab("customproperties")
 							} catch (error) {
 								console.error(`Failed to trigger default action on the file for URL: ${location.href}`, error)
 							}
@@ -2154,7 +2155,7 @@
 			_.defer(() => {
 				try {
 					OCA.Files.Sidebar.open(targetDir);
-					OCA.Files.Sidebar.setActiveTab("customproperties")
+					//OCA.Files.Sidebar.setActiveTab("customproperties")
 				} catch (error) {
 					console.error(`Failed to trigger default action on the file for URL: ${location.href}`, error)
 				}
