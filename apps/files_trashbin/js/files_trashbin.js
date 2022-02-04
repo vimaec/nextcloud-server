@@ -144,20 +144,26 @@ OCA.Trashbin.App = {
       useHTTPS: OC.getProtocol() === 'https'
     });
     var urlParams = OC.Util.History.parseUrlQuery();
+    multiSelectMenu = [{
+      name: 'restore',
+      displayName: t('files_trashbin', 'Restore'),
+      iconClass: 'icon-history'
+    }];
+
+    if (OC.isUserAdmin()) {
+      multiSelectMenu.push({
+        name: 'delete',
+        displayName: t('files_trashbin', 'Delete permanently'),
+        iconClass: 'icon-delete'
+      });
+    }
+
     this.fileList = new OCA.Trashbin.FileList($('#app-content-trashbin'), {
       fileActions: this._createFileActions(),
       detailsViewEnabled: false,
       scrollTo: urlParams.scrollto,
       config: OCA.Files.App.getFilesConfig(),
-      multiSelectMenu: [{
-        name: 'restore',
-        displayName: t('files_trashbin', 'Restore'),
-        iconClass: 'icon-history'
-      }, {
-        name: 'delete',
-        displayName: t('files_trashbin', 'Delete permanently'),
-        iconClass: 'icon-delete'
-      }],
+      multiSelectMenu: multiSelectMenu,
       client: this.client,
       // The file list is created when a "show" event is handled, so
       // it should be marked as "shown" like it would have been done
@@ -191,32 +197,36 @@ OCA.Trashbin.App = {
         });
       }
     });
-    fileActions.registerAction({
-      name: 'Delete',
-      displayName: t('files_trashbin', 'Delete permanently'),
-      mime: 'all',
-      permissions: OC.PERMISSION_READ,
-      iconClass: 'icon-delete',
-      render: function render(actionSpec, isDefault, context) {
-        var $actionLink = fileActions._makeActionLink(actionSpec, context);
 
-        $actionLink.attr('original-title', t('files_trashbin', 'Delete permanently'));
-        $actionLink.children('img').attr('alt', t('files_trashbin', 'Delete permanently'));
-        context.$file.find('td:last').append($actionLink);
-        return $actionLink;
-      },
-      actionHandler: function actionHandler(filename, context) {
-        var fileList = context.fileList;
-        $('.tipsy').remove();
-        var tr = fileList.findFileEl(filename);
-        fileList.showFileBusyState(tr, true);
-        var dir = context.fileList.getCurrentDirectory();
-        client.remove(OC.joinPaths('trash', dir, filename)).then(fileList._removeCallback.bind(fileList, [filename]), function () {
-          fileList.showFileBusyState(tr, false);
-          OC.Notification.show(t('files_trashbin', 'Error while removing file from trashbin'));
-        });
-      }
-    });
+    if (OC.isUserAdmin()) {
+      fileActions.registerAction({
+        name: 'Delete',
+        displayName: t('files_trashbin', 'Delete permanently'),
+        mime: 'all',
+        permissions: OC.PERMISSION_READ,
+        iconClass: 'icon-delete',
+        render: function render(actionSpec, isDefault, context) {
+          var $actionLink = fileActions._makeActionLink(actionSpec, context);
+
+          $actionLink.attr('original-title', t('files_trashbin', 'Delete permanently'));
+          $actionLink.children('img').attr('alt', t('files_trashbin', 'Delete permanently'));
+          context.$file.find('td:last').append($actionLink);
+          return $actionLink;
+        },
+        actionHandler: function actionHandler(filename, context) {
+          var fileList = context.fileList;
+          $('.tipsy').remove();
+          var tr = fileList.findFileEl(filename);
+          fileList.showFileBusyState(tr, true);
+          var dir = context.fileList.getCurrentDirectory();
+          client.remove(OC.joinPaths('trash', dir, filename)).then(fileList._removeCallback.bind(fileList, [filename]), function () {
+            fileList.showFileBusyState(tr, false);
+            OC.Notification.show(t('files_trashbin', 'Error while removing file from trashbin'));
+          });
+        }
+      });
+    }
+
     return fileActions;
   }
 };
