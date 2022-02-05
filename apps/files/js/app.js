@@ -110,7 +110,7 @@
 						{
 							name: 'delete',
 							displayName: t('files', 'Archive'),
-							iconClass: 'icon-delete',
+							iconClass: 'icon-archive',
 							order: 99,
 						},
 						{

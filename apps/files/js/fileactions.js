@@ -748,7 +748,7 @@
 				order: 1000,
 				// permission is READ because we show a hint instead if there is no permission
 				permissions: OC.PERMISSION_DELETE,
-				iconClass: 'icon-delete',
+				iconClass: 'icon-archive',
 				actionHandler: function(fileName, context) {
 					// if there is no permission to delete do nothing
 					if((context.$file.data('permissions') & OC.PERMISSION_DELETE) === 0) {
