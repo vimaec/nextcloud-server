@@ -147,12 +147,6 @@
 .nav-icon-extstoragemounts {
 	@include icon-color('external', 'files', $color-black);
 }
-.nav-icon-trashbin {
-	background-image: url("/index.php/apps/theming/img/core/filetypes/package-x-generic.svg");
-}
-.nav-icon-trashbin-starred {
-	background-image: url("/index.php/apps/theming/img/core/filetypes/package-x-generic.svg");
-}
 .nav-icon-deletedshares {
 	@include icon-color('unshare', 'files', $color-black);
 }

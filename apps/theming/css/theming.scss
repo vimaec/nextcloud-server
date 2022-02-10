@@ -92,6 +92,15 @@ $invert: luma($color-primary) > 0.6;
 }
 
 /* Colorized svg images */
+.icon-archive {
+	background-image: url(./img/core/filetypes/package-x-generic.svg?v=#{$theming-cachebuster});
+}
+.nav-icon-trashbin {
+	background-image: url(./img/core/filetypes/package-x-generic.svg?v=#{$theming-cachebuster});
+}
+.nav-icon-trashbin-starred {
+	background-image: url(./img/core/filetypes/package-x-generic.svg?v=#{$theming-cachebuster});
+}
 .icon-file, .icon-filetype-text {
 	background-image: url(./img/core/filetypes/text.svg?v=#{$theming-cachebuster});
 }
