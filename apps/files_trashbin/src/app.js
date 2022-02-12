@@ -54,7 +54,7 @@ OCA.Trashbin.App = {
 			displayName: t('files_trashbin', 'Restore'),
 			iconClass: 'icon-history',
 		}]
-		if(OC.isUserAdmin()){
+		if(OC.isUserAdmin() || _oc_isdmsadmin){
 			multiSelectMenu.push({
 				name: 'delete',
 				displayName: t('files_trashbin', 'Delete permanently'),
@@ -110,7 +110,7 @@ OCA.Trashbin.App = {
 			},
 		})
 
-		if(OC.isUserAdmin()){
+		if(OC.isUserAdmin() || _oc_isdmsadmin){
 
 			fileActions.registerAction({
 				name: 'Delete',

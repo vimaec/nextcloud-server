@@ -15291,7 +15291,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 };
 
                 if (_this.ModelDetail !== "") {
-                  if (OC.isUserAdmin()) {
+                  if (OC.isUserAdmin() || _oc_isdmsadmin) {
                     if (OCA.Files.App.currentFileList._newFileMenu !== undefined) {
                       OCA.Files.App.currentFileList._newFileMenu.addMenuEntry(templatePlugin);
                     } else if (!_this.IsMenuAdded) {

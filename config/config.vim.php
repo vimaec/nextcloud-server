@@ -14,6 +14,7 @@ $CONFIG = array (
   'datadirectory' => '/mnt/nxdata/data',
   'projectskeletondirecty' => '/shahzadAdmin/files/ProjectTemplate',
   'samlentityid' =>'VIM-AEC-WMT-US-DEV',
+  'DMSAdminGroup' => 'VIM-AEC-WMT-US-ADMIN',
   'trashbin_retention_obligation' => 'disabled',
   'memcache.local' => '\OC\Memcache\Redis',
   'resourceFolder' => '/Resources',
