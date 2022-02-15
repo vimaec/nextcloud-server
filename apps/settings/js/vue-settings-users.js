@@ -2553,6 +2553,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
 
 
 
@@ -4527,21 +4528,26 @@ var render = function() {
               key: "list",
               fn: function() {
                 return [
-                  _c("AppNavigationItem", {
-                    ref: "addGroup",
-                    attrs: {
-                      id: "addgroup",
-                      "edit-placeholder": _vm.t("settings", "Enter group name"),
-                      editable: true,
-                      loading: _vm.loadingAddGroup,
-                      title: _vm.t("settings", "Add group"),
-                      icon: "icon-add"
-                    },
-                    on: {
-                      click: _vm.showAddGroupForm,
-                      "update:title": _vm.createGroup
-                    }
-                  }),
+                  _vm.settings.isAdmin
+                    ? _c("AppNavigationItem", {
+                        ref: "addGroup",
+                        attrs: {
+                          id: "addgroup",
+                          "edit-placeholder": _vm.t(
+                            "settings",
+                            "Enter group name"
+                          ),
+                          editable: true,
+                          loading: _vm.loadingAddGroup,
+                          title: _vm.t("settings", "Add group"),
+                          icon: "icon-add"
+                        },
+                        on: {
+                          click: _vm.showAddGroupForm,
+                          "update:title": _vm.createGroup
+                        }
+                      })
+                    : _vm._e(),
                   _vm._v(" "),
                   _c(
                     "AppNavigationItem",
@@ -4722,273 +4728,283 @@ var render = function() {
               key: "footer",
               fn: function() {
                 return [
-                  _c("AppNavigationSettings", [
-                    _c(
-                      "div",
-                      [
-                        _c("p", [
-                          _vm._v(_vm._s(_vm.t("settings", "Default quota:")))
+                  _vm.settings.isAdmin
+                    ? _c("AppNavigationSettings", [
+                        _c(
+                          "div",
+                          [
+                            _c("p", [
+                              _vm._v(
+                                _vm._s(_vm.t("settings", "Default quota:"))
+                              )
+                            ]),
+                            _vm._v(" "),
+                            _c("Multiselect", {
+                              attrs: {
+                                value: _vm.defaultQuota,
+                                options: _vm.quotaOptions,
+                                "tag-placeholder": "create",
+                                placeholder: _vm.t(
+                                  "settings",
+                                  "Select default quota"
+                                ),
+                                label: "label",
+                                "track-by": "id",
+                                "allow-empty": false,
+                                taggable: true
+                              },
+                              on: {
+                                tag: _vm.validateQuota,
+                                input: _vm.setDefaultQuota
+                              }
+                            })
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c("div", [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.showLanguages,
+                                expression: "showLanguages"
+                              }
+                            ],
+                            staticClass: "checkbox",
+                            attrs: { id: "showLanguages", type: "checkbox" },
+                            domProps: {
+                              checked: Array.isArray(_vm.showLanguages)
+                                ? _vm._i(_vm.showLanguages, null) > -1
+                                : _vm.showLanguages
+                            },
+                            on: {
+                              change: function($event) {
+                                var $$a = _vm.showLanguages,
+                                  $$el = $event.target,
+                                  $$c = $$el.checked ? true : false
+                                if (Array.isArray($$a)) {
+                                  var $$v = null,
+                                    $$i = _vm._i($$a, $$v)
+                                  if ($$el.checked) {
+                                    $$i < 0 &&
+                                      (_vm.showLanguages = $$a.concat([$$v]))
+                                  } else {
+                                    $$i > -1 &&
+                                      (_vm.showLanguages = $$a
+                                        .slice(0, $$i)
+                                        .concat($$a.slice($$i + 1)))
+                                  }
+                                } else {
+                                  _vm.showLanguages = $$c
+                                }
+                              }
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c("label", { attrs: { for: "showLanguages" } }, [
+                            _vm._v(_vm._s(_vm.t("settings", "Show Languages")))
+                          ])
                         ]),
                         _vm._v(" "),
-                        _c("Multiselect", {
-                          attrs: {
-                            value: _vm.defaultQuota,
-                            options: _vm.quotaOptions,
-                            "tag-placeholder": "create",
-                            placeholder: _vm.t(
-                              "settings",
-                              "Select default quota"
-                            ),
-                            label: "label",
-                            "track-by": "id",
-                            "allow-empty": false,
-                            taggable: true
-                          },
-                          on: {
-                            tag: _vm.validateQuota,
-                            input: _vm.setDefaultQuota
-                          }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c("div", [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.showLanguages,
-                            expression: "showLanguages"
-                          }
-                        ],
-                        staticClass: "checkbox",
-                        attrs: { id: "showLanguages", type: "checkbox" },
-                        domProps: {
-                          checked: Array.isArray(_vm.showLanguages)
-                            ? _vm._i(_vm.showLanguages, null) > -1
-                            : _vm.showLanguages
-                        },
-                        on: {
-                          change: function($event) {
-                            var $$a = _vm.showLanguages,
-                              $$el = $event.target,
-                              $$c = $$el.checked ? true : false
-                            if (Array.isArray($$a)) {
-                              var $$v = null,
-                                $$i = _vm._i($$a, $$v)
-                              if ($$el.checked) {
-                                $$i < 0 &&
-                                  (_vm.showLanguages = $$a.concat([$$v]))
-                              } else {
-                                $$i > -1 &&
-                                  (_vm.showLanguages = $$a
-                                    .slice(0, $$i)
-                                    .concat($$a.slice($$i + 1)))
+                        _c("div", [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.showLastLogin,
+                                expression: "showLastLogin"
                               }
-                            } else {
-                              _vm.showLanguages = $$c
-                            }
-                          }
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c("label", { attrs: { for: "showLanguages" } }, [
-                        _vm._v(_vm._s(_vm.t("settings", "Show Languages")))
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("div", [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.showLastLogin,
-                            expression: "showLastLogin"
-                          }
-                        ],
-                        staticClass: "checkbox",
-                        attrs: { id: "showLastLogin", type: "checkbox" },
-                        domProps: {
-                          checked: Array.isArray(_vm.showLastLogin)
-                            ? _vm._i(_vm.showLastLogin, null) > -1
-                            : _vm.showLastLogin
-                        },
-                        on: {
-                          change: function($event) {
-                            var $$a = _vm.showLastLogin,
-                              $$el = $event.target,
-                              $$c = $$el.checked ? true : false
-                            if (Array.isArray($$a)) {
-                              var $$v = null,
-                                $$i = _vm._i($$a, $$v)
-                              if ($$el.checked) {
-                                $$i < 0 &&
-                                  (_vm.showLastLogin = $$a.concat([$$v]))
-                              } else {
-                                $$i > -1 &&
-                                  (_vm.showLastLogin = $$a
-                                    .slice(0, $$i)
-                                    .concat($$a.slice($$i + 1)))
+                            ],
+                            staticClass: "checkbox",
+                            attrs: { id: "showLastLogin", type: "checkbox" },
+                            domProps: {
+                              checked: Array.isArray(_vm.showLastLogin)
+                                ? _vm._i(_vm.showLastLogin, null) > -1
+                                : _vm.showLastLogin
+                            },
+                            on: {
+                              change: function($event) {
+                                var $$a = _vm.showLastLogin,
+                                  $$el = $event.target,
+                                  $$c = $$el.checked ? true : false
+                                if (Array.isArray($$a)) {
+                                  var $$v = null,
+                                    $$i = _vm._i($$a, $$v)
+                                  if ($$el.checked) {
+                                    $$i < 0 &&
+                                      (_vm.showLastLogin = $$a.concat([$$v]))
+                                  } else {
+                                    $$i > -1 &&
+                                      (_vm.showLastLogin = $$a
+                                        .slice(0, $$i)
+                                        .concat($$a.slice($$i + 1)))
+                                  }
+                                } else {
+                                  _vm.showLastLogin = $$c
+                                }
                               }
-                            } else {
-                              _vm.showLastLogin = $$c
                             }
-                          }
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c("label", { attrs: { for: "showLastLogin" } }, [
-                        _vm._v(_vm._s(_vm.t("settings", "Show last login")))
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("div", [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.showUserBackend,
-                            expression: "showUserBackend"
-                          }
-                        ],
-                        staticClass: "checkbox",
-                        attrs: { id: "showUserBackend", type: "checkbox" },
-                        domProps: {
-                          checked: Array.isArray(_vm.showUserBackend)
-                            ? _vm._i(_vm.showUserBackend, null) > -1
-                            : _vm.showUserBackend
-                        },
-                        on: {
-                          change: function($event) {
-                            var $$a = _vm.showUserBackend,
-                              $$el = $event.target,
-                              $$c = $$el.checked ? true : false
-                            if (Array.isArray($$a)) {
-                              var $$v = null,
-                                $$i = _vm._i($$a, $$v)
-                              if ($$el.checked) {
-                                $$i < 0 &&
-                                  (_vm.showUserBackend = $$a.concat([$$v]))
-                              } else {
-                                $$i > -1 &&
-                                  (_vm.showUserBackend = $$a
-                                    .slice(0, $$i)
-                                    .concat($$a.slice($$i + 1)))
+                          }),
+                          _vm._v(" "),
+                          _c("label", { attrs: { for: "showLastLogin" } }, [
+                            _vm._v(_vm._s(_vm.t("settings", "Show last login")))
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("div", [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.showUserBackend,
+                                expression: "showUserBackend"
                               }
-                            } else {
-                              _vm.showUserBackend = $$c
-                            }
-                          }
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c("label", { attrs: { for: "showUserBackend" } }, [
-                        _vm._v(_vm._s(_vm.t("settings", "Show user backend")))
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("div", [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.showStoragePath,
-                            expression: "showStoragePath"
-                          }
-                        ],
-                        staticClass: "checkbox",
-                        attrs: { id: "showStoragePath", type: "checkbox" },
-                        domProps: {
-                          checked: Array.isArray(_vm.showStoragePath)
-                            ? _vm._i(_vm.showStoragePath, null) > -1
-                            : _vm.showStoragePath
-                        },
-                        on: {
-                          change: function($event) {
-                            var $$a = _vm.showStoragePath,
-                              $$el = $event.target,
-                              $$c = $$el.checked ? true : false
-                            if (Array.isArray($$a)) {
-                              var $$v = null,
-                                $$i = _vm._i($$a, $$v)
-                              if ($$el.checked) {
-                                $$i < 0 &&
-                                  (_vm.showStoragePath = $$a.concat([$$v]))
-                              } else {
-                                $$i > -1 &&
-                                  (_vm.showStoragePath = $$a
-                                    .slice(0, $$i)
-                                    .concat($$a.slice($$i + 1)))
+                            ],
+                            staticClass: "checkbox",
+                            attrs: { id: "showUserBackend", type: "checkbox" },
+                            domProps: {
+                              checked: Array.isArray(_vm.showUserBackend)
+                                ? _vm._i(_vm.showUserBackend, null) > -1
+                                : _vm.showUserBackend
+                            },
+                            on: {
+                              change: function($event) {
+                                var $$a = _vm.showUserBackend,
+                                  $$el = $event.target,
+                                  $$c = $$el.checked ? true : false
+                                if (Array.isArray($$a)) {
+                                  var $$v = null,
+                                    $$i = _vm._i($$a, $$v)
+                                  if ($$el.checked) {
+                                    $$i < 0 &&
+                                      (_vm.showUserBackend = $$a.concat([$$v]))
+                                  } else {
+                                    $$i > -1 &&
+                                      (_vm.showUserBackend = $$a
+                                        .slice(0, $$i)
+                                        .concat($$a.slice($$i + 1)))
+                                  }
+                                } else {
+                                  _vm.showUserBackend = $$c
+                                }
                               }
-                            } else {
-                              _vm.showStoragePath = $$c
                             }
-                          }
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c("label", { attrs: { for: "showStoragePath" } }, [
-                        _vm._v(_vm._s(_vm.t("settings", "Show storage path")))
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("div", [
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.sendWelcomeMail,
-                            expression: "sendWelcomeMail"
-                          }
-                        ],
-                        staticClass: "checkbox",
-                        attrs: {
-                          id: "sendWelcomeMail",
-                          disabled: _vm.loadingSendMail,
-                          type: "checkbox"
-                        },
-                        domProps: {
-                          checked: Array.isArray(_vm.sendWelcomeMail)
-                            ? _vm._i(_vm.sendWelcomeMail, null) > -1
-                            : _vm.sendWelcomeMail
-                        },
-                        on: {
-                          change: function($event) {
-                            var $$a = _vm.sendWelcomeMail,
-                              $$el = $event.target,
-                              $$c = $$el.checked ? true : false
-                            if (Array.isArray($$a)) {
-                              var $$v = null,
-                                $$i = _vm._i($$a, $$v)
-                              if ($$el.checked) {
-                                $$i < 0 &&
-                                  (_vm.sendWelcomeMail = $$a.concat([$$v]))
-                              } else {
-                                $$i > -1 &&
-                                  (_vm.sendWelcomeMail = $$a
-                                    .slice(0, $$i)
-                                    .concat($$a.slice($$i + 1)))
+                          }),
+                          _vm._v(" "),
+                          _c("label", { attrs: { for: "showUserBackend" } }, [
+                            _vm._v(
+                              _vm._s(_vm.t("settings", "Show user backend"))
+                            )
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("div", [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.showStoragePath,
+                                expression: "showStoragePath"
                               }
-                            } else {
-                              _vm.sendWelcomeMail = $$c
+                            ],
+                            staticClass: "checkbox",
+                            attrs: { id: "showStoragePath", type: "checkbox" },
+                            domProps: {
+                              checked: Array.isArray(_vm.showStoragePath)
+                                ? _vm._i(_vm.showStoragePath, null) > -1
+                                : _vm.showStoragePath
+                            },
+                            on: {
+                              change: function($event) {
+                                var $$a = _vm.showStoragePath,
+                                  $$el = $event.target,
+                                  $$c = $$el.checked ? true : false
+                                if (Array.isArray($$a)) {
+                                  var $$v = null,
+                                    $$i = _vm._i($$a, $$v)
+                                  if ($$el.checked) {
+                                    $$i < 0 &&
+                                      (_vm.showStoragePath = $$a.concat([$$v]))
+                                  } else {
+                                    $$i > -1 &&
+                                      (_vm.showStoragePath = $$a
+                                        .slice(0, $$i)
+                                        .concat($$a.slice($$i + 1)))
+                                  }
+                                } else {
+                                  _vm.showStoragePath = $$c
+                                }
+                              }
                             }
-                          }
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c("label", { attrs: { for: "sendWelcomeMail" } }, [
-                        _vm._v(
-                          _vm._s(_vm.t("settings", "Send email to new user"))
-                        )
+                          }),
+                          _vm._v(" "),
+                          _c("label", { attrs: { for: "showStoragePath" } }, [
+                            _vm._v(
+                              _vm._s(_vm.t("settings", "Show storage path"))
+                            )
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("div", [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.sendWelcomeMail,
+                                expression: "sendWelcomeMail"
+                              }
+                            ],
+                            staticClass: "checkbox",
+                            attrs: {
+                              id: "sendWelcomeMail",
+                              disabled: _vm.loadingSendMail,
+                              type: "checkbox"
+                            },
+                            domProps: {
+                              checked: Array.isArray(_vm.sendWelcomeMail)
+                                ? _vm._i(_vm.sendWelcomeMail, null) > -1
+                                : _vm.sendWelcomeMail
+                            },
+                            on: {
+                              change: function($event) {
+                                var $$a = _vm.sendWelcomeMail,
+                                  $$el = $event.target,
+                                  $$c = $$el.checked ? true : false
+                                if (Array.isArray($$a)) {
+                                  var $$v = null,
+                                    $$i = _vm._i($$a, $$v)
+                                  if ($$el.checked) {
+                                    $$i < 0 &&
+                                      (_vm.sendWelcomeMail = $$a.concat([$$v]))
+                                  } else {
+                                    $$i > -1 &&
+                                      (_vm.sendWelcomeMail = $$a
+                                        .slice(0, $$i)
+                                        .concat($$a.slice($$i + 1)))
+                                  }
+                                } else {
+                                  _vm.sendWelcomeMail = $$c
+                                }
+                              }
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c("label", { attrs: { for: "sendWelcomeMail" } }, [
+                            _vm._v(
+                              _vm._s(
+                                _vm.t("settings", "Send email to new user")
+                              )
+                            )
+                          ])
+                        ])
                       ])
-                    ])
-                  ])
+                    : _vm._e()
                 ]
               },
               proxy: true
@@ -4996,39 +5012,41 @@ var render = function() {
           ])
         },
         [
-          _c("AppNavigationNew", {
-            attrs: {
-              "button-id": "new-user-button",
-              text: _vm.t("settings", "New user"),
-              "button-class": "icon-add"
-            },
-            on: {
-              click: _vm.showNewUserMenu,
-              keyup: [
-                function($event) {
-                  if (
-                    !$event.type.indexOf("key") &&
-                    _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-                  ) {
-                    return null
-                  }
-                  return _vm.showNewUserMenu.apply(null, arguments)
+          _vm.settings.isAdmin
+            ? _c("AppNavigationNew", {
+                attrs: {
+                  "button-id": "new-user-button",
+                  text: _vm.t("settings", "New user"),
+                  "button-class": "icon-add"
                 },
-                function($event) {
-                  if (
-                    !$event.type.indexOf("key") &&
-                    _vm._k($event.keyCode, "space", 32, $event.key, [
-                      " ",
-                      "Spacebar"
-                    ])
-                  ) {
-                    return null
-                  }
-                  return _vm.showNewUserMenu.apply(null, arguments)
+                on: {
+                  click: _vm.showNewUserMenu,
+                  keyup: [
+                    function($event) {
+                      if (
+                        !$event.type.indexOf("key") &&
+                        _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                      ) {
+                        return null
+                      }
+                      return _vm.showNewUserMenu.apply(null, arguments)
+                    },
+                    function($event) {
+                      if (
+                        !$event.type.indexOf("key") &&
+                        _vm._k($event.keyCode, "space", 32, $event.key, [
+                          " ",
+                          "Spacebar"
+                        ])
+                      ) {
+                        return null
+                      }
+                      return _vm.showNewUserMenu.apply(null, arguments)
+                    }
+                  ]
                 }
-              ]
-            }
-          })
+              })
+            : _vm._e()
         ],
         1
       ),
@@ -5059,4 +5077,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=vue-settings-users.js.map?v=5b82ac82db7c6c66e883
+//# sourceMappingURL=vue-settings-users.js.map?v=0f431316426267e33f7e
