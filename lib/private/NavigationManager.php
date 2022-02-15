@@ -321,8 +321,9 @@ class NavigationManager implements INavigationManager {
 	private function isSubadmin() {
 		$user = $this->userSession->getUser();
 		if ($user !== null) {
-			return $this->groupManager->getSubAdmin()->isSubAdmin($user);
+			return $this->groupManager->getSubAdmin()->isSubAdmin($user) || $this->groupManager->isDMSAdmin($user->getUID());
 		}
+
 		return false;
 	}
 

@@ -206,7 +206,7 @@ class JSConfigHelper {
 		$array = [
 			"_oc_debug" => $this->config->getSystemValue('debug', false) ? 'true' : 'false',
 			"_oc_isadmin" => $uid !== null && $this->groupManager->isAdmin($uid) ? 'true' : 'false',
-			"_oc_isdmsadmin" => $uid !== null && $this->groupManager->isInGroup($uid,$this->config->getSystemValue('DMSAdminGroup', 'VIM-AEC-WMT-US-ADMIN')) ? 'true' : 'false',
+			"_oc_isdmsadmin" => $uid !== null && $this->groupManager->isDMSAdmin($uid) ? 'true' : 'false',
 			"backendAllowsPasswordConfirmation" => $userBackendAllowsPasswordConfirmation ? 'true' : 'false',
 			"oc_dataURL" => is_string($dataLocation) ? "\"" . $dataLocation . "\"" : 'false',
 			"_oc_webroot" => "\"" . \OC::$WEBROOT . "\"",

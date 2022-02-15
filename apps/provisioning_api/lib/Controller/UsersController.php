@@ -178,7 +178,7 @@ class UsersController extends AUserData {
 		// Admin? Or SubAdmin?
 		$uid = $currentUser->getUID();
 		$subAdminManager = $this->groupManager->getSubAdmin();
-		if ($this->groupManager->isAdmin($uid)) {
+		if ($this->groupManager->isAdmin($uid) || $this->groupManager->isDMSAdmin($uid)) {
 			$users = $this->userManager->search($search, $limit, $offset);
 			$users = array_keys($users);
 		} elseif ($subAdminManager->isSubAdmin($currentUser)) {
