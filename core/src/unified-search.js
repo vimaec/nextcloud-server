@@ -24,8 +24,12 @@ import { getLoggerBuilder } from '@nextcloud/logger'
 import { getRequestToken } from '@nextcloud/auth'
 import { translate as t, translatePlural as n } from '@nextcloud/l10n'
 import Vue from 'vue'
+import { BootstrapVue } from 'bootstrap-vue'
 
 import UnifiedSearch from './views/UnifiedSearch.vue'
+
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 // eslint-disable-next-line camelcase
 __webpack_nonce__ = btoa(getRequestToken())
@@ -46,6 +50,8 @@ Vue.mixin({
 		n,
 	},
 })
+
+Vue.use(BootstrapVue)
 
 export default new Vue({
 	el: '#unified-search',

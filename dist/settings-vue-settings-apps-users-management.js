@@ -1,3 +1,2185 @@
-/*! For license information please see settings-vue-settings-apps-users-management.js.LICENSE.txt */
-!function(){"use strict";var e,r,o,i={31579:function(e,r,o){var i=o(20144),u=o(34741),a=o(83678),s={name:"App",beforeMount:function(){null!==document.getElementById("serverData")&&this.$store.commit("setServerData",JSON.parse(document.getElementById("serverData").dataset.server))}},c=(0,o(51900).Z)(s,(function(){var t=this.$createElement;return(this._self._c||t)("router-view")}),[],!1,null,null,null).exports,d=o(78345),p=o(79753),f=function(){return Promise.all([o.e(874),o.e(351)]).then(o.bind(o,22744))},l=function(){return Promise.all([o.e(874),o.e(647)]).then(o.bind(o,97967))};i.default.use(d.Z);var m=new d.Z({mode:"history",base:(0,p.generateUrl)(""),linkActiveClass:"active",routes:[{path:"/:index(index.php/)?settings/users",component:f,props:!0,name:"users",children:[{path:":selectedGroup",name:"group",component:f}]},{path:"/:index(index.php/)?settings/apps",component:l,props:!0,name:"apps",children:[{path:":category",name:"apps-category",component:l,children:[{path:":id",name:"apps-details",component:l}]}]}]}),g=o(20629),h=o(4820),A=o(10128),v=o.n(A),U=function(t){return t.replace(/\/$/,"")},b=function(){return v()()},I=function(t,e){return h.default.get(U(t),e)},y=function(t,e){return h.default.post(U(t),e)},L=function(t,e){return h.default.put(U(t),e)},O=function(t,e){return h.default.delete(U(t),{params:e})},P=function(t,e){return 1===e?t.sort((function(t,e){return t.usercount-t.disabled<e.usercount-e.disabled})):t.sort((function(t,e){return t.name.localeCompare(e.name)}))},w={id:"",name:"",usercount:0,disabled:0,canAdd:!0,canRemove:!0},E={appendUsers:function(t,e){var r=t.users.concat(Object.keys(e).map((function(t){return e[t]})));t.usersOffset+=t.usersLimit,t.users=r},setPasswordPolicyMinLength:function(t,e){t.minPasswordLength=""!==e?e:0},initGroups:function(t,e){var r=e.groups,n=e.orderBy,o=e.userCount;t.groups=r.map((function(t){return Object.assign({},w,t)})),t.orderBy=n,t.userCount=o,t.groups=P(t.groups,t.orderBy)},addGroup:function(t,e){var r=e.gid,n=e.displayName;try{if(void 0!==t.groups.find((function(t){return t.id===r})))return;var o=Object.assign({},w,{id:r,name:n});t.groups.push(o),t.groups=P(t.groups,t.orderBy)}catch(t){console.error("Can't create group",t)}},removeGroup:function(t,e){var r=t.groups.findIndex((function(t){return t.id===e}));r>=0&&t.groups.splice(r,1)},addUserGroup:function(t,e){var r=e.userid,n=e.gid,o=t.groups.find((function(t){return t.id===n})),i=t.users.find((function(t){return t.id===r}));o&&i.enabled&&t.userCount>0&&o.usercount++,i.groups.push(n),t.groups=P(t.groups,t.orderBy)},removeUserGroup:function(t,e){var r=e.userid,n=e.gid,o=t.groups.find((function(t){return t.id===n})),i=t.users.find((function(t){return t.id===r}));o&&i.enabled&&t.userCount>0&&o.usercount--;var u=i.groups;u.splice(u.indexOf(n),1),t.groups=P(t.groups,t.orderBy)},addUserSubAdmin:function(t,e){var r=e.userid,n=e.gid;t.users.find((function(t){return t.id===r})).subadmin.push(n)},removeUserSubAdmin:function(t,e){var r=e.userid,n=e.gid,o=t.users.find((function(t){return t.id===r})).subadmin;o.splice(o.indexOf(n),1)},deleteUser:function(t,e){var r=t.users.findIndex((function(t){return t.id===e}));t.users.splice(r,1)},addUserData:function(t,e){t.users.push(e.data.ocs.data)},enableDisableUser:function(t,e){var r=e.userid,n=e.enabled,o=t.users.find((function(t){return t.id===r}));o.enabled=n,t.userCount>0&&(t.groups.find((function(t){return"disabled"===t.id})).usercount+=n?-1:1,t.userCount+=n?1:-1,o.groups.forEach((function(e){t.groups.find((function(t){return t.id===e})).disabled+=n?-1:1})))},setUserData:function(t,e){var r=e.userid,n=e.key,o=e.value;if("quota"===n){var i=OC.Util.computerFileSize(o);t.users.find((function(t){return t.id===r}))[n][n]=null!==i?i:o}else t.users.find((function(t){return t.id===r}))[n]=o},resetUsers:function(t){t.users=[],t.usersOffset=0}},C=h.default.CancelToken,_=null,F={state:{users:[],groups:[],orderBy:1,minPasswordLength:0,usersOffset:0,usersLimit:25,userCount:0},mutations:E,getters:{getUsers:function(t){return t.users},getGroups:function(t){return t.groups},getSubadminGroups:function(t){return t.groups.filter((function(t){return"admin"!==t.id&&"disabled"!==t.id}))},getPasswordPolicyMinLength:function(t){return t.minPasswordLength},getUsersOffset:function(t){return t.usersOffset},getUsersLimit:function(t){return t.usersLimit},getUserCount:function(t){return t.userCount}},actions:{getUsers:function(t,e){var r=e.offset,n=e.limit,o=e.search,i=e.group;return _&&_.cancel("Operation canceled by another search request."),_=C.source(),o="string"==typeof o?o:"",""!==(i="string"==typeof i?i:"")?I((0,p.generateOcsUrl)("cloud/groups/{group}/users/details?offset={offset}&limit={limit}&search={search}",{group:encodeURIComponent(i),offset:r,limit:n,search:o}),{cancelToken:_.token}).then((function(e){var r=Object.keys(e.data.ocs.data.users).length;return r>0&&t.commit("appendUsers",e.data.ocs.data.users),r})).catch((function(e){h.default.isCancel(e)||t.commit("API_FAILURE",e)})):I((0,p.generateOcsUrl)("cloud/users/details?offset={offset}&limit={limit}&search={search}",{offset:r,limit:n,search:o}),{cancelToken:_.token}).then((function(e){var r=Object.keys(e.data.ocs.data.users).length;return r>0&&t.commit("appendUsers",e.data.ocs.data.users),r})).catch((function(e){h.default.isCancel(e)||t.commit("API_FAILURE",e)}))},getGroups:function(t,e){var r=e.offset,n=e.limit,o=e.search;o="string"==typeof o?o:"";var i=-1===n?"":"&limit=".concat(n);return I((0,p.generateOcsUrl)("cloud/groups?offset={offset}&search={search}",{offset:r,search:o})+i).then((function(e){return Object.keys(e.data.ocs.data.groups).length>0&&(e.data.ocs.data.groups.forEach((function(e){t.commit("addGroup",{gid:e,displayName:e})})),!0)})).catch((function(e){return t.commit("API_FAILURE",e)}))},getUsersFromList:function(t,e){var r=e.offset,n=e.limit,o=e.search;return o="string"==typeof o?o:"",I((0,p.generateOcsUrl)("cloud/users/details?offset={offset}&limit={limit}&search={search}",{offset:r,limit:n,search:o})).then((function(e){return Object.keys(e.data.ocs.data.users).length>0&&(t.commit("appendUsers",e.data.ocs.data.users),!0)})).catch((function(e){return t.commit("API_FAILURE",e)}))},getUsersFromGroup:function(t,e){var r=e.groupid,n=e.offset,o=e.limit;return I((0,p.generateOcsUrl)("cloud/users/{groupId}/details?offset={offset}&limit={limit}",{groupId:encodeURIComponent(r),offset:n,limit:o})).then((function(e){return t.commit("getUsersFromList",e.data.ocs.data.users)})).catch((function(e){return t.commit("API_FAILURE",e)}))},getPasswordPolicyMinLength:function(t){return!(!OC.getCapabilities().password_policy||!OC.getCapabilities().password_policy.minLength)&&(t.commit("setPasswordPolicyMinLength",OC.getCapabilities().password_policy.minLength),OC.getCapabilities().password_policy.minLength)},addGroup:function(t,e){return b().then((function(r){return y((0,p.generateOcsUrl)("cloud/groups"),{groupid:e}).then((function(r){return t.commit("addGroup",{gid:e,displayName:e}),{gid:e,displayName:e}})).catch((function(t){throw t}))})).catch((function(r){throw t.commit("API_FAILURE",{gid:e,error:r}),r}))},removeGroup:function(t,e){return b().then((function(r){return O((0,p.generateOcsUrl)("cloud/groups/{groupId}",{groupId:encodeURIComponent(e)})).then((function(r){return t.commit("removeGroup",e)})).catch((function(t){throw t}))})).catch((function(r){return t.commit("API_FAILURE",{gid:e,error:r})}))},addUserGroup:function(t,e){var r=e.userid,n=e.gid;return b().then((function(e){return y((0,p.generateOcsUrl)("cloud/users/{userid}/groups",{userid:r}),{groupid:n}).then((function(e){return t.commit("addUserGroup",{userid:r,gid:n})})).catch((function(t){throw t}))})).catch((function(e){return t.commit("API_FAILURE",{userid:r,error:e})}))},removeUserGroup:function(t,e){var r=e.userid,n=e.gid;return b().then((function(e){return O((0,p.generateOcsUrl)("cloud/users/{userid}/groups",{userid:r}),{groupid:n}).then((function(e){return t.commit("removeUserGroup",{userid:r,gid:n})})).catch((function(t){throw t}))})).catch((function(e){throw t.commit("API_FAILURE",{userid:r,error:e}),e}))},addUserSubAdmin:function(t,e){var r=e.userid,n=e.gid;return b().then((function(e){return y((0,p.generateOcsUrl)("cloud/users/{userid}/subadmins",{userid:r}),{groupid:n}).then((function(e){return t.commit("addUserSubAdmin",{userid:r,gid:n})})).catch((function(t){throw t}))})).catch((function(e){return t.commit("API_FAILURE",{userid:r,error:e})}))},removeUserSubAdmin:function(t,e){var r=e.userid,n=e.gid;return b().then((function(e){return O((0,p.generateOcsUrl)("cloud/users/{userid}/subadmins",{userid:r}),{groupid:n}).then((function(e){return t.commit("removeUserSubAdmin",{userid:r,gid:n})})).catch((function(t){throw t}))})).catch((function(e){return t.commit("API_FAILURE",{userid:r,error:e})}))},wipeUserDevices:function(t,e){return b().then((function(t){return y((0,p.generateOcsUrl)("cloud/users/{userid}/wipe",{userid:e})).catch((function(t){throw t}))})).catch((function(r){return t.commit("API_FAILURE",{userid:e,error:r})}))},deleteUser:function(t,e){return b().then((function(r){return O((0,p.generateOcsUrl)("cloud/users/{userid}",{userid:e})).then((function(r){return t.commit("deleteUser",e)})).catch((function(t){throw t}))})).catch((function(r){return t.commit("API_FAILURE",{userid:e,error:r})}))},addUser:function(t,e){var r=t.commit,n=t.dispatch,o=e.userid,i=e.password,u=e.displayName,a=e.email,s=e.groups,c=e.subadmin,d=e.quota,f=e.language;return b().then((function(t){return y((0,p.generateOcsUrl)("cloud/users"),{userid:o,password:i,displayName:u,email:a,groups:s,subadmin:c,quota:d,language:f}).then((function(t){return n("addUserData",o||t.data.ocs.data.id)})).catch((function(t){throw t}))})).catch((function(t){throw r("API_FAILURE",{userid:o,error:t}),t}))},addUserData:function(t,e){return b().then((function(r){return I((0,p.generateOcsUrl)("cloud/users/{userid}",{userid:e})).then((function(e){return t.commit("addUserData",e)})).catch((function(t){throw t}))})).catch((function(r){return t.commit("API_FAILURE",{userid:e,error:r})}))},enableDisableUser:function(t,e){var r=e.userid,n=e.enabled,o=void 0===n||n,i=o?"enable":"disable";return b().then((function(e){return L((0,p.generateOcsUrl)("cloud/users/{userid}/{userStatus}",{userid:r,userStatus:i})).then((function(e){return t.commit("enableDisableUser",{userid:r,enabled:o})})).catch((function(t){throw t}))})).catch((function(e){return t.commit("API_FAILURE",{userid:r,error:e})}))},setUserData:function(t,e){var r=e.userid,n=e.key,o=e.value,i=["email","displayname"];return-1!==["email","language","quota","displayname","password"].indexOf(n)&&"string"==typeof o&&(-1===i.indexOf(n)&&o.length>0||-1!==i.indexOf(n))?b().then((function(e){return L((0,p.generateOcsUrl)("cloud/users/{userid}",{userid:r}),{key:n,value:o}).then((function(e){return t.commit("setUserData",{userid:r,key:n,value:o})})).catch((function(t){throw t}))})).catch((function(e){return t.commit("API_FAILURE",{userid:r,error:e})})):Promise.reject(new Error("Invalid request data"))},sendWelcomeMail:function(t,e){return b().then((function(t){return y((0,p.generateOcsUrl)("cloud/users/{userid}/welcome",{userid:e})).then((function(t){return!0})).catch((function(t){throw t}))})).catch((function(r){return t.commit("API_FAILURE",{userid:e,error:r})}))}}},R={APPS_API_FAILURE:function(e,r){OC.Notification.showHtml(t("settings","An error occured during the request. Unable to proceed.")+"<br>"+r.error.response.data.data.message,{timeout:7}),console.error(e,r)},initCategories:function(t,e){var r=e.categories,n=e.updateCount;t.categories=r,t.updateCount=n},setUpdateCount:function(t,e){t.updateCount=e},addCategory:function(t,e){t.categories.push(e)},appendCategories:function(t,e){t.categories=e},setAllApps:function(t,e){t.apps=e},setError:function(t,e){var r=e.appId,n=e.error;Array.isArray(r)||(r=[r]),r.forEach((function(e){t.apps.find((function(t){return t.id===e})).error=n}))},clearError:function(t,e){var r=e.appId;e.error,t.apps.find((function(t){return t.id===r})).error=null},enableApp:function(t,e){var r=e.appId,n=e.groups,o=t.apps.find((function(t){return t.id===r}));o.active=!0,o.groups=n},disableApp:function(t,e){var r=t.apps.find((function(t){return t.id===e}));r.active=!1,r.groups=[],r.removable&&(r.canUnInstall=!0)},uninstallApp:function(t,e){t.apps.find((function(t){return t.id===e})).active=!1,t.apps.find((function(t){return t.id===e})).groups=[],t.apps.find((function(t){return t.id===e})).needsDownload=!0,t.apps.find((function(t){return t.id===e})).installed=!1,t.apps.find((function(t){return t.id===e})).canUnInstall=!1,t.apps.find((function(t){return t.id===e})).canInstall=!0},updateApp:function(t,e){var r=t.apps.find((function(t){return t.id===e})),n=r.update;r.update=null,r.version=n,t.updateCount--},resetApps:function(t){t.apps=[]},reset:function(t){t.apps=[],t.categories=[],t.updateCount=0},startLoading:function(t,e){Array.isArray(e)?e.forEach((function(e){i.default.set(t.loading,e,!0)})):i.default.set(t.loading,e,!0)},stopLoading:function(t,e){Array.isArray(e)?e.forEach((function(e){i.default.set(t.loading,e,!1)})):i.default.set(t.loading,e,!1)}},k={enableApp:function(e,r){var n,o=r.appId,i=r.groups;return n=Array.isArray(o)?o:[o],b().then((function(r){return e.commit("startLoading",n),e.commit("startLoading","install"),y((0,p.generateUrl)("settings/apps/enable"),{appIds:n,groups:i}).then((function(r){return e.commit("stopLoading",n),e.commit("stopLoading","install"),n.forEach((function(t){e.commit("enableApp",{appId:t,groups:i})})),I((0,p.generateUrl)("apps/files")).then((function(){r.data.update_required&&(OC.dialogs.info(t("settings","The app has been enabled but needs to be updated. You will be redirected to the update page in 5 seconds."),t("settings","App update"),(function(){window.location.reload()}),!0),setTimeout((function(){location.reload()}),5e3))})).catch((function(){Array.isArray(o)||e.commit("setError",{appId:n,error:t("settings","Error: This app cannot be enabled because it makes the server unstable")})}))})).catch((function(t){e.commit("stopLoading",n),e.commit("stopLoading","install"),e.commit("setError",{appId:n,error:t.response.data.data.message}),e.commit("APPS_API_FAILURE",{appId:o,error:t})}))})).catch((function(t){return e.commit("API_FAILURE",{appId:o,error:t})}))},forceEnableApp:function(t,e){var r,n=e.appId;return e.groups,r=Array.isArray(n)?n:[n],b().then((function(){return t.commit("startLoading",r),t.commit("startLoading","install"),y((0,p.generateUrl)("settings/apps/force"),{appId:n}).then((function(t){location.reload()})).catch((function(e){t.commit("stopLoading",r),t.commit("stopLoading","install"),t.commit("setError",{appId:r,error:e.response.data.data.message}),t.commit("APPS_API_FAILURE",{appId:n,error:e})}))})).catch((function(e){return t.commit("API_FAILURE",{appId:n,error:e})}))},disableApp:function(t,e){var r,n=e.appId;return r=Array.isArray(n)?n:[n],b().then((function(e){return t.commit("startLoading",r),y((0,p.generateUrl)("settings/apps/disable"),{appIds:r}).then((function(e){return t.commit("stopLoading",r),r.forEach((function(e){t.commit("disableApp",e)})),!0})).catch((function(e){t.commit("stopLoading",r),t.commit("APPS_API_FAILURE",{appId:n,error:e})}))})).catch((function(e){return t.commit("API_FAILURE",{appId:n,error:e})}))},uninstallApp:function(t,e){var r=e.appId;return b().then((function(e){return t.commit("startLoading",r),I((0,p.generateUrl)("settings/apps/uninstall/".concat(r))).then((function(e){return t.commit("stopLoading",r),t.commit("uninstallApp",r),!0})).catch((function(e){t.commit("stopLoading",r),t.commit("APPS_API_FAILURE",{appId:r,error:e})}))})).catch((function(e){return t.commit("API_FAILURE",{appId:r,error:e})}))},updateApp:function(t,e){var r=e.appId;return b().then((function(e){return t.commit("startLoading",r),t.commit("startLoading","install"),I((0,p.generateUrl)("settings/apps/update/".concat(r))).then((function(e){return t.commit("stopLoading","install"),t.commit("stopLoading",r),t.commit("updateApp",r),!0})).catch((function(e){t.commit("stopLoading",r),t.commit("stopLoading","install"),t.commit("APPS_API_FAILURE",{appId:r,error:e})}))})).catch((function(e){return t.commit("API_FAILURE",{appId:r,error:e})}))},getAllApps:function(t){return t.commit("startLoading","list"),I((0,p.generateUrl)("settings/apps/list")).then((function(e){return t.commit("setAllApps",e.data.apps),t.commit("stopLoading","list"),!0})).catch((function(e){return t.commit("API_FAILURE",e)}))},getCategories:function(t){return t.commit("startLoading","categories"),I((0,p.generateUrl)("settings/apps/categories")).then((function(e){return e.data.length>0&&(t.commit("appendCategories",e.data),t.commit("stopLoading","categories"),!0)})).catch((function(e){return t.commit("API_FAILURE",e)}))}},S={state:{apps:[],categories:[],updateCount:0,loading:{},loadingList:!1},mutations:R,getters:{loading:function(t){return function(e){return t.loading[e]}},getCategories:function(t){return t.categories},getAllApps:function(t){return t.apps},getUpdateCount:function(t){return t.updateCount}},actions:k},D={state:{},mutations:{},getters:{},actions:{setAppConfig:function(t,e){var r=e.app,n=e.key,o=e.value;return b().then((function(t){return y((0,p.generateOcsUrl)("apps/provisioning_api/api/v1/config/apps/{app}/{key}",{app:r,key:n}),{value:o}).catch((function(t){throw t}))})).catch((function(e){return t.commit("API_FAILURE",{app:r,key:n,value:o,error:e})}))}}};i.default.use(g.ZP);var j={API_FAILURE:function(e,r){try{var n=r.error.response.data.ocs.meta.message;OC.Notification.showHtml(t("settings","An error occured during the request. Unable to proceed.")+"<br>"+n,{timeout:7})}catch(e){OC.Notification.showTemporary(t("settings","An error occured during the request. Unable to proceed."))}console.error(e,r)}},x=new g.yh({modules:{users:F,apps:S,settings:{state:{serverData:{}},mutations:{setServerData:function(t,e){t.serverData=e}},getters:{getServerData:function(t){return t.serverData}},actions:{}},oc:D},strict:!1,mutations:j});i.default.use(u.default,{defaultHtml:!1}),(0,a.Z)(x,m),o.nc=btoa(OC.requestToken),i.default.prototype.t=t,i.default.prototype.n=n,i.default.prototype.OC=OC,i.default.prototype.OCA=OCA,i.default.prototype.oc_userconfig=oc_userconfig,new i.default({router:m,store:x,render:function(t){return t(c)}}).$mount("#content")}},u={};function a(t){var e=u[t];if(void 0!==e)return e.exports;var r=u[t]={id:t,loaded:!1,exports:{}};return i[t].call(r.exports,r,r.exports,a),r.loaded=!0,r.exports}a.m=i,a.amdD=function(){throw new Error("define cannot be used indirect")},a.amdO={},e=[],a.O=function(t,r,n,o){if(!r){var i=1/0;for(d=0;d<e.length;d++){r=e[d][0],n=e[d][1],o=e[d][2];for(var u=!0,s=0;s<r.length;s++)(!1&o||i>=o)&&Object.keys(a.O).every((function(t){return a.O[t](r[s])}))?r.splice(s--,1):(u=!1,o<i&&(i=o));if(u){e.splice(d--,1);var c=n();void 0!==c&&(t=c)}}return t}o=o||0;for(var d=e.length;d>0&&e[d-1][2]>o;d--)e[d]=e[d-1];e[d]=[r,n,o]},a.n=function(t){var e=t&&t.__esModule?function(){return t.default}:function(){return t};return a.d(e,{a:e}),e},a.d=function(t,e){for(var r in e)a.o(e,r)&&!a.o(t,r)&&Object.defineProperty(t,r,{enumerable:!0,get:e[r]})},a.f={},a.e=function(t){return Promise.all(Object.keys(a.f).reduce((function(e,r){return a.f[r](t,e),e}),[]))},a.u=function(t){return{351:"settings-users",647:"settings-apps"}[t]+"-"+t+".js?v="+{351:"bbe5c2b9a74130bebc3f",647:"2590f4b412bb62c536bf"}[t]},a.g=function(){if("object"==typeof globalThis)return globalThis;try{return this||new Function("return this")()}catch(t){if("object"==typeof window)return window}}(),a.o=function(t,e){return Object.prototype.hasOwnProperty.call(t,e)},r={},o="nextcloud:",a.l=function(t,e,n,i){if(r[t])r[t].push(e);else{var u,s;if(void 0!==n)for(var c=document.getElementsByTagName("script"),d=0;d<c.length;d++){var p=c[d];if(p.getAttribute("src")==t||p.getAttribute("data-webpack")==o+n){u=p;break}}u||(s=!0,(u=document.createElement("script")).charset="utf-8",u.timeout=120,a.nc&&u.setAttribute("nonce",a.nc),u.setAttribute("data-webpack",o+n),u.src=t),r[t]=[e];var f=function(e,n){u.onerror=u.onload=null,clearTimeout(l);var o=r[t];if(delete r[t],u.parentNode&&u.parentNode.removeChild(u),o&&o.forEach((function(t){return t(n)})),e)return e(n)},l=setTimeout(f.bind(null,void 0,{type:"timeout",target:u}),12e4);u.onerror=f.bind(null,u.onerror),u.onload=f.bind(null,u.onload),s&&document.head.appendChild(u)}},a.r=function(t){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(t,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(t,"__esModule",{value:!0})},a.nmd=function(t){return t.paths=[],t.children||(t.children=[]),t},a.j=562,function(){var t;a.g.importScripts&&(t=a.g.location+"");var e=a.g.document;if(!t&&e&&(e.currentScript&&(t=e.currentScript.src),!t)){var r=e.getElementsByTagName("script");r.length&&(t=r[r.length-1].src)}if(!t)throw new Error("Automatic publicPath is not supported in this browser");t=t.replace(/#.*$/,"").replace(/\?.*$/,"").replace(/\/[^\/]+$/,"/"),a.p=t}(),function(){var t={562:0};a.f.j=function(e,r){var n=a.o(t,e)?t[e]:void 0;if(0!==n)if(n)r.push(n[2]);else{var o=new Promise((function(r,o){n=t[e]=[r,o]}));r.push(n[2]=o);var i=a.p+a.u(e),u=new Error;a.l(i,(function(r){if(a.o(t,e)&&(0!==(n=t[e])&&(t[e]=void 0),n)){var o=r&&("load"===r.type?"missing":r.type),i=r&&r.target&&r.target.src;u.message="Loading chunk "+e+" failed.\n("+o+": "+i+")",u.name="ChunkLoadError",u.type=o,u.request=i,n[1](u)}}),"chunk-"+e,e)}},a.O.j=function(e){return 0===t[e]};var e=function(e,r){var n,o,i=r[0],u=r[1],s=r[2],c=0;if(i.some((function(e){return 0!==t[e]}))){for(n in u)a.o(u,n)&&(a.m[n]=u[n]);if(s)var d=s(a)}for(e&&e(r);c<i.length;c++)o=i[c],a.o(t,o)&&t[o]&&t[o][0](),t[o]=0;return a.O(d)},r=self.webpackChunknextcloud=self.webpackChunknextcloud||[];r.forEach(e.bind(null,0)),r.push=e.bind(null,r.push.bind(r))}();var s=a.O(void 0,[874],(function(){return a(31579)}));s=a.O(s)}();
-//# sourceMappingURL=settings-vue-settings-apps-users-management.js.map?v=cb7f18c95c20084d1c21
+/******/ (function() { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./apps/settings/src/main-apps-users-management.js":
+/*!*********************************************************!*\
+  !*** ./apps/settings/src/main-apps-users-management.js ***!
+  \*********************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "app": function() { return /* binding */ app; },
+/* harmony export */   "router": function() { return /* reexport safe */ _router__WEBPACK_IMPORTED_MODULE_3__["default"]; },
+/* harmony export */   "store": function() { return /* reexport safe */ _store__WEBPACK_IMPORTED_MODULE_4__["default"]; }
+/* harmony export */ });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.runtime.esm.js");
+/* harmony import */ var v_tooltip__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! v-tooltip */ "./node_modules/v-tooltip/dist/v-tooltip.esm.js");
+/* harmony import */ var vuex_router_sync__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex-router-sync */ "./node_modules/vuex-router-sync/index.js");
+/* harmony import */ var _App_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./App.vue */ "./apps/settings/src/App.vue");
+/* harmony import */ var _router__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./router */ "./apps/settings/src/router.js");
+/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./store */ "./apps/settings/src/store/index.js");
+/**
+ * @copyright Copyright (c) 2018 John Molakvoæ <skjnldsv@protonmail.com>
+ *
+ * @author John Molakvoæ <skjnldsv@protonmail.com>
+ * @author rakekniven <mark.ziegler@rakekniven.de>
+ * @author Roeland Jago Douma <roeland@famdouma.nl>
+ *
+ * @license AGPL-3.0-or-later
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+
+
+
+
+vue__WEBPACK_IMPORTED_MODULE_5__["default"].use(v_tooltip__WEBPACK_IMPORTED_MODULE_0__["default"], {
+  defaultHtml: false
+});
+(0,vuex_router_sync__WEBPACK_IMPORTED_MODULE_1__.sync)(_store__WEBPACK_IMPORTED_MODULE_4__["default"], _router__WEBPACK_IMPORTED_MODULE_3__["default"]); // CSP config for webpack dynamic chunk loading
+// eslint-disable-next-line camelcase
+
+__webpack_require__.nc = btoa(OC.requestToken); // bind to window
+
+vue__WEBPACK_IMPORTED_MODULE_5__["default"].prototype.t = t;
+vue__WEBPACK_IMPORTED_MODULE_5__["default"].prototype.n = n;
+vue__WEBPACK_IMPORTED_MODULE_5__["default"].prototype.OC = OC;
+vue__WEBPACK_IMPORTED_MODULE_5__["default"].prototype.OCA = OCA; // eslint-disable-next-line camelcase
+
+vue__WEBPACK_IMPORTED_MODULE_5__["default"].prototype.oc_userconfig = oc_userconfig;
+var app = new vue__WEBPACK_IMPORTED_MODULE_5__["default"]({
+  router: _router__WEBPACK_IMPORTED_MODULE_3__["default"],
+  store: _store__WEBPACK_IMPORTED_MODULE_4__["default"],
+  render: function render(h) {
+    return h(_App_vue__WEBPACK_IMPORTED_MODULE_2__["default"]);
+  }
+}).$mount('#content');
+
+
+/***/ }),
+
+/***/ "./apps/settings/src/router.js":
+/*!*************************************!*\
+  !*** ./apps/settings/src/router.js ***!
+  \*************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.runtime.esm.js");
+/* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm.js");
+/* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @nextcloud/router */ "./node_modules/@nextcloud/router/dist/index.js");
+/**
+ * @copyright Copyright (c) 2018 John Molakvoæ <skjnldsv@protonmail.com>
+ *
+ * @author John Molakvoæ <skjnldsv@protonmail.com>
+ * @author Julius Härtl <jus@bitgrid.net>
+ * @author Roeland Jago Douma <roeland@famdouma.nl>
+ *
+ * @license AGPL-3.0-or-later
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+ // Dynamic loading
+
+var Users = function Users() {
+  return Promise.all(/*! import() | settings-users */[__webpack_require__.e("core-common"), __webpack_require__.e("settings-users")]).then(__webpack_require__.bind(__webpack_require__, /*! ./views/Users */ "./apps/settings/src/views/Users.vue"));
+};
+
+var Apps = function Apps() {
+  return Promise.all(/*! import() | settings-apps */[__webpack_require__.e("core-common"), __webpack_require__.e("settings-apps")]).then(__webpack_require__.bind(__webpack_require__, /*! ./views/Apps */ "./apps/settings/src/views/Apps.vue"));
+};
+
+vue__WEBPACK_IMPORTED_MODULE_1__["default"].use(vue_router__WEBPACK_IMPORTED_MODULE_2__["default"]);
+/*
+ * This is the list of routes where the vuejs app will
+ * take over php to provide data
+ * You need to forward the php routing (routes.php) to
+ * the settings-vue template, where the vue-router will
+ * ensure the proper route.
+ * ⚠️ Routes needs to match the php routes.
+ */
+
+/* harmony default export */ __webpack_exports__["default"] = (new vue_router__WEBPACK_IMPORTED_MODULE_2__["default"]({
+  mode: 'history',
+  // if index.php is in the url AND we got this far, then it's working:
+  // let's keep using index.php in the url
+  base: (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__.generateUrl)(''),
+  linkActiveClass: 'active',
+  routes: [{
+    path: '/:index(index.php/)?settings/users',
+    component: Users,
+    props: true,
+    name: 'users',
+    children: [{
+      path: ':selectedGroup',
+      name: 'group',
+      component: Users
+    }]
+  }, {
+    path: '/:index(index.php/)?settings/apps',
+    component: Apps,
+    props: true,
+    name: 'apps',
+    children: [{
+      path: ':category',
+      name: 'apps-category',
+      component: Apps,
+      children: [{
+        path: ':id',
+        name: 'apps-details',
+        component: Apps
+      }]
+    }]
+  }]
+}));
+
+/***/ }),
+
+/***/ "./apps/settings/src/store/api.js":
+/*!****************************************!*\
+  !*** ./apps/settings/src/store/api.js ***!
+  \****************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _nextcloud_axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @nextcloud/axios */ "./node_modules/@nextcloud/axios/dist/index.js");
+/* harmony import */ var _nextcloud_password_confirmation__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/password-confirmation */ "./node_modules/@nextcloud/password-confirmation/dist/main.js");
+/* harmony import */ var _nextcloud_password_confirmation__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_nextcloud_password_confirmation__WEBPACK_IMPORTED_MODULE_1__);
+/**
+ * @copyright Copyright (c) 2018 John Molakvoæ <skjnldsv@protonmail.com>
+ *
+ * @author Christoph Wurst <christoph@winzerhof-wurst.at>
+ * @author John Molakvoæ <skjnldsv@protonmail.com>
+ * @author Julius Härtl <jus@bitgrid.net>
+ * @author Roeland Jago Douma <roeland@famdouma.nl>
+ * @author Sujith Haridasan <sujith.h@gmail.com>
+ *
+ * @license AGPL-3.0-or-later
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+
+var sanitize = function sanitize(url) {
+  return url.replace(/\/$/, ''); // Remove last url slash
+};
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  /**
+   * This Promise is used to chain a request that require an admin password confirmation
+   * Since chaining Promise have a very precise behavior concerning catch and then,
+   * you'll need to be careful when using it.
+   * e.g
+   * // store
+   * action(context) {
+   *   return api.requireAdmin().then((response) => {
+   *     return api.get('url')
+   *       .then((response) => {API success})
+   *       .catch((error) => {API failure});
+   *   }).catch((error) => {requireAdmin failure});
+   * }
+   * // vue
+   * this.$store.dispatch('action').then(() => {always executed})
+   *
+   * Since Promise.then().catch().then() will always execute the last then
+   * this.$store.dispatch('action').then will always be executed
+   *
+   * If you want requireAdmin failure to also catch the API request failure
+   * you will need to throw a new error in the api.get.catch()
+   *
+   * e.g
+   * api.requireAdmin().then((response) => {
+   *   api.get('url')
+   *     .then((response) => {API success})
+   *     .catch((error) => {throw error;});
+   * }).catch((error) => {requireAdmin OR API failure});
+   *
+   * @return {Promise}
+   */
+  requireAdmin: function requireAdmin() {
+    return _nextcloud_password_confirmation__WEBPACK_IMPORTED_MODULE_1___default()();
+  },
+  get: function get(url, options) {
+    return _nextcloud_axios__WEBPACK_IMPORTED_MODULE_0__["default"].get(sanitize(url), options);
+  },
+  post: function post(url, data) {
+    return _nextcloud_axios__WEBPACK_IMPORTED_MODULE_0__["default"].post(sanitize(url), data);
+  },
+  patch: function patch(url, data) {
+    return _nextcloud_axios__WEBPACK_IMPORTED_MODULE_0__["default"].patch(sanitize(url), data);
+  },
+  put: function put(url, data) {
+    return _nextcloud_axios__WEBPACK_IMPORTED_MODULE_0__["default"].put(sanitize(url), data);
+  },
+  delete: function _delete(url, data) {
+    return _nextcloud_axios__WEBPACK_IMPORTED_MODULE_0__["default"]["delete"](sanitize(url), {
+      params: data
+    });
+  }
+});
+
+/***/ }),
+
+/***/ "./apps/settings/src/store/apps.js":
+/*!*****************************************!*\
+  !*** ./apps/settings/src/store/apps.js ***!
+  \*****************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./apps/settings/src/store/api.js");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.runtime.esm.js");
+/* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/router */ "./node_modules/@nextcloud/router/dist/index.js");
+/**
+ * @copyright Copyright (c) 2018 Julius Härtl <jus@bitgrid.net>
+ *
+ * @author John Molakvoæ <skjnldsv@protonmail.com>
+ * @author Julius Härtl <jus@bitgrid.net>
+ * @author Roeland Jago Douma <roeland@famdouma.nl>
+ *
+ * @license AGPL-3.0-or-later
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+
+var state = {
+  apps: [],
+  categories: [],
+  updateCount: 0,
+  loading: {},
+  loadingList: false
+};
+var mutations = {
+  APPS_API_FAILURE: function APPS_API_FAILURE(state, error) {
+    OC.Notification.showHtml(t('settings', 'An error occured during the request. Unable to proceed.') + '<br>' + error.error.response.data.data.message, {
+      timeout: 7
+    });
+    console.error(state, error);
+  },
+  initCategories: function initCategories(state, _ref) {
+    var categories = _ref.categories,
+        updateCount = _ref.updateCount;
+    state.categories = categories;
+    state.updateCount = updateCount;
+  },
+  setUpdateCount: function setUpdateCount(state, updateCount) {
+    state.updateCount = updateCount;
+  },
+  addCategory: function addCategory(state, category) {
+    state.categories.push(category);
+  },
+  appendCategories: function appendCategories(state, categoriesArray) {
+    // convert obj to array
+    state.categories = categoriesArray;
+  },
+  setAllApps: function setAllApps(state, apps) {
+    state.apps = apps;
+  },
+  setError: function setError(state, _ref2) {
+    var appId = _ref2.appId,
+        error = _ref2.error;
+
+    if (!Array.isArray(appId)) {
+      appId = [appId];
+    }
+
+    appId.forEach(function (_id) {
+      var app = state.apps.find(function (app) {
+        return app.id === _id;
+      });
+      app.error = error;
+    });
+  },
+  clearError: function clearError(state, _ref3) {
+    var appId = _ref3.appId,
+        error = _ref3.error;
+    var app = state.apps.find(function (app) {
+      return app.id === appId;
+    });
+    app.error = null;
+  },
+  enableApp: function enableApp(state, _ref4) {
+    var appId = _ref4.appId,
+        groups = _ref4.groups;
+    var app = state.apps.find(function (app) {
+      return app.id === appId;
+    });
+    app.active = true;
+    app.groups = groups;
+  },
+  disableApp: function disableApp(state, appId) {
+    var app = state.apps.find(function (app) {
+      return app.id === appId;
+    });
+    app.active = false;
+    app.groups = [];
+
+    if (app.removable) {
+      app.canUnInstall = true;
+    }
+  },
+  uninstallApp: function uninstallApp(state, appId) {
+    state.apps.find(function (app) {
+      return app.id === appId;
+    }).active = false;
+    state.apps.find(function (app) {
+      return app.id === appId;
+    }).groups = [];
+    state.apps.find(function (app) {
+      return app.id === appId;
+    }).needsDownload = true;
+    state.apps.find(function (app) {
+      return app.id === appId;
+    }).installed = false;
+    state.apps.find(function (app) {
+      return app.id === appId;
+    }).canUnInstall = false;
+    state.apps.find(function (app) {
+      return app.id === appId;
+    }).canInstall = true;
+  },
+  updateApp: function updateApp(state, appId) {
+    var app = state.apps.find(function (app) {
+      return app.id === appId;
+    });
+    var version = app.update;
+    app.update = null;
+    app.version = version;
+    state.updateCount--;
+  },
+  resetApps: function resetApps(state) {
+    state.apps = [];
+  },
+  reset: function reset(state) {
+    state.apps = [];
+    state.categories = [];
+    state.updateCount = 0;
+  },
+  startLoading: function startLoading(state, id) {
+    if (Array.isArray(id)) {
+      id.forEach(function (_id) {
+        vue__WEBPACK_IMPORTED_MODULE_2__["default"].set(state.loading, _id, true);
+      });
+    } else {
+      vue__WEBPACK_IMPORTED_MODULE_2__["default"].set(state.loading, id, true);
+    }
+  },
+  stopLoading: function stopLoading(state, id) {
+    if (Array.isArray(id)) {
+      id.forEach(function (_id) {
+        vue__WEBPACK_IMPORTED_MODULE_2__["default"].set(state.loading, _id, false);
+      });
+    } else {
+      vue__WEBPACK_IMPORTED_MODULE_2__["default"].set(state.loading, id, false);
+    }
+  }
+};
+var getters = {
+  loading: function loading(state) {
+    return function (id) {
+      return state.loading[id];
+    };
+  },
+  getCategories: function getCategories(state) {
+    return state.categories;
+  },
+  getAllApps: function getAllApps(state) {
+    return state.apps;
+  },
+  getUpdateCount: function getUpdateCount(state) {
+    return state.updateCount;
+  }
+};
+var actions = {
+  enableApp: function enableApp(context, _ref5) {
+    var appId = _ref5.appId,
+        groups = _ref5.groups;
+    var apps;
+
+    if (Array.isArray(appId)) {
+      apps = appId;
+    } else {
+      apps = [appId];
+    }
+
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].requireAdmin().then(function (response) {
+      context.commit('startLoading', apps);
+      context.commit('startLoading', 'install');
+      return _api__WEBPACK_IMPORTED_MODULE_0__["default"].post((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_1__.generateUrl)('settings/apps/enable'), {
+        appIds: apps,
+        groups: groups
+      }).then(function (response) {
+        context.commit('stopLoading', apps);
+        context.commit('stopLoading', 'install');
+        apps.forEach(function (_appId) {
+          context.commit('enableApp', {
+            appId: _appId,
+            groups: groups
+          });
+        }); // check for server health
+
+        return _api__WEBPACK_IMPORTED_MODULE_0__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_1__.generateUrl)('apps/files')).then(function () {
+          if (response.data.update_required) {
+            OC.dialogs.info(t('settings', 'The app has been enabled but needs to be updated. You will be redirected to the update page in 5 seconds.'), t('settings', 'App update'), function () {
+              window.location.reload();
+            }, true);
+            setTimeout(function () {
+              location.reload();
+            }, 5000);
+          }
+        }).catch(function () {
+          if (!Array.isArray(appId)) {
+            context.commit('setError', {
+              appId: apps,
+              error: t('settings', 'Error: This app cannot be enabled because it makes the server unstable')
+            });
+          }
+        });
+      }).catch(function (error) {
+        context.commit('stopLoading', apps);
+        context.commit('stopLoading', 'install');
+        context.commit('setError', {
+          appId: apps,
+          error: error.response.data.data.message
+        });
+        context.commit('APPS_API_FAILURE', {
+          appId: appId,
+          error: error
+        });
+      });
+    }).catch(function (error) {
+      return context.commit('API_FAILURE', {
+        appId: appId,
+        error: error
+      });
+    });
+  },
+  forceEnableApp: function forceEnableApp(context, _ref6) {
+    var appId = _ref6.appId,
+        groups = _ref6.groups;
+    var apps;
+
+    if (Array.isArray(appId)) {
+      apps = appId;
+    } else {
+      apps = [appId];
+    }
+
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].requireAdmin().then(function () {
+      context.commit('startLoading', apps);
+      context.commit('startLoading', 'install');
+      return _api__WEBPACK_IMPORTED_MODULE_0__["default"].post((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_1__.generateUrl)('settings/apps/force'), {
+        appId: appId
+      }).then(function (response) {
+        // TODO: find a cleaner solution
+        location.reload();
+      }).catch(function (error) {
+        context.commit('stopLoading', apps);
+        context.commit('stopLoading', 'install');
+        context.commit('setError', {
+          appId: apps,
+          error: error.response.data.data.message
+        });
+        context.commit('APPS_API_FAILURE', {
+          appId: appId,
+          error: error
+        });
+      });
+    }).catch(function (error) {
+      return context.commit('API_FAILURE', {
+        appId: appId,
+        error: error
+      });
+    });
+  },
+  disableApp: function disableApp(context, _ref7) {
+    var appId = _ref7.appId;
+    var apps;
+
+    if (Array.isArray(appId)) {
+      apps = appId;
+    } else {
+      apps = [appId];
+    }
+
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].requireAdmin().then(function (response) {
+      context.commit('startLoading', apps);
+      return _api__WEBPACK_IMPORTED_MODULE_0__["default"].post((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_1__.generateUrl)('settings/apps/disable'), {
+        appIds: apps
+      }).then(function (response) {
+        context.commit('stopLoading', apps);
+        apps.forEach(function (_appId) {
+          context.commit('disableApp', _appId);
+        });
+        return true;
+      }).catch(function (error) {
+        context.commit('stopLoading', apps);
+        context.commit('APPS_API_FAILURE', {
+          appId: appId,
+          error: error
+        });
+      });
+    }).catch(function (error) {
+      return context.commit('API_FAILURE', {
+        appId: appId,
+        error: error
+      });
+    });
+  },
+  uninstallApp: function uninstallApp(context, _ref8) {
+    var appId = _ref8.appId;
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].requireAdmin().then(function (response) {
+      context.commit('startLoading', appId);
+      return _api__WEBPACK_IMPORTED_MODULE_0__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_1__.generateUrl)("settings/apps/uninstall/".concat(appId))).then(function (response) {
+        context.commit('stopLoading', appId);
+        context.commit('uninstallApp', appId);
+        return true;
+      }).catch(function (error) {
+        context.commit('stopLoading', appId);
+        context.commit('APPS_API_FAILURE', {
+          appId: appId,
+          error: error
+        });
+      });
+    }).catch(function (error) {
+      return context.commit('API_FAILURE', {
+        appId: appId,
+        error: error
+      });
+    });
+  },
+  updateApp: function updateApp(context, _ref9) {
+    var appId = _ref9.appId;
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].requireAdmin().then(function (response) {
+      context.commit('startLoading', appId);
+      context.commit('startLoading', 'install');
+      return _api__WEBPACK_IMPORTED_MODULE_0__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_1__.generateUrl)("settings/apps/update/".concat(appId))).then(function (response) {
+        context.commit('stopLoading', 'install');
+        context.commit('stopLoading', appId);
+        context.commit('updateApp', appId);
+        return true;
+      }).catch(function (error) {
+        context.commit('stopLoading', appId);
+        context.commit('stopLoading', 'install');
+        context.commit('APPS_API_FAILURE', {
+          appId: appId,
+          error: error
+        });
+      });
+    }).catch(function (error) {
+      return context.commit('API_FAILURE', {
+        appId: appId,
+        error: error
+      });
+    });
+  },
+  getAllApps: function getAllApps(context) {
+    context.commit('startLoading', 'list');
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_1__.generateUrl)('settings/apps/list')).then(function (response) {
+      context.commit('setAllApps', response.data.apps);
+      context.commit('stopLoading', 'list');
+      return true;
+    }).catch(function (error) {
+      return context.commit('API_FAILURE', error);
+    });
+  },
+  getCategories: function getCategories(context) {
+    context.commit('startLoading', 'categories');
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_1__.generateUrl)('settings/apps/categories')).then(function (response) {
+      if (response.data.length > 0) {
+        context.commit('appendCategories', response.data);
+        context.commit('stopLoading', 'categories');
+        return true;
+      }
+
+      return false;
+    }).catch(function (error) {
+      return context.commit('API_FAILURE', error);
+    });
+  }
+};
+/* harmony default export */ __webpack_exports__["default"] = ({
+  state: state,
+  mutations: mutations,
+  getters: getters,
+  actions: actions
+});
+
+/***/ }),
+
+/***/ "./apps/settings/src/store/index.js":
+/*!******************************************!*\
+  !*** ./apps/settings/src/store/index.js ***!
+  \******************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.runtime.esm.js");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _users__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./users */ "./apps/settings/src/store/users.js");
+/* harmony import */ var _apps__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./apps */ "./apps/settings/src/store/apps.js");
+/* harmony import */ var _settings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./settings */ "./apps/settings/src/store/settings.js");
+/* harmony import */ var _oc__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./oc */ "./apps/settings/src/store/oc.js");
+/**
+ * @copyright Copyright (c) 2018 John Molakvoæ <skjnldsv@protonmail.com>
+ *
+ * @author John Molakvoæ <skjnldsv@protonmail.com>
+ * @author Julius Härtl <jus@bitgrid.net>
+ *
+ * @license AGPL-3.0-or-later
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+
+
+
+
+vue__WEBPACK_IMPORTED_MODULE_4__["default"].use(vuex__WEBPACK_IMPORTED_MODULE_5__["default"]);
+var debug = "development" !== 'production';
+var mutations = {
+  API_FAILURE: function API_FAILURE(state, error) {
+    try {
+      var message = error.error.response.data.ocs.meta.message;
+      OC.Notification.showHtml(t('settings', 'An error occured during the request. Unable to proceed.') + '<br>' + message, {
+        timeout: 7
+      });
+    } catch (e) {
+      OC.Notification.showTemporary(t('settings', 'An error occured during the request. Unable to proceed.'));
+    }
+
+    console.error(state, error);
+  }
+};
+/* harmony default export */ __webpack_exports__["default"] = (new vuex__WEBPACK_IMPORTED_MODULE_5__.Store({
+  modules: {
+    users: _users__WEBPACK_IMPORTED_MODULE_0__["default"],
+    apps: _apps__WEBPACK_IMPORTED_MODULE_1__["default"],
+    settings: _settings__WEBPACK_IMPORTED_MODULE_2__["default"],
+    oc: _oc__WEBPACK_IMPORTED_MODULE_3__["default"]
+  },
+  strict: debug,
+  mutations: mutations
+}));
+
+/***/ }),
+
+/***/ "./apps/settings/src/store/oc.js":
+/*!***************************************!*\
+  !*** ./apps/settings/src/store/oc.js ***!
+  \***************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./apps/settings/src/store/api.js");
+/* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/router */ "./node_modules/@nextcloud/router/dist/index.js");
+/**
+ * @copyright Copyright (c) 2018 John Molakvoæ <skjnldsv@protonmail.com>
+ *
+ * @author John Molakvoæ <skjnldsv@protonmail.com>
+ * @author Roeland Jago Douma <roeland@famdouma.nl>
+ *
+ * @license AGPL-3.0-or-later
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+var state = {};
+var mutations = {};
+var getters = {};
+var actions = {
+  /**
+   * Set application config in database
+   *
+   * @param {object} context store context
+   * @param {object} options destructuring object
+   * @param {string} options.app Application name
+   * @param {boolean} options.key Config key
+   * @param {boolean} options.value Value to set
+   * @return {Promise}
+   */
+  setAppConfig: function setAppConfig(context, _ref) {
+    var app = _ref.app,
+        key = _ref.key,
+        value = _ref.value;
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].requireAdmin().then(function (response) {
+      return _api__WEBPACK_IMPORTED_MODULE_0__["default"].post((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_1__.generateOcsUrl)('apps/provisioning_api/api/v1/config/apps/{app}/{key}', {
+        app: app,
+        key: key
+      }), {
+        value: value
+      }).catch(function (error) {
+        throw error;
+      });
+    }).catch(function (error) {
+      return context.commit('API_FAILURE', {
+        app: app,
+        key: key,
+        value: value,
+        error: error
+      });
+    });
+  }
+};
+/* harmony default export */ __webpack_exports__["default"] = ({
+  state: state,
+  mutations: mutations,
+  getters: getters,
+  actions: actions
+});
+
+/***/ }),
+
+/***/ "./apps/settings/src/store/settings.js":
+/*!*********************************************!*\
+  !*** ./apps/settings/src/store/settings.js ***!
+  \*********************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/**
+ * @copyright Copyright (c) 2018 John Molakvoæ <skjnldsv@protonmail.com>
+ *
+ * @author John Molakvoæ <skjnldsv@protonmail.com>
+ *
+ * @license AGPL-3.0-or-later
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+var state = {
+  serverData: {}
+};
+var mutations = {
+  setServerData: function setServerData(state, data) {
+    state.serverData = data;
+  }
+};
+var getters = {
+  getServerData: function getServerData(state) {
+    return state.serverData;
+  }
+};
+var actions = {};
+/* harmony default export */ __webpack_exports__["default"] = ({
+  state: state,
+  mutations: mutations,
+  getters: getters,
+  actions: actions
+});
+
+/***/ }),
+
+/***/ "./apps/settings/src/store/users.js":
+/*!******************************************!*\
+  !*** ./apps/settings/src/store/users.js ***!
+  \******************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./apps/settings/src/store/api.js");
+/* harmony import */ var _nextcloud_axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/axios */ "./node_modules/@nextcloud/axios/dist/index.js");
+/* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @nextcloud/router */ "./node_modules/@nextcloud/router/dist/index.js");
+/**
+ * @copyright Copyright (c) 2018 John Molakvoæ <skjnldsv@protonmail.com>
+ *
+ * @author Arthur Schiwon <blizzz@arthur-schiwon.de>
+ * @author Christoph Wurst <christoph@winzerhof-wurst.at>
+ * @author Daniel Calviño Sánchez <danxuliu@gmail.com>
+ * @author John Molakvoæ <skjnldsv@protonmail.com>
+ * @author Julius Härtl <jus@bitgrid.net>
+ * @author Roeland Jago Douma <roeland@famdouma.nl>
+ * @author Vincent Petry <vincent@nextcloud.com>
+ *
+ * @license AGPL-3.0-or-later
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+
+
+var orderGroups = function orderGroups(groups, orderBy) {
+  /* const SORT_USERCOUNT = 1;
+   * const SORT_GROUPNAME = 2;
+   * https://github.com/nextcloud/server/blob/208e38e84e1a07a49699aa90dc5b7272d24489f0/lib/private/Group/MetaData.php#L34
+   */
+  if (orderBy === 1) {
+    return groups.sort(function (a, b) {
+      return a.usercount - a.disabled < b.usercount - b.disabled;
+    });
+  } else {
+    return groups.sort(function (a, b) {
+      return a.name.localeCompare(b.name);
+    });
+  }
+};
+
+var defaults = {
+  group: {
+    id: '',
+    name: '',
+    usercount: 0,
+    disabled: 0,
+    canAdd: true,
+    canRemove: true
+  }
+};
+var state = {
+  users: [],
+  groups: [],
+  orderBy: 1,
+  minPasswordLength: 0,
+  usersOffset: 0,
+  usersLimit: 25,
+  userCount: 0
+};
+var mutations = {
+  appendUsers: function appendUsers(state, usersObj) {
+    // convert obj to array
+    var users = state.users.concat(Object.keys(usersObj).map(function (userid) {
+      return usersObj[userid];
+    }));
+    state.usersOffset += state.usersLimit;
+    state.users = users;
+  },
+  setPasswordPolicyMinLength: function setPasswordPolicyMinLength(state, length) {
+    state.minPasswordLength = length !== '' ? length : 0;
+  },
+  initGroups: function initGroups(state, _ref) {
+    var groups = _ref.groups,
+        orderBy = _ref.orderBy,
+        userCount = _ref.userCount;
+    state.groups = groups.map(function (group) {
+      return Object.assign({}, defaults.group, group);
+    });
+    state.orderBy = orderBy;
+    state.userCount = userCount;
+    state.groups = orderGroups(state.groups, state.orderBy);
+  },
+  addGroup: function addGroup(state, _ref2) {
+    var gid = _ref2.gid,
+        displayName = _ref2.displayName;
+
+    try {
+      if (typeof state.groups.find(function (group) {
+        return group.id === gid;
+      }) !== 'undefined') {
+        return;
+      } // extend group to default values
+
+
+      var group = Object.assign({}, defaults.group, {
+        id: gid,
+        name: displayName
+      });
+      state.groups.push(group);
+      state.groups = orderGroups(state.groups, state.orderBy);
+    } catch (e) {
+      console.error('Can\'t create group', e);
+    }
+  },
+  removeGroup: function removeGroup(state, gid) {
+    var groupIndex = state.groups.findIndex(function (groupSearch) {
+      return groupSearch.id === gid;
+    });
+
+    if (groupIndex >= 0) {
+      state.groups.splice(groupIndex, 1);
+    }
+  },
+  addUserGroup: function addUserGroup(state, _ref3) {
+    var userid = _ref3.userid,
+        gid = _ref3.gid;
+    var group = state.groups.find(function (groupSearch) {
+      return groupSearch.id === gid;
+    });
+    var user = state.users.find(function (user) {
+      return user.id === userid;
+    }); // increase count if user is enabled
+
+    if (group && user.enabled && state.userCount > 0) {
+      group.usercount++;
+    }
+
+    var groups = user.groups;
+    groups.push(gid);
+    state.groups = orderGroups(state.groups, state.orderBy);
+  },
+  removeUserGroup: function removeUserGroup(state, _ref4) {
+    var userid = _ref4.userid,
+        gid = _ref4.gid;
+    var group = state.groups.find(function (groupSearch) {
+      return groupSearch.id === gid;
+    });
+    var user = state.users.find(function (user) {
+      return user.id === userid;
+    }); // lower count if user is enabled
+
+    if (group && user.enabled && state.userCount > 0) {
+      group.usercount--;
+    }
+
+    var groups = user.groups;
+    groups.splice(groups.indexOf(gid), 1);
+    state.groups = orderGroups(state.groups, state.orderBy);
+  },
+  addUserSubAdmin: function addUserSubAdmin(state, _ref5) {
+    var userid = _ref5.userid,
+        gid = _ref5.gid;
+    var groups = state.users.find(function (user) {
+      return user.id === userid;
+    }).subadmin;
+    groups.push(gid);
+  },
+  removeUserSubAdmin: function removeUserSubAdmin(state, _ref6) {
+    var userid = _ref6.userid,
+        gid = _ref6.gid;
+    var groups = state.users.find(function (user) {
+      return user.id === userid;
+    }).subadmin;
+    groups.splice(groups.indexOf(gid), 1);
+  },
+  deleteUser: function deleteUser(state, userid) {
+    var userIndex = state.users.findIndex(function (user) {
+      return user.id === userid;
+    });
+    state.users.splice(userIndex, 1);
+  },
+  addUserData: function addUserData(state, response) {
+    state.users.push(response.data.ocs.data);
+  },
+  enableDisableUser: function enableDisableUser(state, _ref7) {
+    var userid = _ref7.userid,
+        enabled = _ref7.enabled;
+    var user = state.users.find(function (user) {
+      return user.id === userid;
+    });
+    user.enabled = enabled; // increment or not
+
+    if (state.userCount > 0) {
+      state.groups.find(function (group) {
+        return group.id === 'disabled';
+      }).usercount += enabled ? -1 : 1;
+      state.userCount += enabled ? 1 : -1;
+      user.groups.forEach(function (group) {
+        // Increment disabled count
+        state.groups.find(function (groupSearch) {
+          return groupSearch.id === group;
+        }).disabled += enabled ? -1 : 1;
+      });
+    }
+  },
+  setUserData: function setUserData(state, _ref8) {
+    var userid = _ref8.userid,
+        key = _ref8.key,
+        value = _ref8.value;
+
+    if (key === 'quota') {
+      var humanValue = OC.Util.computerFileSize(value);
+      state.users.find(function (user) {
+        return user.id === userid;
+      })[key][key] = humanValue !== null ? humanValue : value;
+    } else {
+      state.users.find(function (user) {
+        return user.id === userid;
+      })[key] = value;
+    }
+  },
+
+  /**
+   * Reset users list
+   *
+   * @param {object} state the store state
+   */
+  resetUsers: function resetUsers(state) {
+    state.users = [];
+    state.usersOffset = 0;
+  }
+};
+var getters = {
+  getUsers: function getUsers(state) {
+    return state.users;
+  },
+  getGroups: function getGroups(state) {
+    return state.groups;
+  },
+  getSubadminGroups: function getSubadminGroups(state) {
+    // Can't be subadmin of admin or disabled
+    return state.groups.filter(function (group) {
+      return group.id !== 'admin' && group.id !== 'disabled';
+    });
+  },
+  getPasswordPolicyMinLength: function getPasswordPolicyMinLength(state) {
+    return state.minPasswordLength;
+  },
+  getUsersOffset: function getUsersOffset(state) {
+    return state.usersOffset;
+  },
+  getUsersLimit: function getUsersLimit(state) {
+    return state.usersLimit;
+  },
+  getUserCount: function getUserCount(state) {
+    return state.userCount;
+  }
+};
+var CancelToken = _nextcloud_axios__WEBPACK_IMPORTED_MODULE_1__["default"].CancelToken;
+var searchRequestCancelSource = null;
+var actions = {
+  /**
+   * Get all users with full details
+   *
+   * @param {object} context store context
+   * @param {object} options destructuring object
+   * @param {number} options.offset List offset to request
+   * @param {number} options.limit List number to return from offset
+   * @param {string} options.search Search amongst users
+   * @param {string} options.group Get users from group
+   * @return {Promise}
+   */
+  getUsers: function getUsers(context, _ref9) {
+    var offset = _ref9.offset,
+        limit = _ref9.limit,
+        search = _ref9.search,
+        group = _ref9.group;
+
+    if (searchRequestCancelSource) {
+      searchRequestCancelSource.cancel('Operation canceled by another search request.');
+    }
+
+    searchRequestCancelSource = CancelToken.source();
+    search = typeof search === 'string' ? search : '';
+    group = typeof group === 'string' ? group : '';
+
+    if (group !== '') {
+      return _api__WEBPACK_IMPORTED_MODULE_0__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_2__.generateOcsUrl)('cloud/groups/{group}/users/details?offset={offset}&limit={limit}&search={search}', {
+        group: encodeURIComponent(group),
+        offset: offset,
+        limit: limit,
+        search: search
+      }), {
+        cancelToken: searchRequestCancelSource.token
+      }).then(function (response) {
+        var usersCount = Object.keys(response.data.ocs.data.users).length;
+
+        if (usersCount > 0) {
+          context.commit('appendUsers', response.data.ocs.data.users);
+        }
+
+        return usersCount;
+      }).catch(function (error) {
+        if (!_nextcloud_axios__WEBPACK_IMPORTED_MODULE_1__["default"].isCancel(error)) {
+          context.commit('API_FAILURE', error);
+        }
+      });
+    }
+
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_2__.generateOcsUrl)('cloud/users/details?offset={offset}&limit={limit}&search={search}', {
+      offset: offset,
+      limit: limit,
+      search: search
+    }), {
+      cancelToken: searchRequestCancelSource.token
+    }).then(function (response) {
+      var usersCount = Object.keys(response.data.ocs.data.users).length;
+
+      if (usersCount > 0) {
+        context.commit('appendUsers', response.data.ocs.data.users);
+      }
+
+      return usersCount;
+    }).catch(function (error) {
+      if (!_nextcloud_axios__WEBPACK_IMPORTED_MODULE_1__["default"].isCancel(error)) {
+        context.commit('API_FAILURE', error);
+      }
+    });
+  },
+  getGroups: function getGroups(context, _ref10) {
+    var offset = _ref10.offset,
+        limit = _ref10.limit,
+        search = _ref10.search;
+    search = typeof search === 'string' ? search : '';
+    var limitParam = limit === -1 ? '' : "&limit=".concat(limit);
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_2__.generateOcsUrl)('cloud/groups?offset={offset}&search={search}', {
+      offset: offset,
+      search: search
+    }) + limitParam).then(function (response) {
+      if (Object.keys(response.data.ocs.data.groups).length > 0) {
+        response.data.ocs.data.groups.forEach(function (group) {
+          context.commit('addGroup', {
+            gid: group,
+            displayName: group
+          });
+        });
+        return true;
+      }
+
+      return false;
+    }).catch(function (error) {
+      return context.commit('API_FAILURE', error);
+    });
+  },
+
+  /**
+   * Get all users with full details
+   *
+   * @param {object} context store context
+   * @param {object} options destructuring object
+   * @param {number} options.offset List offset to request
+   * @param {number} options.limit List number to return from offset
+   * @param {string} options.search -
+   * @return {Promise}
+   */
+  getUsersFromList: function getUsersFromList(context, _ref11) {
+    var offset = _ref11.offset,
+        limit = _ref11.limit,
+        search = _ref11.search;
+    search = typeof search === 'string' ? search : '';
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_2__.generateOcsUrl)('cloud/users/details?offset={offset}&limit={limit}&search={search}', {
+      offset: offset,
+      limit: limit,
+      search: search
+    })).then(function (response) {
+      if (Object.keys(response.data.ocs.data.users).length > 0) {
+        context.commit('appendUsers', response.data.ocs.data.users);
+        return true;
+      }
+
+      return false;
+    }).catch(function (error) {
+      return context.commit('API_FAILURE', error);
+    });
+  },
+
+  /**
+   * Get all users with full details from a groupid
+   *
+   * @param {object} context store context
+   * @param {object} options destructuring object
+   * @param {number} options.offset List offset to request
+   * @param {number} options.limit List number to return from offset
+   * @param {string} options.groupid -
+   * @return {Promise}
+   */
+  getUsersFromGroup: function getUsersFromGroup(context, _ref12) {
+    var groupid = _ref12.groupid,
+        offset = _ref12.offset,
+        limit = _ref12.limit;
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_2__.generateOcsUrl)('cloud/users/{groupId}/details?offset={offset}&limit={limit}', {
+      groupId: encodeURIComponent(groupid),
+      offset: offset,
+      limit: limit
+    })).then(function (response) {
+      return context.commit('getUsersFromList', response.data.ocs.data.users);
+    }).catch(function (error) {
+      return context.commit('API_FAILURE', error);
+    });
+  },
+  getPasswordPolicyMinLength: function getPasswordPolicyMinLength(context) {
+    if (OC.getCapabilities().password_policy && OC.getCapabilities().password_policy.minLength) {
+      context.commit('setPasswordPolicyMinLength', OC.getCapabilities().password_policy.minLength);
+      return OC.getCapabilities().password_policy.minLength;
+    }
+
+    return false;
+  },
+
+  /**
+   * Add group
+   *
+   * @param {object} context store context
+   * @param {string} gid Group id
+   * @return {Promise}
+   */
+  addGroup: function addGroup(context, gid) {
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].requireAdmin().then(function (response) {
+      return _api__WEBPACK_IMPORTED_MODULE_0__["default"].post((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_2__.generateOcsUrl)('cloud/groups'), {
+        groupid: gid
+      }).then(function (response) {
+        context.commit('addGroup', {
+          gid: gid,
+          displayName: gid
+        });
+        return {
+          gid: gid,
+          displayName: gid
+        };
+      }).catch(function (error) {
+        throw error;
+      });
+    }).catch(function (error) {
+      context.commit('API_FAILURE', {
+        gid: gid,
+        error: error
+      }); // let's throw one more time to prevent the view
+      // from adding the user to a group that doesn't exists
+
+      throw error;
+    });
+  },
+
+  /**
+   * Remove group
+   *
+   * @param {object} context store context
+   * @param {string} gid Group id
+   * @return {Promise}
+   */
+  removeGroup: function removeGroup(context, gid) {
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].requireAdmin().then(function (response) {
+      return _api__WEBPACK_IMPORTED_MODULE_0__["default"]["delete"]((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_2__.generateOcsUrl)('cloud/groups/{groupId}', {
+        groupId: encodeURIComponent(gid)
+      })).then(function (response) {
+        return context.commit('removeGroup', gid);
+      }).catch(function (error) {
+        throw error;
+      });
+    }).catch(function (error) {
+      return context.commit('API_FAILURE', {
+        gid: gid,
+        error: error
+      });
+    });
+  },
+
+  /**
+   * Add user to group
+   *
+   * @param {object} context store context
+   * @param {object} options destructuring object
+   * @param {string} options.userid User id
+   * @param {string} options.gid Group id
+   * @return {Promise}
+   */
+  addUserGroup: function addUserGroup(context, _ref13) {
+    var userid = _ref13.userid,
+        gid = _ref13.gid;
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].requireAdmin().then(function (response) {
+      return _api__WEBPACK_IMPORTED_MODULE_0__["default"].post((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_2__.generateOcsUrl)('cloud/users/{userid}/groups', {
+        userid: userid
+      }), {
+        groupid: gid
+      }).then(function (response) {
+        return context.commit('addUserGroup', {
+          userid: userid,
+          gid: gid
+        });
+      }).catch(function (error) {
+        throw error;
+      });
+    }).catch(function (error) {
+      return context.commit('API_FAILURE', {
+        userid: userid,
+        error: error
+      });
+    });
+  },
+
+  /**
+   * Remove user from group
+   *
+   * @param {object} context store context
+   * @param {object} options destructuring object
+   * @param {string} options.userid User id
+   * @param {string} options.gid Group id
+   * @return {Promise}
+   */
+  removeUserGroup: function removeUserGroup(context, _ref14) {
+    var userid = _ref14.userid,
+        gid = _ref14.gid;
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].requireAdmin().then(function (response) {
+      return _api__WEBPACK_IMPORTED_MODULE_0__["default"]["delete"]((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_2__.generateOcsUrl)('cloud/users/{userid}/groups', {
+        userid: userid
+      }), {
+        groupid: gid
+      }).then(function (response) {
+        return context.commit('removeUserGroup', {
+          userid: userid,
+          gid: gid
+        });
+      }).catch(function (error) {
+        throw error;
+      });
+    }).catch(function (error) {
+      context.commit('API_FAILURE', {
+        userid: userid,
+        error: error
+      }); // let's throw one more time to prevent
+      // the view from removing the user row on failure
+
+      throw error;
+    });
+  },
+
+  /**
+   * Add user to group admin
+   *
+   * @param {object} context store context
+   * @param {object} options destructuring object
+   * @param {string} options.userid User id
+   * @param {string} options.gid Group id
+   * @return {Promise}
+   */
+  addUserSubAdmin: function addUserSubAdmin(context, _ref15) {
+    var userid = _ref15.userid,
+        gid = _ref15.gid;
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].requireAdmin().then(function (response) {
+      return _api__WEBPACK_IMPORTED_MODULE_0__["default"].post((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_2__.generateOcsUrl)('cloud/users/{userid}/subadmins', {
+        userid: userid
+      }), {
+        groupid: gid
+      }).then(function (response) {
+        return context.commit('addUserSubAdmin', {
+          userid: userid,
+          gid: gid
+        });
+      }).catch(function (error) {
+        throw error;
+      });
+    }).catch(function (error) {
+      return context.commit('API_FAILURE', {
+        userid: userid,
+        error: error
+      });
+    });
+  },
+
+  /**
+   * Remove user from group admin
+   *
+   * @param {object} context store context
+   * @param {object} options destructuring object
+   * @param {string} options.userid User id
+   * @param {string} options.gid Group id
+   * @return {Promise}
+   */
+  removeUserSubAdmin: function removeUserSubAdmin(context, _ref16) {
+    var userid = _ref16.userid,
+        gid = _ref16.gid;
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].requireAdmin().then(function (response) {
+      return _api__WEBPACK_IMPORTED_MODULE_0__["default"]["delete"]((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_2__.generateOcsUrl)('cloud/users/{userid}/subadmins', {
+        userid: userid
+      }), {
+        groupid: gid
+      }).then(function (response) {
+        return context.commit('removeUserSubAdmin', {
+          userid: userid,
+          gid: gid
+        });
+      }).catch(function (error) {
+        throw error;
+      });
+    }).catch(function (error) {
+      return context.commit('API_FAILURE', {
+        userid: userid,
+        error: error
+      });
+    });
+  },
+
+  /**
+   * Mark all user devices for remote wipe
+   *
+   * @param {object} context store context
+   * @param {string} userid User id
+   * @return {Promise}
+   */
+  wipeUserDevices: function wipeUserDevices(context, userid) {
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].requireAdmin().then(function (response) {
+      return _api__WEBPACK_IMPORTED_MODULE_0__["default"].post((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_2__.generateOcsUrl)('cloud/users/{userid}/wipe', {
+        userid: userid
+      })).catch(function (error) {
+        throw error;
+      });
+    }).catch(function (error) {
+      return context.commit('API_FAILURE', {
+        userid: userid,
+        error: error
+      });
+    });
+  },
+
+  /**
+   * Delete a user
+   *
+   * @param {object} context store context
+   * @param {string} userid User id
+   * @return {Promise}
+   */
+  deleteUser: function deleteUser(context, userid) {
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].requireAdmin().then(function (response) {
+      return _api__WEBPACK_IMPORTED_MODULE_0__["default"]["delete"]((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_2__.generateOcsUrl)('cloud/users/{userid}', {
+        userid: userid
+      })).then(function (response) {
+        return context.commit('deleteUser', userid);
+      }).catch(function (error) {
+        throw error;
+      });
+    }).catch(function (error) {
+      return context.commit('API_FAILURE', {
+        userid: userid,
+        error: error
+      });
+    });
+  },
+
+  /**
+   * Add a user
+   *
+   * @param {object} context store context
+   * @param {Function} context.commit -
+   * @param {Function} context.dispatch -
+   * @param {object} options destructuring object
+   * @param {string} options.userid User id
+   * @param {string} options.password User password
+   * @param {string} options.displayName User display name
+   * @param {string} options.email User email
+   * @param {string} options.groups User groups
+   * @param {string} options.subadmin User subadmin groups
+   * @param {string} options.quota User email
+   * @param {string} options.language User language
+   * @return {Promise}
+   */
+  addUser: function addUser(_ref17, _ref18) {
+    var commit = _ref17.commit,
+        dispatch = _ref17.dispatch;
+    var userid = _ref18.userid,
+        password = _ref18.password,
+        displayName = _ref18.displayName,
+        email = _ref18.email,
+        groups = _ref18.groups,
+        subadmin = _ref18.subadmin,
+        quota = _ref18.quota,
+        language = _ref18.language;
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].requireAdmin().then(function (response) {
+      return _api__WEBPACK_IMPORTED_MODULE_0__["default"].post((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_2__.generateOcsUrl)('cloud/users'), {
+        userid: userid,
+        password: password,
+        displayName: displayName,
+        email: email,
+        groups: groups,
+        subadmin: subadmin,
+        quota: quota,
+        language: language
+      }).then(function (response) {
+        return dispatch('addUserData', userid || response.data.ocs.data.id);
+      }).catch(function (error) {
+        throw error;
+      });
+    }).catch(function (error) {
+      commit('API_FAILURE', {
+        userid: userid,
+        error: error
+      });
+      throw error;
+    });
+  },
+
+  /**
+   * Get user data and commit addition
+   *
+   * @param {object} context store context
+   * @param {string} userid User id
+   * @return {Promise}
+   */
+  addUserData: function addUserData(context, userid) {
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].requireAdmin().then(function (response) {
+      return _api__WEBPACK_IMPORTED_MODULE_0__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_2__.generateOcsUrl)('cloud/users/{userid}', {
+        userid: userid
+      })).then(function (response) {
+        return context.commit('addUserData', response);
+      }).catch(function (error) {
+        throw error;
+      });
+    }).catch(function (error) {
+      return context.commit('API_FAILURE', {
+        userid: userid,
+        error: error
+      });
+    });
+  },
+
+  /**
+   * Enable or disable user
+   *
+   * @param {object} context store context
+   * @param {object} options destructuring object
+   * @param {string} options.userid User id
+   * @param {boolean} options.enabled User enablement status
+   * @return {Promise}
+   */
+  enableDisableUser: function enableDisableUser(context, _ref19) {
+    var userid = _ref19.userid,
+        _ref19$enabled = _ref19.enabled,
+        enabled = _ref19$enabled === void 0 ? true : _ref19$enabled;
+    var userStatus = enabled ? 'enable' : 'disable';
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].requireAdmin().then(function (response) {
+      return _api__WEBPACK_IMPORTED_MODULE_0__["default"].put((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_2__.generateOcsUrl)('cloud/users/{userid}/{userStatus}', {
+        userid: userid,
+        userStatus: userStatus
+      })).then(function (response) {
+        return context.commit('enableDisableUser', {
+          userid: userid,
+          enabled: enabled
+        });
+      }).catch(function (error) {
+        throw error;
+      });
+    }).catch(function (error) {
+      return context.commit('API_FAILURE', {
+        userid: userid,
+        error: error
+      });
+    });
+  },
+
+  /**
+   * Edit user data
+   *
+   * @param {object} context store context
+   * @param {object} options destructuring object
+   * @param {string} options.userid User id
+   * @param {string} options.key User field to edit
+   * @param {string} options.value Value of the change
+   * @return {Promise}
+   */
+  setUserData: function setUserData(context, _ref20) {
+    var userid = _ref20.userid,
+        key = _ref20.key,
+        value = _ref20.value;
+    var allowedEmpty = ['email', 'displayname'];
+
+    if (['email', 'language', 'quota', 'displayname', 'password'].indexOf(key) !== -1) {
+      // We allow empty email or displayname
+      if (typeof value === 'string' && (allowedEmpty.indexOf(key) === -1 && value.length > 0 || allowedEmpty.indexOf(key) !== -1)) {
+        return _api__WEBPACK_IMPORTED_MODULE_0__["default"].requireAdmin().then(function (response) {
+          return _api__WEBPACK_IMPORTED_MODULE_0__["default"].put((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_2__.generateOcsUrl)('cloud/users/{userid}', {
+            userid: userid
+          }), {
+            key: key,
+            value: value
+          }).then(function (response) {
+            return context.commit('setUserData', {
+              userid: userid,
+              key: key,
+              value: value
+            });
+          }).catch(function (error) {
+            throw error;
+          });
+        }).catch(function (error) {
+          return context.commit('API_FAILURE', {
+            userid: userid,
+            error: error
+          });
+        });
+      }
+    }
+
+    return Promise.reject(new Error('Invalid request data'));
+  },
+
+  /**
+   * Send welcome mail
+   *
+   * @param {object} context store context
+   * @param {string} userid User id
+   * @return {Promise}
+   */
+  sendWelcomeMail: function sendWelcomeMail(context, userid) {
+    return _api__WEBPACK_IMPORTED_MODULE_0__["default"].requireAdmin().then(function (response) {
+      return _api__WEBPACK_IMPORTED_MODULE_0__["default"].post((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_2__.generateOcsUrl)('cloud/users/{userid}/welcome', {
+        userid: userid
+      })).then(function (response) {
+        return true;
+      }).catch(function (error) {
+        throw error;
+      });
+    }).catch(function (error) {
+      return context.commit('API_FAILURE', {
+        userid: userid,
+        error: error
+      });
+    });
+  }
+};
+/* harmony default export */ __webpack_exports__["default"] = ({
+  state: state,
+  mutations: mutations,
+  getters: getters,
+  actions: actions
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./apps/settings/src/App.vue?vue&type=script&lang=js&":
+/*!****************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./apps/settings/src/App.vue?vue&type=script&lang=js& ***!
+  \****************************************************************************************************************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'App',
+  beforeMount: function beforeMount() {
+    // importing server data into the store
+    var serverDataElmt = document.getElementById('serverData');
+
+    if (serverDataElmt !== null) {
+      this.$store.commit('setServerData', JSON.parse(document.getElementById('serverData').dataset.server));
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./apps/settings/src/App.vue":
+/*!***********************************!*\
+  !*** ./apps/settings/src/App.vue ***!
+  \***********************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _App_vue_vue_type_template_id_f468116e___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./App.vue?vue&type=template&id=f468116e& */ "./apps/settings/src/App.vue?vue&type=template&id=f468116e&");
+/* harmony import */ var _App_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./App.vue?vue&type=script&lang=js& */ "./apps/settings/src/App.vue?vue&type=script&lang=js&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+;
+var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _App_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _App_vue_vue_type_template_id_f468116e___WEBPACK_IMPORTED_MODULE_0__.render,
+  _App_vue_vue_type_template_id_f468116e___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "apps/settings/src/App.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./apps/settings/src/App.vue?vue&type=script&lang=js&":
+/*!************************************************************!*\
+  !*** ./apps/settings/src/App.vue?vue&type=script&lang=js& ***!
+  \************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_node_modules_vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./App.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./apps/settings/src/App.vue?vue&type=script&lang=js&");
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_node_modules_vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./apps/settings/src/App.vue?vue&type=template&id=f468116e&":
+/*!******************************************************************!*\
+  !*** ./apps/settings/src/App.vue?vue&type=template&id=f468116e& ***!
+  \******************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": function() { return /* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_template_id_f468116e___WEBPACK_IMPORTED_MODULE_0__.render; },
+/* harmony export */   "staticRenderFns": function() { return /* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_template_id_f468116e___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns; }
+/* harmony export */ });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_App_vue_vue_type_template_id_f468116e___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./App.vue?vue&type=template&id=f468116e& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./apps/settings/src/App.vue?vue&type=template&id=f468116e&");
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./apps/settings/src/App.vue?vue&type=template&id=f468116e&":
+/*!*********************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./apps/settings/src/App.vue?vue&type=template&id=f468116e& ***!
+  \*********************************************************************************************************************************************************************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": function() { return /* binding */ render; },
+/* harmony export */   "staticRenderFns": function() { return /* binding */ staticRenderFns; }
+/* harmony export */ });
+var render = function () {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("router-view")
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			id: moduleId,
+/******/ 			loaded: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = __webpack_modules__;
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/amd define */
+/******/ 	!function() {
+/******/ 		__webpack_require__.amdD = function () {
+/******/ 			throw new Error('define cannot be used indirect');
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/amd options */
+/******/ 	!function() {
+/******/ 		__webpack_require__.amdO = {};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/chunk loaded */
+/******/ 	!function() {
+/******/ 		var deferred = [];
+/******/ 		__webpack_require__.O = function(result, chunkIds, fn, priority) {
+/******/ 			if(chunkIds) {
+/******/ 				priority = priority || 0;
+/******/ 				for(var i = deferred.length; i > 0 && deferred[i - 1][2] > priority; i--) deferred[i] = deferred[i - 1];
+/******/ 				deferred[i] = [chunkIds, fn, priority];
+/******/ 				return;
+/******/ 			}
+/******/ 			var notFulfilled = Infinity;
+/******/ 			for (var i = 0; i < deferred.length; i++) {
+/******/ 				var chunkIds = deferred[i][0];
+/******/ 				var fn = deferred[i][1];
+/******/ 				var priority = deferred[i][2];
+/******/ 				var fulfilled = true;
+/******/ 				for (var j = 0; j < chunkIds.length; j++) {
+/******/ 					if ((priority & 1 === 0 || notFulfilled >= priority) && Object.keys(__webpack_require__.O).every(function(key) { return __webpack_require__.O[key](chunkIds[j]); })) {
+/******/ 						chunkIds.splice(j--, 1);
+/******/ 					} else {
+/******/ 						fulfilled = false;
+/******/ 						if(priority < notFulfilled) notFulfilled = priority;
+/******/ 					}
+/******/ 				}
+/******/ 				if(fulfilled) {
+/******/ 					deferred.splice(i--, 1)
+/******/ 					var r = fn();
+/******/ 					if (r !== undefined) result = r;
+/******/ 				}
+/******/ 			}
+/******/ 			return result;
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	!function() {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = function(module) {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				function() { return module['default']; } :
+/******/ 				function() { return module; };
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	!function() {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = function(exports, definition) {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/ensure chunk */
+/******/ 	!function() {
+/******/ 		__webpack_require__.f = {};
+/******/ 		// This file contains only the entry chunk.
+/******/ 		// The chunk loading function for additional chunks
+/******/ 		__webpack_require__.e = function(chunkId) {
+/******/ 			return Promise.all(Object.keys(__webpack_require__.f).reduce(function(promises, key) {
+/******/ 				__webpack_require__.f[key](chunkId, promises);
+/******/ 				return promises;
+/******/ 			}, []));
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/get javascript chunk filename */
+/******/ 	!function() {
+/******/ 		// This function allow to reference async chunks
+/******/ 		__webpack_require__.u = function(chunkId) {
+/******/ 			// return url for filenames based on template
+/******/ 			return "" + chunkId + "-" + chunkId + ".js?v=" + {"settings-users":"33f01b530adb81dbd00a","settings-apps":"153427c965591f0a912f"}[chunkId] + "";
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/global */
+/******/ 	!function() {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	!function() {
+/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/load script */
+/******/ 	!function() {
+/******/ 		var inProgress = {};
+/******/ 		var dataWebpackPrefix = "nextcloud:";
+/******/ 		// loadScript function to load a script via script tag
+/******/ 		__webpack_require__.l = function(url, done, key, chunkId) {
+/******/ 			if(inProgress[url]) { inProgress[url].push(done); return; }
+/******/ 			var script, needAttach;
+/******/ 			if(key !== undefined) {
+/******/ 				var scripts = document.getElementsByTagName("script");
+/******/ 				for(var i = 0; i < scripts.length; i++) {
+/******/ 					var s = scripts[i];
+/******/ 					if(s.getAttribute("src") == url || s.getAttribute("data-webpack") == dataWebpackPrefix + key) { script = s; break; }
+/******/ 				}
+/******/ 			}
+/******/ 			if(!script) {
+/******/ 				needAttach = true;
+/******/ 				script = document.createElement('script');
+/******/ 		
+/******/ 				script.charset = 'utf-8';
+/******/ 				script.timeout = 120;
+/******/ 				if (__webpack_require__.nc) {
+/******/ 					script.setAttribute("nonce", __webpack_require__.nc);
+/******/ 				}
+/******/ 				script.setAttribute("data-webpack", dataWebpackPrefix + key);
+/******/ 				script.src = url;
+/******/ 			}
+/******/ 			inProgress[url] = [done];
+/******/ 			var onScriptComplete = function(prev, event) {
+/******/ 				// avoid mem leaks in IE.
+/******/ 				script.onerror = script.onload = null;
+/******/ 				clearTimeout(timeout);
+/******/ 				var doneFns = inProgress[url];
+/******/ 				delete inProgress[url];
+/******/ 				script.parentNode && script.parentNode.removeChild(script);
+/******/ 				doneFns && doneFns.forEach(function(fn) { return fn(event); });
+/******/ 				if(prev) return prev(event);
+/******/ 			}
+/******/ 			;
+/******/ 			var timeout = setTimeout(onScriptComplete.bind(null, undefined, { type: 'timeout', target: script }), 120000);
+/******/ 			script.onerror = onScriptComplete.bind(null, script.onerror);
+/******/ 			script.onload = onScriptComplete.bind(null, script.onload);
+/******/ 			needAttach && document.head.appendChild(script);
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	!function() {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = function(exports) {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/node module decorator */
+/******/ 	!function() {
+/******/ 		__webpack_require__.nmd = function(module) {
+/******/ 			module.paths = [];
+/******/ 			if (!module.children) module.children = [];
+/******/ 			return module;
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/publicPath */
+/******/ 	!function() {
+/******/ 		var scriptUrl;
+/******/ 		if (__webpack_require__.g.importScripts) scriptUrl = __webpack_require__.g.location + "";
+/******/ 		var document = __webpack_require__.g.document;
+/******/ 		if (!scriptUrl && document) {
+/******/ 			if (document.currentScript)
+/******/ 				scriptUrl = document.currentScript.src
+/******/ 			if (!scriptUrl) {
+/******/ 				var scripts = document.getElementsByTagName("script");
+/******/ 				if(scripts.length) scriptUrl = scripts[scripts.length - 1].src
+/******/ 			}
+/******/ 		}
+/******/ 		// When supporting browsers where an automatic publicPath is not supported you must specify an output.publicPath manually via configuration
+/******/ 		// or pass an empty string ("") and set the __webpack_public_path__ variable from your code to use your own logic.
+/******/ 		if (!scriptUrl) throw new Error("Automatic publicPath is not supported in this browser");
+/******/ 		scriptUrl = scriptUrl.replace(/#.*$/, "").replace(/\?.*$/, "").replace(/\/[^\/]+$/, "/");
+/******/ 		__webpack_require__.p = scriptUrl;
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/jsonp chunk loading */
+/******/ 	!function() {
+/******/ 		// no baseURI
+/******/ 		
+/******/ 		// object to store loaded and loading chunks
+/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
+/******/ 		var installedChunks = {
+/******/ 			"settings-vue-settings-apps-users-management": 0
+/******/ 		};
+/******/ 		
+/******/ 		__webpack_require__.f.j = function(chunkId, promises) {
+/******/ 				// JSONP chunk loading for javascript
+/******/ 				var installedChunkData = __webpack_require__.o(installedChunks, chunkId) ? installedChunks[chunkId] : undefined;
+/******/ 				if(installedChunkData !== 0) { // 0 means "already installed".
+/******/ 		
+/******/ 					// a Promise means "currently loading".
+/******/ 					if(installedChunkData) {
+/******/ 						promises.push(installedChunkData[2]);
+/******/ 					} else {
+/******/ 						if(true) { // all chunks have JS
+/******/ 							// setup Promise in chunk cache
+/******/ 							var promise = new Promise(function(resolve, reject) { installedChunkData = installedChunks[chunkId] = [resolve, reject]; });
+/******/ 							promises.push(installedChunkData[2] = promise);
+/******/ 		
+/******/ 							// start chunk loading
+/******/ 							var url = __webpack_require__.p + __webpack_require__.u(chunkId);
+/******/ 							// create error before stack unwound to get useful stacktrace later
+/******/ 							var error = new Error();
+/******/ 							var loadingEnded = function(event) {
+/******/ 								if(__webpack_require__.o(installedChunks, chunkId)) {
+/******/ 									installedChunkData = installedChunks[chunkId];
+/******/ 									if(installedChunkData !== 0) installedChunks[chunkId] = undefined;
+/******/ 									if(installedChunkData) {
+/******/ 										var errorType = event && (event.type === 'load' ? 'missing' : event.type);
+/******/ 										var realSrc = event && event.target && event.target.src;
+/******/ 										error.message = 'Loading chunk ' + chunkId + ' failed.\n(' + errorType + ': ' + realSrc + ')';
+/******/ 										error.name = 'ChunkLoadError';
+/******/ 										error.type = errorType;
+/******/ 										error.request = realSrc;
+/******/ 										installedChunkData[1](error);
+/******/ 									}
+/******/ 								}
+/******/ 							};
+/******/ 							__webpack_require__.l(url, loadingEnded, "chunk-" + chunkId, chunkId);
+/******/ 						} else installedChunks[chunkId] = 0;
+/******/ 					}
+/******/ 				}
+/******/ 		};
+/******/ 		
+/******/ 		// no prefetching
+/******/ 		
+/******/ 		// no preloaded
+/******/ 		
+/******/ 		// no HMR
+/******/ 		
+/******/ 		// no HMR manifest
+/******/ 		
+/******/ 		__webpack_require__.O.j = function(chunkId) { return installedChunks[chunkId] === 0; };
+/******/ 		
+/******/ 		// install a JSONP callback for chunk loading
+/******/ 		var webpackJsonpCallback = function(parentChunkLoadingFunction, data) {
+/******/ 			var chunkIds = data[0];
+/******/ 			var moreModules = data[1];
+/******/ 			var runtime = data[2];
+/******/ 			// add "moreModules" to the modules object,
+/******/ 			// then flag all "chunkIds" as loaded and fire callback
+/******/ 			var moduleId, chunkId, i = 0;
+/******/ 			if(chunkIds.some(function(id) { return installedChunks[id] !== 0; })) {
+/******/ 				for(moduleId in moreModules) {
+/******/ 					if(__webpack_require__.o(moreModules, moduleId)) {
+/******/ 						__webpack_require__.m[moduleId] = moreModules[moduleId];
+/******/ 					}
+/******/ 				}
+/******/ 				if(runtime) var result = runtime(__webpack_require__);
+/******/ 			}
+/******/ 			if(parentChunkLoadingFunction) parentChunkLoadingFunction(data);
+/******/ 			for(;i < chunkIds.length; i++) {
+/******/ 				chunkId = chunkIds[i];
+/******/ 				if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
+/******/ 					installedChunks[chunkId][0]();
+/******/ 				}
+/******/ 				installedChunks[chunkId] = 0;
+/******/ 			}
+/******/ 			return __webpack_require__.O(result);
+/******/ 		}
+/******/ 		
+/******/ 		var chunkLoadingGlobal = self["webpackChunknextcloud"] = self["webpackChunknextcloud"] || [];
+/******/ 		chunkLoadingGlobal.forEach(webpackJsonpCallback.bind(null, 0));
+/******/ 		chunkLoadingGlobal.push = webpackJsonpCallback.bind(null, chunkLoadingGlobal.push.bind(chunkLoadingGlobal));
+/******/ 	}();
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["core-common"], function() { return __webpack_require__("./apps/settings/src/main-apps-users-management.js"); })
+/******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
+/******/ 	
+/******/ })()
+;
+//# sourceMappingURL=settings-vue-settings-apps-users-management.js.map?v=85cee300a05fa485505f
