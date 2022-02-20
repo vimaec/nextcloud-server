@@ -189,7 +189,7 @@ class UsersController extends Controller {
 		/* GROUPS */
 		$groupsInfo = new \OC\Group\MetaData(
 			$uid,
-			$this->isAdmin,
+			true,
 			$this->groupManager,
 			$this->userSession
 		);

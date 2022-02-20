@@ -114,7 +114,7 @@ abstract class AUserData extends OCSController {
 		}
 
 		// Should be at least Admin Or SubAdmin!
-		if ($this->groupManager->isAdmin($currentLoggedInUser->getUID())
+		if ($this->groupManager->isAdmin($currentLoggedInUser->getUID()) || $this->groupManager->isDMSAdmin($currentLoggedInUser->getUID())
 			|| $this->groupManager->getSubAdmin()->isUserAccessible($currentLoggedInUser, $targetUserObject)) {
 			$data['enabled'] = $this->config->getUserValue($targetUserObject->getUID(), 'core', 'enabled', 'true') === 'true';
 		} else {

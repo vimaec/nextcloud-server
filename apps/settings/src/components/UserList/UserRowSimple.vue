@@ -58,7 +58,7 @@
 		</div>
 
 		<div class="userActions">
-			<div v-if="canEdit && !loading.all" class="toggleUserActions">
+			<div v-if="canEdit && !loading.all && settings.isAdmin" class="toggleUserActions">
 				<Actions>
 					<ActionButton icon="icon-rename" @click="toggleEdit">
 						{{ t('settings', 'Edit User') }}
