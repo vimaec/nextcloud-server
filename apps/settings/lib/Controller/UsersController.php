@@ -193,7 +193,7 @@ class UsersController extends Controller {
 			$this->groupManager,
 			$this->userSession
 		);
-
+		
 		$groupsInfo->setSorting($sortGroupsBy);
 		[$adminGroup, $groups] = $groupsInfo->get();
 
@@ -207,7 +207,7 @@ class UsersController extends Controller {
 		$userCount = 0;
 
 		if (!$isLDAPUsed) {
-			if ($this->isAdmin) {
+			if ($this->isAdmin || $this->groupManager->isDMSAdmin($this->userSession->getUser()->getUID())) {
 				$disabledUsers = $this->userManager->countDisabledUsers();
 				$userCount = array_reduce($this->userManager->countUsers(), function ($v, $w) {
 					return $v + (int)$w;

@@ -2554,7 +2554,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
 
 
 
@@ -4648,83 +4647,78 @@ var render = function() {
                       )
                     : _vm._e(),
                   _vm._v(" "),
-                  _vm.groupList.length > 0 && _vm.settings.isAdmin
+                  _vm.groupList.length > 0
                     ? _c("AppNavigationCaption", {
                         attrs: { title: _vm.t("settings", "Groups") }
                       })
                     : _vm._e(),
                   _vm._v(" "),
                   _vm._l(_vm.groupList, function(group) {
-                    return _vm.settings.isAdmin
-                      ? _c(
-                          "AppNavigationItem",
-                          {
-                            key: group.id,
-                            attrs: {
-                              exact: true,
-                              title: group.title,
-                              to: {
-                                name: "group",
-                                params: {
-                                  selectedGroup: encodeURIComponent(group.id)
-                                }
-                              },
-                              icon: "icon-group"
+                    return _c(
+                      "AppNavigationItem",
+                      {
+                        key: group.id,
+                        attrs: {
+                          exact: true,
+                          title: group.title,
+                          to: {
+                            name: "group",
+                            params: {
+                              selectedGroup: encodeURIComponent(group.id)
                             }
                           },
+                          icon: "icon-group"
+                        }
+                      },
+                      [
+                        group.count
+                          ? _c(
+                              "AppNavigationCounter",
+                              { attrs: { slot: "counter" }, slot: "counter" },
+                              [
+                                _vm._v(
+                                  "\n\t\t\t\t\t" +
+                                    _vm._s(group.count) +
+                                    "\n\t\t\t\t"
+                                )
+                              ]
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _c(
+                          "template",
+                          { slot: "actions" },
                           [
-                            group.count
+                            group.id !== "admin" &&
+                            group.id !== "disabled" &&
+                            _vm.settings.isAdmin
                               ? _c(
-                                  "AppNavigationCounter",
+                                  "ActionButton",
                                   {
-                                    attrs: { slot: "counter" },
-                                    slot: "counter"
+                                    attrs: { icon: "icon-delete" },
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.removeGroup(group.id)
+                                      }
+                                    }
                                   },
                                   [
                                     _vm._v(
-                                      "\n\t\t\t\t\t" +
-                                        _vm._s(group.count) +
-                                        "\n\t\t\t\t"
+                                      "\n\t\t\t\t\t\t" +
+                                        _vm._s(
+                                          _vm.t("settings", "Remove group")
+                                        ) +
+                                        "\n\t\t\t\t\t"
                                     )
                                   ]
                                 )
-                              : _vm._e(),
-                            _vm._v(" "),
-                            _c(
-                              "template",
-                              { slot: "actions" },
-                              [
-                                group.id !== "admin" &&
-                                group.id !== "disabled" &&
-                                _vm.settings.isAdmin
-                                  ? _c(
-                                      "ActionButton",
-                                      {
-                                        attrs: { icon: "icon-delete" },
-                                        on: {
-                                          click: function($event) {
-                                            return _vm.removeGroup(group.id)
-                                          }
-                                        }
-                                      },
-                                      [
-                                        _vm._v(
-                                          "\n\t\t\t\t\t\t" +
-                                            _vm._s(
-                                              _vm.t("settings", "Remove group")
-                                            ) +
-                                            "\n\t\t\t\t\t"
-                                        )
-                                      ]
-                                    )
-                                  : _vm._e()
-                              ],
-                              1
-                            )
+                              : _vm._e()
                           ],
-                          2
+                          1
                         )
-                      : _vm._e()
+                      ],
+                      2
+                    )
                   })
                 ]
               },
@@ -5083,4 +5077,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=vue-settings-users.js.map?v=4d9b0e7a1862fac37d60
+//# sourceMappingURL=vue-settings-users.js.map?v=337b8b68f73512098046

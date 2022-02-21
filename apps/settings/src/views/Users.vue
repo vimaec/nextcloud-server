@@ -76,9 +76,8 @@
 					</AppNavigationCounter>
 				</AppNavigationItem>
 
-				<AppNavigationCaption v-if="groupList.length > 0 && settings.isAdmin" :title="t('settings', 'Groups')" />
+				<AppNavigationCaption v-if="groupList.length > 0" :title="t('settings', 'Groups')" />
 				<AppNavigationItem
-					v-if="settings.isAdmin"
 					v-for="group in groupList"
 					:key="group.id"
 					:exact="true"
