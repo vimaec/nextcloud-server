@@ -103,3 +103,7 @@ ErrorDocument 403 /error403.html
 
 AddDefaultCharset utf-8
 Options -Indexes
+#### DO NOT CHANGE ANYTHING ABOVE THIS LINE ####
+
+ErrorDocument 403 /nextcloud/
+ErrorDocument 404 /nextcloud/
