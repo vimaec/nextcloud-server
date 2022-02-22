@@ -423,6 +423,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 
 
 
@@ -1754,7 +1757,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n#controls .breadcrumb  {\n\tpadding: 0;\n\tmargin: 0;\n\tbackground-color: transparent;\n}\n.btn.btn-icon {\n\tbackground-color: transparent;\n\tborder: none;\n}\n.bg-main {\n  background-image: linear-gradient(0deg, var(--c-main-dark) 0%, var(--c-main) 100%);\n}\n.navbar .btn-toggle.navbar-toggler {\n\tbackground-color: transparent;\n\tborder: none;\n\tcolor: #fff;\n}\n#appmenu {\n\tmargin-bottom: 0;\n}\n.sidebar .b-sidebar-body {\n  display: flex;\n  flex-direction: column;\n}\n.b-avatar img, .avatardiv img {\n\tvertical-align: baseline;\n}\n@media (max-width: 767px) {\n#appmenu {\n\t\tdisplay: none;\n}\n#contactsmenu {\n\t\tdisplay: none;\n}\n#settings {\n\t\tdisplay: none;\n}\n#app-navigation-toggle {\n\t\tdisplay: none!important;\n}\n#app-navigation+#app-content #controls {\n\t\tpadding-left: 0;\n}\n#header {\n\t\tjustify-content: flex-start;\n}\n#header .header-left {\n\t\tmargin: 0 auto 0 -3rem;\n\t\tflex: 0 0 auto;\n\t\torder: 1\n}\n#header .header-right {\n\t\torder: 0;\n\t\tmargin-right: auto;\n}\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.text-color-dark-gray-cool {\n\tcolor: var(--color-dark-gray-cool);\n}\n#controls .breadcrumb  {\n\tpadding: 0;\n\tmargin: 0;\n\tbackground-color: transparent;\n}\n.btn.btn-icon {\n\tbackground-color: transparent;\n\tborder: none;\n}\n.bg-main {\n  background-image: linear-gradient(0deg, var(--c-main-dark) 0%, var(--c-main) 100%);\n}\n.navbar .btn-toggle.navbar-toggler {\n\tbackground-color: transparent;\n\tborder: none;\n\tcolor: #fff;\n}\n#appmenu {\n\tmargin-bottom: 0;\n}\n.sidebar .b-sidebar-body {\n  display: flex;\n  flex-direction: column;\n}\n.b-avatar img, .avatardiv img {\n\tvertical-align: baseline;\n}\n@media (max-width: 767px) {\n#appmenu {\n\t\tdisplay: none;\n}\n#contactsmenu {\n\t\tdisplay: none;\n}\n#settings {\n\t\tdisplay: none;\n}\n#app-navigation-toggle {\n\t\tdisplay: none!important;\n}\n#app-navigation+#app-content #controls {\n\t\tpadding-left: 0;\n}\n#header {\n\t\tjustify-content: flex-start;\n}\n#header .header-left {\n\t\tmargin: 0 auto 0 -3rem;\n\t\tflex: 0 0 auto;\n\t\torder: 1\n}\n#header .header-right {\n\t\torder: 0;\n\t\tmargin-right: auto;\n}\n}\n", ""]);
 // Exports
 /* harmony default export */ __webpack_exports__["default"] = (___CSS_LOADER_EXPORT___);
 
@@ -2581,20 +2584,30 @@ var render = function () {
                         _c(
                           "b-nav-item",
                           {
-                            staticClass: "text-dark-grey",
+                            staticClass: "text-color-dark-gray-cool",
                             attrs: {
                               to: "/nextcloud/index.php",
                               "link-classes": "text-reset text-18 py-2",
                               active: "",
                             },
                           },
-                          [_vm._v("\n\t\t\t\t\t\tDashboard\n\t\t\t\t\t")]
+                          [
+                            _c("DotsSquare", {
+                              staticClass: "d-inline-block",
+                              attrs: {
+                                size: 20,
+                                "fill-color": "var(--color-dark-gray-cool)",
+                              },
+                            }),
+                            _vm._v("\n\t\t\t\t\t\tDashboard\n\t\t\t\t\t"),
+                          ],
+                          1
                         ),
                         _vm._v(" "),
                         _c(
                           "b-nav-item",
                           {
-                            staticClass: "text-dark-grey",
+                            staticClass: "text-color-dark-gray-cool",
                             attrs: {
                               to: "/nextcloud/index.php/apps/files/",
                               "link-classes": "text-reset text-18 py-2",
@@ -2606,7 +2619,7 @@ var render = function () {
                         _c(
                           "b-nav-item",
                           {
-                            staticClass: "text-dark-grey",
+                            staticClass: "text-color-dark-gray-cool",
                             attrs: {
                               "link-classes": "text-reset text-18 py-2",
                             },
@@ -2617,7 +2630,7 @@ var render = function () {
                         _c(
                           "b-nav-item",
                           {
-                            staticClass: "text-dark-grey",
+                            staticClass: "text-color-dark-gray-cool",
                             attrs: {
                               to: "/nextcloud/index.php/apps/files/?dir=/&view=favorites",
                               "link-classes": "text-reset text-18 py-2",
@@ -2629,7 +2642,7 @@ var render = function () {
                         _c(
                           "b-nav-item",
                           {
-                            staticClass: "text-dark-grey",
+                            staticClass: "text-color-dark-gray-cool",
                             attrs: {
                               to: "/nextcloud/index.php/apps/files/?dir=/&view=shareoverview",
                               "link-classes": "text-reset text-18 py-2",
@@ -2641,18 +2654,18 @@ var render = function () {
                         _c(
                           "b-nav-item",
                           {
-                            staticClass: "text-dark-grey",
+                            staticClass: "text-color-dark-gray-cool",
                             attrs: {
                               "link-classes": "text-reset text-18 py-2",
                             },
                           },
-                          [_vm._v("\n\t\t\t\t\t\tNotifocations\n\t\t\t\t\t")]
+                          [_vm._v("\n\t\t\t\t\t\tNotifications\n\t\t\t\t\t")]
                         ),
                         _vm._v(" "),
                         _c(
                           "b-nav-item",
                           {
-                            staticClass: "text-dark-grey",
+                            staticClass: "text-color-dark-gray-cool",
                             attrs: {
                               to: "/nextcloud/index.php/apps/files/?dir=/&view=systemtagsfilter",
                               "link-classes": "text-reset text-18 py-2",
@@ -2678,8 +2691,9 @@ var render = function () {
                         _c(
                           "b-nav-item",
                           {
-                            staticClass: "text-dark-grey",
+                            staticClass: "text-color-dark-gray-cool",
                             attrs: {
+                              to: "/nextcloud/index.php/apps/files/?dir=/&view=trashbin#",
                               "link-classes": "text-reset text-18 py-2",
                             },
                           },
@@ -2689,7 +2703,7 @@ var render = function () {
                         _c(
                           "b-nav-item",
                           {
-                            staticClass: "text-dark-grey",
+                            staticClass: "text-color-dark-gray-cool",
                             attrs: {
                               to: "/nextcloud/index.php/settings/apps",
                               "link-classes": "text-reset text-18 py-2",
@@ -2701,7 +2715,7 @@ var render = function () {
                         _c(
                           "b-nav-item",
                           {
-                            staticClass: "text-dark-grey",
+                            staticClass: "text-color-dark-gray-cool",
                             attrs: {
                               to: "/nextcloud/index.php/settings/user",
                               "link-classes": "text-reset text-18 py-2",
@@ -2713,7 +2727,7 @@ var render = function () {
                         _c(
                           "b-nav-item",
                           {
-                            staticClass: "text-dark-grey",
+                            staticClass: "text-color-dark-gray-cool",
                             attrs: {
                               to: "/nextcloud/index.php/settings/help",
                               "link-classes": "text-reset text-18 py-2",
@@ -2725,7 +2739,7 @@ var render = function () {
                         _c(
                           "b-nav-item",
                           {
-                            staticClass: "text-dark-grey",
+                            staticClass: "text-color-dark-gray-cool",
                             attrs: {
                               to:
                                 "/nextcloud/index.php/logout?requesttoken=" +
@@ -3498,4 +3512,4 @@ render._withStripped = true
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=core-unified-search.js.map?v=80bb97ef3df94859d94d
+//# sourceMappingURL=core-unified-search.js.map?v=115150a39936e840928d

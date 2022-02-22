@@ -105,46 +105,49 @@
 				<section class="mb-auto mt-3">
 					<b-nav vertical>
 						<b-nav-item to="/nextcloud/index.php"
-							class="text-dark-grey"
+							class="text-color-dark-gray-cool"
 							link-classes="text-reset text-18 py-2"
 							active>
+							<DotsSquare class="d-inline-block"
+								:size="20"
+								fill-color="var(--color-dark-gray-cool)" />
 							Dashboard
 						</b-nav-item>
-						<b-nav-item to="/nextcloud/index.php/apps/files/" class="text-dark-grey" link-classes="text-reset text-18 py-2">
+						<b-nav-item to="/nextcloud/index.php/apps/files/" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2">
 							All Files
 						</b-nav-item>
-						<b-nav-item class="text-dark-grey" link-classes="text-reset text-18 py-2">
+						<b-nav-item class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2">
 							Activity
 						</b-nav-item>
-						<b-nav-item to="/nextcloud/index.php/apps/files/?dir=/&view=favorites" class="text-dark-grey" link-classes="text-reset text-18 py-2">
+						<b-nav-item to="/nextcloud/index.php/apps/files/?dir=/&view=favorites" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2">
 							Favorites
 						</b-nav-item>
-						<b-nav-item to="/nextcloud/index.php/apps/files/?dir=/&view=shareoverview" class="text-dark-grey" link-classes="text-reset text-18 py-2">
+						<b-nav-item to="/nextcloud/index.php/apps/files/?dir=/&view=shareoverview" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2">
 							Shared
 						</b-nav-item>
-						<b-nav-item class="text-dark-grey" link-classes="text-reset text-18 py-2">
-							Notifocations
+						<b-nav-item class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2">
+							Notifications
 						</b-nav-item>
-						<b-nav-item to="/nextcloud/index.php/apps/files/?dir=/&view=systemtagsfilter" class="text-dark-grey" link-classes="text-reset text-18 py-2">
+						<b-nav-item to="/nextcloud/index.php/apps/files/?dir=/&view=systemtagsfilter" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2">
 							Tags
 						</b-nav-item>
 					</b-nav>
 				</section>
 				<section class="mt-auto mb-3">
 					<b-nav vertical>
-						<b-nav-item class="text-dark-grey" link-classes="text-reset text-18 py-2">
+						<b-nav-item to="/nextcloud/index.php/apps/files/?dir=/&view=trashbin#" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2">
 							Archived Files
 						</b-nav-item>
-						<b-nav-item to="/nextcloud/index.php/settings/apps" class="text-dark-grey" link-classes="text-reset text-18 py-2">
+						<b-nav-item to="/nextcloud/index.php/settings/apps" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2">
 							Apps
 						</b-nav-item>
-						<b-nav-item to="/nextcloud/index.php/settings/user" class="text-dark-grey" link-classes="text-reset text-18 py-2">
+						<b-nav-item to="/nextcloud/index.php/settings/user" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2">
 							Settings
 						</b-nav-item>
-						<b-nav-item to="/nextcloud/index.php/settings/help" class="text-dark-grey" link-classes="text-reset text-18 py-2">
+						<b-nav-item to="/nextcloud/index.php/settings/help" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2">
 							Help
 						</b-nav-item>
-						<b-nav-item :to="'/nextcloud/index.php/logout?requesttoken=' + tokenUrl" class="text-dark-grey" link-classes="text-reset text-18 py-2">
+						<b-nav-item :to="'/nextcloud/index.php/logout?requesttoken=' + tokenUrl" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2">
 							Log Out
 						</b-nav-item>
 					</b-nav>
@@ -208,7 +211,7 @@ export default {
 	computed: {
 		tokenUrl() {
 			return encodeURIComponent(this.token)
-		}
+		},
 	},
 	watch: {
 		open(newVal) {
@@ -349,6 +352,9 @@ export default {
 </style>
 
 <style>
+.text-color-dark-gray-cool {
+	color: var(--color-dark-gray-cool);
+}
 #controls .breadcrumb  {
 	padding: 0;
 	margin: 0;
