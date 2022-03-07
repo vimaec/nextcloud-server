@@ -104,7 +104,7 @@
 				</header>
 				<section class="mb-auto mt-3">
 					<b-nav vertical>
-						<b-nav-item to="/nextcloud-server/index.php"
+						<b-nav-item :to="mainPath + '/index.php'"
 							class="text-color-dark-gray-cool"
 							link-classes="text-reset text-18 py-2 d-flex align-items-center"
 							active>
@@ -118,7 +118,7 @@
 
 							Dashboard
 						</b-nav-item>
-						<b-nav-item to="/nextcloud-server/index.php/apps/files/" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2 d-flex align-items-center">
+						<b-nav-item :to="mainPath + '/index.php/apps/files/'" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2 d-flex align-items-center">
 							<svg xmlns="http://www.w3.org/2000/svg"
 								width="20"
 								height="20"
@@ -128,7 +128,7 @@
 							</svg>
 							All Files
 						</b-nav-item>
-						<b-nav-item to="/nextcloud-server/index.php/apps/activity/" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2 d-flex align-items-center">
+						<b-nav-item :to="mainPath + '/index.php/apps/activity/'" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2 d-flex align-items-center">
 							<svg xmlns="http://www.w3.org/2000/svg"
 								width="20"
 								height="20"
@@ -138,7 +138,7 @@
 							</svg>
 							Activity
 						</b-nav-item>
-						<b-nav-item to="/nextcloud-server/index.php/apps/files/?dir=/&view=favorites" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2 d-flex align-items-center">
+						<b-nav-item :to="mainPath + 'index.php/apps/files/?dir=/&view=favorites'" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2 d-flex align-items-center">
 							<svg xmlns="http://www.w3.org/2000/svg"
 								width="20"
 								height="20"
@@ -148,7 +148,7 @@
 							</svg>
 							Favorites
 						</b-nav-item>
-						<b-nav-item to="/nextcloud-server/index.php/apps/files/?dir=/&view=shareoverview" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2 d-flex align-items-center">
+						<b-nav-item :to="mainPath + '/index.php/apps/files/?dir=/&view=shareoverview'" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2 d-flex align-items-center">
 							<svg xmlns="http://www.w3.org/2000/svg"
 								width="20"
 								height="20"
@@ -158,7 +158,7 @@
 							</svg>
 							Shared
 						</b-nav-item>
-						<b-nav-item to="/nextcloud-server/index.php/apps/files/?dir=/&view=systemtagsfilter" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2 d-flex align-items-center">
+						<b-nav-item :to="mainPath + '/index.php/apps/files/?dir=/&view=systemtagsfilter'" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2 d-flex align-items-center">
 							<svg xmlns="http://www.w3.org/2000/svg"
 								width="20"
 								height="20"
@@ -172,7 +172,7 @@
 				</section>
 				<section class="mt-auto mb-3">
 					<b-nav vertical>
-						<b-nav-item to="/nextcloud-server/index.php/apps/files/?dir=/&view=trashbin#" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2 d-flex align-items-center">
+						<b-nav-item :to="mainPath + '/index.php/apps/files/?dir=/&view=trashbin#'" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2 d-flex align-items-center">
 							<svg xmlns="http://www.w3.org/2000/svg"
 								width="20"
 								height="20"
@@ -182,7 +182,7 @@
 							</svg>
 							Archived Files
 						</b-nav-item>
-						<b-nav-item to="/nextcloud-server/index.php/settings/apps" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2 d-flex align-items-center">
+						<b-nav-item :to="mainPath + '/index.php/settings/apps'" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2 d-flex align-items-center">
 							<svg xmlns="http://www.w3.org/2000/svg"
 								width="20"
 								height="20"
@@ -192,7 +192,7 @@
 							</svg>
 							Apps
 						</b-nav-item>
-						<b-nav-item to="/nextcloud-server/index.php/settings/user" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2 d-flex align-items-center">
+						<b-nav-item :to="mainPath + '/index.php/settings/user'" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2 d-flex align-items-center">
 							<svg xmlns="http://www.w3.org/2000/svg"
 								width="20"
 								height="20"
@@ -202,7 +202,7 @@
 							</svg>
 							Settings
 						</b-nav-item>
-						<b-nav-item to="/nextcloud-server/index.php/settings/help" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2 d-flex align-items-center">
+						<b-nav-item :to="mainPath + '/index.php/settings/help'" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2 d-flex align-items-center">
 							<svg xmlns="http://www.w3.org/2000/svg"
 								width="20"
 								height="20"
@@ -212,7 +212,7 @@
 							</svg>
 							Help
 						</b-nav-item>
-						<b-nav-item :to="'/nextcloud-server/index.php/logout?requesttoken=' + tokenUrl" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2 d-flex align-items-center">
+						<b-nav-item :to="mainPath + '/index.php/logout?requesttoken=' + tokenUrl" class="text-color-dark-gray-cool" link-classes="text-reset text-18 py-2 d-flex align-items-center">
 							<svg xmlns="http://www.w3.org/2000/svg"
 								width="20"
 								height="20"
@@ -266,6 +266,7 @@ export default {
 
 	data() {
 		return {
+			mainPath: window._oc_webroot,
 			opened: this.open,
 			clickOutsideConfig: {
 				handler: this.closeMenu,
