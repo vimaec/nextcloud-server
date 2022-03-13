@@ -3561,7 +3561,6 @@
 				this.$el.find('#headerName a.name>span:first').text(selection);
 				this.$el.find('#modified a>span:first').text('');
 				this.$el.find('table').addClass('multiselect');
-				debugger
 
 				if (this.fileMultiSelectMenu) {
 					this.fileMultiSelectMenu.toggleItemVisibility('download', this.isSelectedDownloadable());
