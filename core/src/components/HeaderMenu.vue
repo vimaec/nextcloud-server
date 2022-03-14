@@ -463,7 +463,7 @@ export default {
 	#app-navigation-toggle {
 		display: none!important;
 	}
-	.header-menu .header-menu__trigger {
+	.header-menu .header-menu__trigger, #filelist-header #recommendations, #controls .breadcrumb {
 		display: none;
 	}
 	#app-navigation+#app-content #controls {

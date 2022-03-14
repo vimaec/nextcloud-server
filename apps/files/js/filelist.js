@@ -3931,6 +3931,7 @@
 		},
 
 		_onClickNewButton: function(event) {
+			this._newButton.toggleClass('active');
 			var $target = $(event.target);
 			if (!$target.hasClass('.button')) {
 				$target = $target.closest('.button');

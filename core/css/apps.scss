@@ -1296,3 +1296,8 @@ $outter-margin: ($popoveritem-height - $popovericon-size) / 2;
 		display: flex;
 	}
 }
+@media (max-width: 767px) {
+	&:after {
+		content: none;
+	}
+}
