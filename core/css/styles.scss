@@ -221,6 +221,38 @@ ul {
 		}
 	}
 }
+@media (max-width: 767px) {
+	#controls .actions {
+		> div,
+		& {
+			> .button, button {
+				height: 60px;
+				width: 60px;
+				border-radius: 30px;
+				background-color: var(--c-main);
+				box-shadow: 0 0 12px 0 rgba(0, 0, 0, .5);
+				> .icon-add {
+					background-image: var(--icon-add-fff);
+					background-size: 20px 20px!important;
+					height: 20px;
+					width: 20px;
+					transition: .3s;
+					opacity: 1;
+				}
+				&.active {
+					background-color: var(--c-light-gray);
+					.icon-add {
+						transform: rotate(45deg);
+						transition: .3s;
+					}
+				}
+			}
+		}
+	}
+	.icon.icon-add {
+		background-image: var(--icon-add-fff);
+	}
+}
 
 /* EMPTY CONTENT DISPLAY ------------------------------------------------------------ */
 
