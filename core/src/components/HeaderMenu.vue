@@ -508,7 +508,7 @@ export default {
 	#header .header-right>.notifications.openedMenu::after {
 		top: 18px;
 	}
-	.header-menu__wrapper {
+	.header-menu .header-menu__wrapper {
 		filter: none;
 		left: 0;
 		right: auto;
@@ -519,6 +519,18 @@ export default {
 	}
 	.header-menu__wrapper .header-menu__content {
 		width: 100vw;
+	}
+	#app-content-files {
+		padding-top: 20px;
+	}
+	#view-toggle {
+		top: 132px;
+	}
+	table th .columntitle.name {
+		margin-left: 5px;
+	}
+	table label {
+		margin-bottom: 0;
 	}
 }
 </style>

@@ -762,3 +762,32 @@ $input-padding: 6px;
 }
 
 </style>
+
+<style scoped>
+@media (max-width: 767px) {
+	.header-menu__content .unified-search__form-input {
+		background-color: var(--c-light-gray);
+		height: 48px!important;
+		border-radius: 10px;
+		padding: 6px 12px
+	}
+	.empty-content {
+		display: none;
+	}
+	.header-menu__content .unified-search__form-reset {
+		top: 7px
+	}
+	.unified-search__result {
+		color: var(--color-main-text);
+		display: flex;
+		align-items: center;
+
+	}
+	.unified-search__result .unified-search__result-line-one > span strong {
+		color: var(--dark-gray-cool);
+	}
+	.unified-search__results:last-child {
+		box-shadow: 0 9px 5px 0px rgb(0 0 0 / 50%);
+	}
+}
+</style>
