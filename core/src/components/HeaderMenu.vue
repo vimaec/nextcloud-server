@@ -34,8 +34,8 @@
 			@click.prevent="toggleMenu">
 			<slot name="trigger" />
 		</a>
-		<div class="d-none d-md-flex">
-			<div v-show="opened"
+		<div class="">
+			<div v-show="opened || mobile"
 				:id="`header-menu-${id}`"
 				class="header-menu__wrapper"
 				role="menu">
@@ -280,6 +280,11 @@ export default {
 		tokenUrl() {
 			return encodeURIComponent(this.token)
 		},
+		mobile() {
+			if (window.innerWidth < 768) {
+				return true
+			} else return false
+		},
 	},
 	watch: {
 		open(newVal) {
@@ -291,6 +296,13 @@ export default {
 					this.closeMenu()
 				}
 			})
+			if (this.mobile === true) {
+				// this.opened = true
+				// this.openMenu()
+				this.opened = true
+				this.$emit('open')
+				this.$emit('update:open', true)
+			}
 		},
 	},
 	mounted() {
@@ -495,6 +507,18 @@ export default {
 	}
 	#header .header-right>.notifications.openedMenu::after {
 		top: 18px;
+	}
+	.header-menu__wrapper {
+		filter: none;
+		left: 0;
+		right: auto;
+		z-index: 1;
+	}
+	.header-menu__carret {
+		display: none;
+	}
+	.header-menu__wrapper .header-menu__content {
+		width: 100vw;
 	}
 }
 </style>
