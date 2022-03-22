@@ -370,6 +370,7 @@ nav[role='navigation'] {
 				border-radius: 50%;
 				border: 2px solid var(--color-primary-text);
 				margin: -2px;
+				box-sizing: content-box;
 			}
 			.avatardiv{
 				background-color: var(--color-primary-text);

@@ -638,3 +638,12 @@ export default {
 	}
 }
 </style>
+<style scoped>
+@media (max-width: 767px) {
+  .panel, .panels > div {
+    width: 100%;
+    margin: 16px 24px;
+    max-width: calc(100% - 48px);
+  }
+}
+</style>
