@@ -474,6 +474,7 @@ export default {
 	@media (max-width: 767px) {
 		#app-sidebar-vue, #rich-workspace {
 			display: none;
+			position: static;
 		}
 	}
 </style>

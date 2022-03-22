@@ -25,6 +25,7 @@
 		exclude-click-outside-classes="popover"
 		:open.sync="open"
 		:aria-label="ariaLabel"
+    :show-search="showSearch"
 		@open="onOpen"
 		@close="onClose">
 		<!-- Header icon -->
@@ -35,7 +36,7 @@
 		</template>
 
 		<!-- Search form & filters wrapper -->
-		<div class="unified-search__input-wrapper">
+		<div class="unified-search__input-wrapper" :class="showSearch ? '' : 'd-none d-block-md'">
 			<form class="unified-search__form"
 				role="search"
 				:class="{'icon-loading-small': isLoading}"
@@ -158,6 +159,7 @@ export default {
 
 	data() {
 		return {
+      currentPage: window.location.pathname,
 			types: [],
 
 			// Cursors per types
@@ -184,6 +186,11 @@ export default {
 	},
 
 	computed: {
+    showSearch() {
+      if (this.currentPage.includes('apps/dashboard')) {
+        return false
+      } else return true
+    },
 		typesIDs() {
 			return this.types.map(type => type.id)
 		},
@@ -765,11 +772,15 @@ $input-padding: 6px;
 
 <style scoped>
 @media (max-width: 767px) {
-	.header-menu__content .unified-search__form-input {
+  .unified-search__form {
+    margin: 10px 24px;
+  }
+	.header-menu__content .unified-search__form-input, .header-menu__content .unified-search__form-input:active {
 		background-color: var(--c-light-gray);
 		height: 48px!important;
 		border-radius: 10px;
-		padding: 6px 12px
+		padding: 6px 12px;
+		-webkit-appearance: none!important;
 	}
 	.empty-content {
 		display: none;
