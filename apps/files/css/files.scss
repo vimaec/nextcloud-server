@@ -682,7 +682,10 @@ a.action > img {
 	vertical-align: middle;
 	margin-left: 6px;
 }
-
+#fileList .action.action-share.permanent.shared-style span.avatar {
+	overflow: visible;
+	vertical-align: baseline;
+}
 #fileList .remoteAddress .userDomain {
 	margin-left: 0 !important;
 }
@@ -1241,6 +1244,7 @@ table.dragshadow td.size {
 		right: 10px;
 		bottom: 10px;
 		flex-direction: row-reverse;
+		height: auto;
 	}
 	.newFileMenu {
 		bottom: 0;
@@ -1257,5 +1261,12 @@ table.dragshadow td.size {
 			bottom: 74px;
 			margin: 0;
 		}
+	}
+	#fileList .action.action-share.permanent.shared-style span.avatar {
+		display: none;
+	}
+	.b-sidebar .avatardiv:not(.avatardiv--unknown).bg-success {
+		box-shadow: none!important;
+		background-color: #73D665!important;
 	}
 }
