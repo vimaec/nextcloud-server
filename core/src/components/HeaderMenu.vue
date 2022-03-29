@@ -658,6 +658,7 @@ p {
 		padding-top: 20px;
 	}
 	#view-toggle {
+    right: 8px;
 		top: 132px;
 	}
 	table th .columntitle.name {
