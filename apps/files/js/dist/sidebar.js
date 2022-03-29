@@ -31212,6 +31212,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       isFullScreen: false
     };
   },
+  // updated() {
+  // 	if (this.sidebarClosed) {
+  // 		this.Sidebar.file = ""
+  // 	}
+  // 	console.log(this.Sidebar)
+  // },
+  // updated() {
+  // 	console.log(this.Sidebar)
+  // },
   computed: {
     /**
      * Current filename
@@ -31359,6 +31368,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     isSystemTagsEnabled: function isSystemTagsEnabled() {
       return OCA && 'SystemTags' in OCA;
+    },
+    sidebarClosed: function sidebarClosed() {
+      if (window.innerWidth < 768) {
+        return true;
+      } else return false;
     }
   },
   methods: {
@@ -31600,6 +31614,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     handleClosed: function handleClosed() {
       Object(_nextcloud_event_bus__WEBPACK_IMPORTED_MODULE_3__["emit"])('files:sidebar:closed');
+    }
+  },
+  watch: {
+    file: function file() {
+      if (this.file === '/' && this.sidebarClosed) {
+        this.Sidebar.file = '';
+      }
+
+      console.log(this.file);
     }
   }
 });
@@ -35373,7 +35396,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.i, "\n@media (max-width: 767px) {\n#app-sidebar-vue, #rich-workspace {\n\t\tdisplay: none;\n\t\tposition: static;\n}\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.i, "\n@media (max-width: 767px) {\n#rich-workspace {\n\t\tdisplay: none;\n\t\tposition: static;\n}\n.app-files #app-sidebar-vue.app-sidebar {\n\t\tz-index: 2100;\n}\n}\n", ""]);
 // Exports
 /* harmony default export */ __webpack_exports__["default"] = (___CSS_LOADER_EXPORT___);
 
