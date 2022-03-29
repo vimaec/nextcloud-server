@@ -121,7 +121,7 @@
     }
 }
 
-.tooltip-inner {
+.tooltip .tooltip-inner {
     max-width: 350px;
     padding: 5px 8px;
     background-color: var(--color-main-background);
@@ -129,7 +129,9 @@
     text-align: center;
     border-radius: var(--border-radius);
 }
-
+.tooltip.show .arrow::before {
+    content: none;
+}
 .tooltip-arrow, .tooltip .arrow {
     position: absolute;
     width: 0;

@@ -115,7 +115,15 @@ export default {
 			isFullScreen: false,
 		}
 	},
-
+	// updated() {
+	// 	if (this.sidebarClosed) {
+	// 		this.Sidebar.file = ""
+	// 	}
+	// 	console.log(this.Sidebar)
+	// },
+	// updated() {
+	// 	console.log(this.Sidebar)
+	// },
 	computed: {
 		/**
 		 * Current filename
@@ -269,6 +277,11 @@ export default {
 		isSystemTagsEnabled() {
 			return OCA && 'SystemTags' in OCA
 		},
+		sidebarClosed() {
+			if (window.innerWidth < 768) {
+				return true;
+			} else return false;
+		}
 	},
 
 	methods: {
@@ -468,13 +481,24 @@ export default {
 			emit('files:sidebar:closed')
 		},
 	},
+	watch: {
+		file() {
+			if (this.file === '/' && this.sidebarClosed) {
+				this.Sidebar.file = ''
+			}
+			console.log(this.file)
+		}
+	}
 }
 </script>
 <style lang="css">
 	@media (max-width: 767px) {
-		#app-sidebar-vue, #rich-workspace {
+		#rich-workspace {
 			display: none;
 			position: static;
+		}
+		.app-files #app-sidebar-vue.app-sidebar {
+			z-index: 2100;
 		}
 	}
 </style>
