@@ -4,7 +4,7 @@
 on:
   push:
     branches:
-      - master
+      - vim-master
 env: 
   AZURE_DEVOPS_EXT_PAT:  ${{ secrets.AZURE_DEVOPS_PAT }}
 
