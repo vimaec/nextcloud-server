@@ -1,7 +1,7 @@
 OC.L10N.register(
     "theming",
     {
-    "Loading preview…" : "Ładowanie podglądu…",
+    "Loading preview…" : "Wczytywanie podglądu…",
     "Saved" : "Zapisano",
     "Admin" : "Administrator",
     "a safe home for all your data" : "bezpieczny dom dla wszystkich danych",
@@ -43,8 +43,8 @@ OC.L10N.register(
     "Upload new login background" : "Wyślij nowe tło logowania",
     "Remove background image" : "Usuń obraz tła",
     "Advanced options" : "Opcje zaawansowane",
-    "Legal notice link" : "Link noty prawnej",
-    "Privacy policy link" : "Link polityki prywatności",
+    "Legal notice link" : "Link do informacji prawnej",
+    "Privacy policy link" : "Link do polityki prywatności",
     "Header logo" : "Logo nagłówka",
     "Upload new header logo" : "Wyślij nowe logo nagłówka",
     "Favicon" : "Ikona favicon",

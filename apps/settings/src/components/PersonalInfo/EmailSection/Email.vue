@@ -17,22 +17,20 @@
 	-
 	- You should have received a copy of the GNU Affero General Public License
 	- along with this program. If not, see <http://www.gnu.org/licenses/>.
+	-
 -->
 
 <template>
 	<div>
 		<div class="email">
-			<input
-				id="email"
+			<input :id="inputId"
 				ref="email"
 				type="email"
-				:name="inputName"
 				:placeholder="inputPlaceholder"
 				:value="email"
 				autocapitalize="none"
 				autocomplete="on"
 				autocorrect="off"
-				required
 				@input="onEmailChange">
 
 			<div class="email__actions-container">
@@ -42,23 +40,20 @@
 				</transition>
 
 				<template v-if="!primary">
-					<FederationControl
-						:account-property="accountProperty"
+					<FederationControl :account-property="accountProperty"
 						:additional="true"
 						:additional-value="email"
 						:disabled="federationDisabled"
-						:handle-scope-change="saveAdditionalEmailScope"
+						:handle-additional-scope-change="saveAdditionalEmailScope"
 						:scope.sync="localScope"
 						@update:scope="onScopeChange" />
 				</template>
 
-				<Actions
-					class="email__actions"
+				<Actions class="email__actions"
 					:aria-label="t('settings', 'Email options')"
 					:disabled="deleteDisabled"
 					:force-menu="true">
-					<ActionButton
-						:aria-label="deleteEmailLabel"
+					<ActionButton :aria-label="deleteEmailLabel"
 						:close-after-click="true"
 						:disabled="deleteDisabled"
 						icon="icon-delete"
@@ -185,11 +180,11 @@ export default {
 			return !this.initialEmail
 		},
 
-		inputName() {
+		inputId() {
 			if (this.primary) {
 				return 'email'
 			}
-			return 'additionalEmail[]'
+			return `email-${this.index}`
 		},
 
 		inputPlaceholder() {
@@ -199,10 +194,10 @@ export default {
 			return t('settings', 'Additional email address {index}', { index: this.index + 1 })
 		},
 
-		  isNotificationEmail() {
-			  return (this.email === this.activeNotificationEmail)
-						|| (this.primary && this.activeNotificationEmail === '')
-		  },
+		isNotificationEmail() {
+			return (this.email && this.email === this.activeNotificationEmail)
+				|| (this.primary && this.activeNotificationEmail === '')
+		},
 	},
 
 	mounted() {
@@ -253,12 +248,12 @@ export default {
 			} catch (e) {
 				if (email === '') {
 					this.handleResponse({
-						errorMessage: 'Unable to delete primary email address',
+						errorMessage: t('settings', 'Unable to delete primary email address'),
 						error: e,
 					})
 				} else {
 					this.handleResponse({
-						errorMessage: 'Unable to update primary email address',
+						errorMessage: t('settings', 'Unable to update primary email address'),
 						error: e,
 					})
 				}
@@ -274,7 +269,7 @@ export default {
 				})
 			} catch (e) {
 				this.handleResponse({
-					errorMessage: 'Unable to add additional email address',
+					errorMessage: t('settings', 'Unable to add additional email address'),
 					error: e,
 				})
 			}
@@ -305,7 +300,7 @@ export default {
 				})
 			} catch (e) {
 				this.handleResponse({
-					errorMessage: 'Unable to update additional email address',
+					errorMessage: t('settings', 'Unable to update additional email address'),
 					error: e,
 				})
 			}
@@ -317,7 +312,7 @@ export default {
 				this.handleDeleteAdditionalEmail(responseData.ocs?.meta?.status)
 			} catch (e) {
 				this.handleResponse({
-					errorMessage: 'Unable to delete additional email address',
+					errorMessage: t('settings', 'Unable to delete additional email address'),
 					error: e,
 				})
 			}
@@ -328,7 +323,7 @@ export default {
 				this.$emit('delete-additional-email')
 			} else {
 				this.handleResponse({
-					errorMessage: 'Unable to delete additional email address',
+					errorMessage: t('settings', 'Unable to delete additional email address'),
 				})
 			}
 		},
@@ -344,7 +339,7 @@ export default {
 				this.showCheckmarkIcon = true
 				setTimeout(() => { this.showCheckmarkIcon = false }, 2000)
 			} else {
-				showError(t('settings', errorMessage))
+				showError(errorMessage)
 				this.logger.error(errorMessage, error)
 				this.showErrorIcon = true
 				setTimeout(() => { this.showErrorIcon = false }, 2000)
@@ -389,7 +384,9 @@ export default {
 		.email__actions {
 			opacity: 0.4 !important;
 
-			&:hover {
+			&:hover,
+			&:focus,
+			&:active {
 				opacity: 0.8 !important;
 			}
 

@@ -31,6 +31,7 @@
  */
 namespace OC\Core;
 
+use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
 use OC\Authentication\Events\RemoteWipeFinished;
 use OC\Authentication\Events\RemoteWipeStarted;
 use OC\Authentication\Listeners\RemoteWipeActivityListener;
@@ -118,6 +119,10 @@ class Application extends App {
 					if (!$table->hasIndex('fs_id_storage_size')) {
 						$subject->addHintForMissingSubject($table->getName(), 'fs_id_storage_size');
 					}
+
+					if (!$table->hasIndex('fs_storage_path_prefix') && !$schema->getDatabasePlatform() instanceof PostgreSQL94Platform) {
+						$subject->addHintForMissingSubject($table->getName(), 'fs_storage_path_prefix');
+					}
 				}
 
 				if ($schema->hasTable('twofactor_providers')) {
@@ -189,6 +194,23 @@ class Application extends App {
 					$table = $schema->getTable('properties');
 					if (!$table->hasIndex('properties_path_index')) {
 						$subject->addHintForMissingSubject($table->getName(), 'properties_path_index');
+					}
+					if (!$table->hasIndex('properties_pathonly_index')) {
+						$subject->addHintForMissingSubject($table->getName(), 'properties_pathonly_index');
+					}
+				}
+
+				if ($schema->hasTable('jobs')) {
+					$table = $schema->getTable('jobs');
+					if (!$table->hasIndex('job_lastcheck_reserved')) {
+						$subject->addHintForMissingSubject($table->getName(), 'job_lastcheck_reserved');
+					}
+				}
+
+				if ($schema->hasTable('direct_edit')) {
+					$table = $schema->getTable('direct_edit');
+					if (!$table->hasIndex('direct_edit_timestamp')) {
+						$subject->addHintForMissingSubject($table->getName(), 'direct_edit_timestamp');
 					}
 				}
 			}

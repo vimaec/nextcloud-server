@@ -20,10 +20,6 @@ class ImageTest extends \Test\TestCase {
 	}
 
 	public function testConstructDestruct() {
-		if (PHP_MAJOR_VERSION > 7) {
-			$this->markTestSkipped('Only run on php7');
-		}
-
 		$img = new \OC_Image();
 		$img->loadFromFile(OC::$SERVERROOT.'/tests/data/testimage.png');
 		$this->assertInstanceOf('\OC_Image', $img);
@@ -51,10 +47,6 @@ class ImageTest extends \Test\TestCase {
 	}
 
 	public function testValid() {
-		if (PHP_MAJOR_VERSION > 7) {
-			$this->markTestSkipped('Only run on php7');
-		}
-
 		$img = new \OC_Image();
 		$img->loadFromFile(OC::$SERVERROOT.'/tests/data/testimage.png');
 		$this->assertTrue($img->valid());
@@ -69,10 +61,6 @@ class ImageTest extends \Test\TestCase {
 	}
 
 	public function testMimeType() {
-		if (PHP_MAJOR_VERSION > 7) {
-			$this->markTestSkipped('Only run on php7');
-		}
-
 		$img = new \OC_Image();
 		$img->loadFromFile(OC::$SERVERROOT.'/tests/data/testimage.png');
 		$this->assertEquals('image/png', $img->mimeType());
@@ -90,10 +78,6 @@ class ImageTest extends \Test\TestCase {
 	}
 
 	public function testWidth() {
-		if (PHP_MAJOR_VERSION > 7) {
-			$this->markTestSkipped('Only run on php7');
-		}
-
 		$img = new \OC_Image();
 		$img->loadFromFile(OC::$SERVERROOT.'/tests/data/testimage.png');
 		$this->assertEquals(128, $img->width());
@@ -111,10 +95,6 @@ class ImageTest extends \Test\TestCase {
 	}
 
 	public function testHeight() {
-		if (PHP_MAJOR_VERSION > 7) {
-			$this->markTestSkipped('Only run on php7');
-		}
-
 		$img = new \OC_Image();
 		$img->loadFromFile(OC::$SERVERROOT.'/tests/data/testimage.png');
 		$this->assertEquals(128, $img->height());
@@ -132,10 +112,6 @@ class ImageTest extends \Test\TestCase {
 	}
 
 	public function testSave() {
-		if (PHP_MAJOR_VERSION > 7) {
-			$this->markTestSkipped('Only run on php7');
-		}
-
 		$img = new \OC_Image();
 		$img->loadFromFile(OC::$SERVERROOT.'/tests/data/testimage.png');
 		$img->resize(16);
@@ -150,10 +126,6 @@ class ImageTest extends \Test\TestCase {
 	}
 
 	public function testData() {
-		if (PHP_MAJOR_VERSION > 7) {
-			$this->markTestSkipped('Only run on php7');
-		}
-
 		$img = new \OC_Image();
 		$img->loadFromFile(OC::$SERVERROOT.'/tests/data/testimage.png');
 		$raw = imagecreatefromstring(file_get_contents(OC::$SERVERROOT.'/tests/data/testimage.png'));
@@ -170,6 +142,10 @@ class ImageTest extends \Test\TestCase {
 			->method('getAppValue')
 			->with('preview', 'jpeg_quality', 90)
 			->willReturn(null);
+		$config->expects($this->once())
+			->method('getSystemValueInt')
+			->with('preview_max_memory', 128)
+			->willReturn(128);
 		$img = new \OC_Image(null, null, $config);
 		$img->loadFromFile(OC::$SERVERROOT.'/tests/data/testimage.jpg');
 		$raw = imagecreatefromstring(file_get_contents(OC::$SERVERROOT.'/tests/data/testimage.jpg'));
@@ -188,10 +164,6 @@ class ImageTest extends \Test\TestCase {
 	}
 
 	public function testDataNoResource() {
-		if (PHP_MAJOR_VERSION > 7) {
-			$this->markTestSkipped('Only run on php7');
-		}
-
 		$img = new \OC_Image();
 		$this->assertNull($img->data());
 	}
@@ -200,10 +172,6 @@ class ImageTest extends \Test\TestCase {
 	 * @depends testData
 	 */
 	public function testToString() {
-		if (PHP_MAJOR_VERSION > 7) {
-			$this->markTestSkipped('Only run on php7');
-		}
-
 		$img = new \OC_Image();
 		$img->loadFromFile(OC::$SERVERROOT.'/tests/data/testimage.png');
 		$expected = base64_encode($img->data());
@@ -221,10 +189,6 @@ class ImageTest extends \Test\TestCase {
 	}
 
 	public function testResize() {
-		if (PHP_MAJOR_VERSION > 7) {
-			$this->markTestSkipped('Only run on php7');
-		}
-
 		$img = new \OC_Image();
 		$img->loadFromFile(OC::$SERVERROOT.'/tests/data/testimage.png');
 		$this->assertTrue($img->resize(32));
@@ -245,10 +209,6 @@ class ImageTest extends \Test\TestCase {
 	}
 
 	public function testPreciseResize() {
-		if (PHP_MAJOR_VERSION > 7) {
-			$this->markTestSkipped('Only run on php7');
-		}
-
 		$img = new \OC_Image();
 		$img->loadFromFile(OC::$SERVERROOT.'/tests/data/testimage.png');
 		$this->assertTrue($img->preciseResize(128, 512));
@@ -269,10 +229,6 @@ class ImageTest extends \Test\TestCase {
 	}
 
 	public function testCenterCrop() {
-		if (PHP_MAJOR_VERSION > 7) {
-			$this->markTestSkipped('Only run on php7');
-		}
-
 		$img = new \OC_Image();
 		$img->loadFromFile(OC::$SERVERROOT.'/tests/data/testimage.png');
 		$img->centerCrop();
@@ -293,10 +249,6 @@ class ImageTest extends \Test\TestCase {
 	}
 
 	public function testCrop() {
-		if (PHP_MAJOR_VERSION > 7) {
-			$this->markTestSkipped('Only run on php7');
-		}
-
 		$img = new \OC_Image();
 		$img->loadFromFile(OC::$SERVERROOT.'/tests/data/testimage.png');
 		$this->assertTrue($img->crop(0, 0, 50, 20));
@@ -332,10 +284,6 @@ class ImageTest extends \Test\TestCase {
 	 * @param int[] $expected
 	 */
 	public function testFitIn($filename, $asked, $expected) {
-		if (PHP_MAJOR_VERSION > 7) {
-			$this->markTestSkipped('Only run on php7');
-		}
-
 		$img = new \OC_Image();
 		$img->loadFromFile(OC::$SERVERROOT . '/tests/data/' . $filename);
 		$this->assertTrue($img->fitIn($asked[0], $asked[1]));
@@ -359,10 +307,6 @@ class ImageTest extends \Test\TestCase {
 	 * @param string $filename
 	 */
 	public function testScaleDownToFitWhenSmallerAlready($filename) {
-		if (PHP_MAJOR_VERSION > 7) {
-			$this->markTestSkipped('Only run on php7');
-		}
-
 		$img = new \OC_Image();
 		$img->loadFromFile(OC::$SERVERROOT.'/tests/data/' . $filename);
 		$currentWidth = $img->width();
@@ -396,10 +340,6 @@ class ImageTest extends \Test\TestCase {
 	 * @param int[] $expected
 	 */
 	public function testScaleDownWhenBigger($filename, $asked, $expected) {
-		if (PHP_MAJOR_VERSION > 7) {
-			$this->markTestSkipped('Only run on php7');
-		}
-
 		$img = new \OC_Image();
 		$img->loadFromFile(OC::$SERVERROOT.'/tests/data/' . $filename);
 		//$this->assertTrue($img->scaleDownToFit($asked[0], $asked[1]));
@@ -420,15 +360,24 @@ class ImageTest extends \Test\TestCase {
 	 * @dataProvider convertDataProvider
 	 */
 	public function testConvert($mimeType) {
-		if (PHP_MAJOR_VERSION > 7) {
-			$this->markTestSkipped('Only run on php7');
-		}
-
 		$img = new \OC_Image();
 		$img->loadFromFile(OC::$SERVERROOT.'/tests/data/testimage.png');
 		$tempFile = tempnam(sys_get_temp_dir(), 'img-test');
 
 		$img->save($tempFile, $mimeType);
 		$this->assertEquals($mimeType, image_type_to_mime_type(exif_imagetype($tempFile)));
+	}
+
+	public function testMemoryLimitFromFile() {
+		$img = new \OC_Image();
+		$img->loadFromFile(OC::$SERVERROOT.'/tests/data/testimage-badheader.jpg');
+		$this->assertFalse($img->valid());
+	}
+
+	public function testMemoryLimitFromData() {
+		$data = file_get_contents(OC::$SERVERROOT.'/tests/data/testimage-badheader.jpg');
+		$img = new \OC_Image();
+		$img->loadFromData($data);
+		$this->assertFalse($img->valid());
 	}
 }

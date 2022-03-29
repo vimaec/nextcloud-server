@@ -38,6 +38,9 @@ class LinkAction implements ILinkAction {
 	/** @var int */
 	private $priority = 10;
 
+	/** @var string */
+	private $appId;
+
 	/**
 	 * @param string $icon absolute URI to an icon
 	 */
@@ -88,13 +91,27 @@ class LinkAction implements ILinkAction {
 	}
 
 	/**
-	 * @return array
+	 * @param string $appId
+	 * @since 23.0.0
 	 */
-	public function jsonSerialize() {
+	public function setAppId(string $appId) {
+		$this->appId = $appId;
+	}
+
+	/**
+	 * @return string
+	 * @since 23.0.0
+	 */
+	public function getAppId(): string {
+		return $this->appId;
+	}
+
+	public function jsonSerialize(): array {
 		return [
 			'title' => $this->name,
 			'icon' => $this->icon,
 			'hyperlink' => $this->href,
+			'appId' => $this->appId,
 		];
 	}
 }

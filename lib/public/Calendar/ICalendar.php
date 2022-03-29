@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @copyright 2017, Georg Ehrke <oc.list@georgehrke.com>
  *
@@ -35,6 +38,11 @@ interface ICalendar {
 	 * @since 13.0.0
 	 */
 	public function getKey();
+
+	/**
+	 * @since 24.0.0
+	 */
+	public function getUri(): string;
 
 	/**
 	 * In comparison to getKey() this function returns a human readable (maybe translated) name

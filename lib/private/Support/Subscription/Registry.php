@@ -34,6 +34,7 @@ use OCP\IGroupManager;
 use OCP\IServerContainer;
 use OCP\IUserManager;
 use OCP\Notification\IManager;
+use OCP\User\Backend\ICountUsersBackend;
 use OCP\Support\Subscription\Exception\AlreadyRegisteredException;
 use OCP\Support\Subscription\IRegistry;
 use OCP\Support\Subscription\ISubscription;
@@ -59,21 +60,17 @@ class Registry implements IRegistry {
 	private $groupManager;
 	/** @var LoggerInterface */
 	private $logger;
-	/** @var IManager */
-	private $notificationManager;
 
 	public function __construct(IConfig $config,
 								IServerContainer $container,
 								IUserManager $userManager,
 								IGroupManager $groupManager,
-								LoggerInterface $logger,
-								IManager $notificationManager) {
+								LoggerInterface $logger) {
 		$this->config = $config;
 		$this->container = $container;
 		$this->userManager = $userManager;
 		$this->groupManager = $groupManager;
 		$this->logger = $logger;
-		$this->notificationManager = $notificationManager;
 	}
 
 	private function getSubscription(): ?ISubscription {
@@ -158,15 +155,16 @@ class Registry implements IRegistry {
 	/**
 	 * Indicates if a hard user limit is reached and no new users should be created
 	 *
+	 * @param IManager|null $notificationManager
 	 * @since 21.0.0
 	 */
-	public function delegateIsHardUserLimitReached(): bool {
+	public function delegateIsHardUserLimitReached(?IManager $notificationManager = null): bool {
 		$subscription = $this->getSubscription();
 		if ($subscription instanceof ISubscription &&
 			$subscription->hasValidSubscription()) {
 			$userLimitReached = $subscription->isHardUserLimitReached();
-			if ($userLimitReached) {
-				$this->notifyAboutReachedUserLimit();
+			if ($userLimitReached && $notificationManager instanceof IManager) {
+				$this->notifyAboutReachedUserLimit($notificationManager);
 			}
 			return $userLimitReached;
 		}
@@ -181,8 +179,8 @@ class Registry implements IRegistry {
 		$hardUserLimit = $this->config->getSystemValue('one-click-instance.user-limit', 50);
 
 		$userLimitReached = $userCount >= $hardUserLimit;
-		if ($userLimitReached) {
-			$this->notifyAboutReachedUserLimit();
+		if ($userLimitReached && $notificationManager instanceof IManager) {
+			$this->notifyAboutReachedUserLimit($notificationManager);
 		}
 		return $userLimitReached;
 	}
@@ -192,6 +190,7 @@ class Registry implements IRegistry {
 		$backends = $this->userManager->getBackends();
 		foreach ($backends as $backend) {
 			if ($backend->implementsActions(Backend::COUNT_USERS)) {
+				/** @var ICountUsersBackend $backend */
 				$backendUsers = $backend->countUsers();
 				if ($backendUsers !== false) {
 					$userCount += $backendUsers;
@@ -216,17 +215,17 @@ class Registry implements IRegistry {
 		return $userCount;
 	}
 
-	private function notifyAboutReachedUserLimit() {
+	private function notifyAboutReachedUserLimit(IManager $notificationManager) {
 		$admins = $this->groupManager->get('admin')->getUsers();
 		foreach ($admins as $admin) {
-			$notification = $this->notificationManager->createNotification();
+			$notification = $notificationManager->createNotification();
 
 			$notification->setApp('core')
 				->setUser($admin->getUID())
 				->setDateTime(new \DateTime())
 				->setObject('user_limit_reached', '1')
 				->setSubject('user_limit_reached');
-			$this->notificationManager->notify($notification);
+			$notificationManager->notify($notification);
 		}
 
 		$this->logger->warning('The user limit was reached and the new user was not created', ['app' => 'lib']);

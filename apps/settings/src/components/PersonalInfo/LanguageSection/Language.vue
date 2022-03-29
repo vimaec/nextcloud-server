@@ -17,16 +17,13 @@
 	-
 	- You should have received a copy of the GNU Affero General Public License
 	- along with this program. If not, see <http://www.gnu.org/licenses/>.
+	-
 -->
 
 <template>
 	<div class="language">
-		<select
-			id="language"
-			ref="language"
-			name="language"
+		<select id="language"
 			:placeholder="t('settings', 'Language')"
-			required
 			@change="onLanguageChange">
 			<option v-for="commonLanguage in commonLanguages"
 				:key="commonLanguage.code"
@@ -45,8 +42,7 @@
 			</option>
 		</select>
 
-		<a
-			href="https://www.transifex.com/nextcloud/nextcloud/"
+		<a href="https://www.transifex.com/nextcloud/nextcloud/"
 			target="_blank"
 			rel="noreferrer noopener">
 			<em>{{ t('settings', 'Help translate') }}</em>
@@ -57,7 +53,8 @@
 <script>
 import { showError } from '@nextcloud/dialogs'
 
-import { saveLanguage } from '../../../service/PersonalInfo/LanguageService'
+import { ACCOUNT_SETTING_PROPERTY_ENUM } from '../../../constants/AccountPropertyConstants'
+import { savePrimaryAccountProperty } from '../../../service/PersonalInfo/PersonalInfoService'
 import { validateLanguage } from '../../../utils/validate'
 
 export default {
@@ -105,7 +102,7 @@ export default {
 
 		async updateLanguage(language) {
 			try {
-				const responseData = await saveLanguage(language.code)
+				const responseData = await savePrimaryAccountProperty(ACCOUNT_SETTING_PROPERTY_ENUM.LANGUAGE, language.code)
 				this.handleResponse({
 					language,
 					status: responseData.ocs?.meta?.status,
@@ -113,7 +110,7 @@ export default {
 				this.reloadPage()
 			} catch (e) {
 				this.handleResponse({
-					errorMessage: 'Unable to update language',
+					errorMessage: t('settings', 'Unable to update language'),
 					error: e,
 				})
 			}
@@ -131,7 +128,7 @@ export default {
 				// Ensure that local state reflects server state
 				this.initialLanguage = language
 			} else {
-				showError(t('settings', errorMessage))
+				showError(errorMessage)
 				this.logger.error(errorMessage, error)
 			}
 		},

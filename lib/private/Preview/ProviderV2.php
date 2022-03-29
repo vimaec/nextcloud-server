@@ -31,9 +31,11 @@ use OCP\IImage;
 use OCP\Preview\IProviderV2;
 
 abstract class ProviderV2 implements IProviderV2 {
-	private $options;
+	/** @var array */
+	protected $options;
 
-	private $tmpFiles = [];
+	/** @var array */
+	protected $tmpFiles = [];
 
 	/**
 	 * Constructor
@@ -70,7 +72,7 @@ abstract class ProviderV2 implements IProviderV2 {
 	 */
 	abstract public function getThumbnail(File $file, int $maxX, int $maxY): ?IImage;
 
-	protected function useTempFile(File $file) {
+	protected function useTempFile(File $file): bool {
 		return $file->isEncrypted() || !$file->getStorage()->isLocal();
 	}
 
@@ -79,9 +81,9 @@ abstract class ProviderV2 implements IProviderV2 {
 	 *
 	 * @param File $file
 	 * @param int $maxSize maximum size for temporary files
-	 * @return string
+	 * @return string|false
 	 */
-	protected function getLocalFile(File $file, int $maxSize = null): string {
+	protected function getLocalFile(File $file, int $maxSize = null) {
 		if ($this->useTempFile($file)) {
 			$absPath = \OC::$server->getTempManager()->getTemporaryFile();
 
@@ -95,14 +97,19 @@ abstract class ProviderV2 implements IProviderV2 {
 			$this->tmpFiles[] = $absPath;
 			return $absPath;
 		} else {
-			return $file->getStorage()->getLocalFile($file->getInternalPath());
+			$path = $file->getStorage()->getLocalFile($file->getInternalPath());
+			if (is_string($path)) {
+				return $path;
+			} else {
+				return false;
+			}
 		}
 	}
 
 	/**
 	 * Clean any generated temporary files
 	 */
-	protected function cleanTmpFiles() {
+	protected function cleanTmpFiles(): void {
 		foreach ($this->tmpFiles as $tmpFile) {
 			unlink($tmpFile);
 		}

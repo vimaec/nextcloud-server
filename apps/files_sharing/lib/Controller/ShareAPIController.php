@@ -334,8 +334,12 @@ class ShareAPIController extends OCSController {
 	 * @return string
 	 */
 	private function getDisplayNameFromAddressBook(string $query, string $property): string {
-		// FIXME: If we inject the contacts manager it gets initialized bofore any address books are registered
-		$result = \OC::$server->getContactsManager()->search($query, [$property]);
+		// FIXME: If we inject the contacts manager it gets initialized before any address books are registered
+		$result = \OC::$server->getContactsManager()->search($query, [$property], [
+			'limit' => 1,
+			'enumeration' => false,
+			'strict_search' => true,
+		]);
 		foreach ($result as $r) {
 			foreach ($r[$property] as $value) {
 				if ($value === $query && $r['FN']) {
@@ -449,6 +453,7 @@ class ShareAPIController extends OCSController {
 		string $password = '',
 		string $sendPasswordByTalk = null,
 		string $expireDate = '',
+		string $note = '',
 		string $label = ''
 	): DataResponse {
 		$share = $this->shareManager->newShare();
@@ -466,7 +471,7 @@ class ShareAPIController extends OCSController {
 		try {
 			$path = $userFolder->get($path);
 		} catch (NotFoundException $e) {
-			throw new OCSNotFoundException($this->l->t('Wrong path, file/folder doesn\'t exist'));
+			throw new OCSNotFoundException($this->l->t('Wrong path, file/folder does not exist'));
 		}
 
 		$share->setNode($path);
@@ -653,6 +658,10 @@ class ShareAPIController extends OCSController {
 		$share->setShareType($shareType);
 		$share->setSharedBy($this->currentUser);
 
+		if ($note !== '') {
+			$share->setNote($note);
+		}
+
 		try {
 			$share = $this->shareManager->createShare($share);
 		} catch (GenericShareException $e) {
@@ -799,7 +808,7 @@ class ShareAPIController extends OCSController {
 				$this->lock($node);
 			} catch (NotFoundException $e) {
 				throw new OCSNotFoundException(
-					$this->l->t('Wrong path, file/folder doesn\'t exist')
+					$this->l->t('Wrong path, file/folder does not exist')
 				);
 			} catch (LockedException $e) {
 				throw new OCSNotFoundException($this->l->t('Could not lock node'));
@@ -931,7 +940,7 @@ class ShareAPIController extends OCSController {
 			$node = $userFolder->get($path);
 			$this->lock($node);
 		} catch (\OCP\Files\NotFoundException $e) {
-			throw new OCSNotFoundException($this->l->t('Wrong path, file/folder doesn\'t exist'));
+			throw new OCSNotFoundException($this->l->t('Wrong path, file/folder does not exist'));
 		} catch (LockedException $e) {
 			throw new OCSNotFoundException($this->l->t('Could not lock path'));
 		}
@@ -992,6 +1001,13 @@ class ShareAPIController extends OCSController {
 		}
 
 		return new DataResponse(array_values($shares));
+	}
+
+	/**
+	 * Check whether a set of permissions contains the permissions to check.
+	 */
+	private function hasPermission(int $permissionsSet, int $permissionsToCheck): bool {
+		return ($permissionsSet & $permissionsToCheck) === $permissionsToCheck;
 	}
 
 
@@ -1095,16 +1111,16 @@ class ShareAPIController extends OCSController {
 				$newPermissions = $newPermissions & ~Constants::PERMISSION_SHARE;
 			}
 
-			if ($newPermissions !== null &&
-				!in_array($newPermissions, [
-					Constants::PERMISSION_READ,
-					Constants::PERMISSION_READ | Constants::PERMISSION_CREATE | Constants::PERMISSION_UPDATE, // legacy
-					Constants::PERMISSION_READ | Constants::PERMISSION_CREATE | Constants::PERMISSION_UPDATE | Constants::PERMISSION_DELETE, // correct
-					Constants::PERMISSION_CREATE, // hidden file list
-					Constants::PERMISSION_READ | Constants::PERMISSION_UPDATE, // allow to edit single files
-				], true)
-			) {
-				throw new OCSBadRequestException($this->l->t('Cannot change permissions for public share links'));
+			if ($newPermissions !== null) {
+				if (!$this->hasPermission($newPermissions, Constants::PERMISSION_READ) && !$this->hasPermission($newPermissions, Constants::PERMISSION_CREATE)) {
+					throw new OCSBadRequestException($this->l->t('Share must at least have READ or CREATE permissions'));
+				}
+
+				if (!$this->hasPermission($newPermissions, Constants::PERMISSION_READ) && (
+						$this->hasPermission($newPermissions, Constants::PERMISSION_UPDATE) || $this->hasPermission($newPermissions, Constants::PERMISSION_DELETE)
+					)) {
+					throw new OCSBadRequestException($this->l->t('Share must have READ permission if UPDATE or DELETE permission is set.'));
+				}
 			}
 
 			if (

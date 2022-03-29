@@ -33,10 +33,12 @@ declare(strict_types=1);
  */
 namespace OC\Core\Command\Db;
 
+use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
 use OC\DB\Connection;
 use OC\DB\SchemaWrapper;
 use OCP\IDBConnection;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -68,11 +70,12 @@ class AddMissingIndices extends Command {
 	protected function configure() {
 		$this
 			->setName('db:add-missing-indices')
-			->setDescription('Add missing indices to the database tables');
+			->setDescription('Add missing indices to the database tables')
+			->addOption('dry-run', null, InputOption::VALUE_NONE, "Output the SQL queries instead of running them.");
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): int {
-		$this->addCoreIndexes($output);
+		$this->addCoreIndexes($output, $input->getOption('dry-run'));
 
 		// Dispatch event so apps can also update indexes if needed
 		$event = new GenericEvent($output);
@@ -84,9 +87,10 @@ class AddMissingIndices extends Command {
 	 * add missing indices to the share table
 	 *
 	 * @param OutputInterface $output
+	 * @param bool $dryRun If true, will return the sql queries instead of running them.
 	 * @throws \Doctrine\DBAL\Schema\SchemaException
 	 */
-	private function addCoreIndexes(OutputInterface $output) {
+	private function addCoreIndexes(OutputInterface $output, bool $dryRun): void {
 		$output->writeln('<info>Check indices of the share table.</info>');
 
 		$schema = new SchemaWrapper($this->connection);
@@ -97,7 +101,10 @@ class AddMissingIndices extends Command {
 			if (!$table->hasIndex('share_with_index')) {
 				$output->writeln('<info>Adding additional share_with index to the share table, this can take some time...</info>');
 				$table->addIndex(['share_with'], 'share_with_index');
-				$this->connection->migrateToSchema($schema->getWrappedSchema());
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
 				$updated = true;
 				$output->writeln('<info>Share table updated successfully.</info>');
 			}
@@ -105,7 +112,10 @@ class AddMissingIndices extends Command {
 			if (!$table->hasIndex('parent_index')) {
 				$output->writeln('<info>Adding additional parent index to the share table, this can take some time...</info>');
 				$table->addIndex(['parent'], 'parent_index');
-				$this->connection->migrateToSchema($schema->getWrappedSchema());
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
 				$updated = true;
 				$output->writeln('<info>Share table updated successfully.</info>');
 			}
@@ -113,7 +123,10 @@ class AddMissingIndices extends Command {
 			if (!$table->hasIndex('owner_index')) {
 				$output->writeln('<info>Adding additional owner index to the share table, this can take some time...</info>');
 				$table->addIndex(['uid_owner'], 'owner_index');
-				$this->connection->migrateToSchema($schema->getWrappedSchema());
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
 				$updated = true;
 				$output->writeln('<info>Share table updated successfully.</info>');
 			}
@@ -121,7 +134,10 @@ class AddMissingIndices extends Command {
 			if (!$table->hasIndex('initiator_index')) {
 				$output->writeln('<info>Adding additional initiator index to the share table, this can take some time...</info>');
 				$table->addIndex(['uid_initiator'], 'initiator_index');
-				$this->connection->migrateToSchema($schema->getWrappedSchema());
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
 				$updated = true;
 				$output->writeln('<info>Share table updated successfully.</info>');
 			}
@@ -133,21 +149,40 @@ class AddMissingIndices extends Command {
 			if (!$table->hasIndex('fs_mtime')) {
 				$output->writeln('<info>Adding additional mtime index to the filecache table, this can take some time...</info>');
 				$table->addIndex(['mtime'], 'fs_mtime');
-				$this->connection->migrateToSchema($schema->getWrappedSchema());
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
 				$updated = true;
 				$output->writeln('<info>Filecache table updated successfully.</info>');
 			}
 			if (!$table->hasIndex('fs_size')) {
 				$output->writeln('<info>Adding additional size index to the filecache table, this can take some time...</info>');
 				$table->addIndex(['size'], 'fs_size');
-				$this->connection->migrateToSchema($schema->getWrappedSchema());
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
 				$updated = true;
 				$output->writeln('<info>Filecache table updated successfully.</info>');
 			}
 			if (!$table->hasIndex('fs_id_storage_size')) {
 				$output->writeln('<info>Adding additional size index to the filecache table, this can take some time...</info>');
 				$table->addIndex(['fileid', 'storage', 'size'], 'fs_id_storage_size');
-				$this->connection->migrateToSchema($schema->getWrappedSchema());
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
+				$updated = true;
+				$output->writeln('<info>Filecache table updated successfully.</info>');
+			}
+			if (!$table->hasIndex('fs_storage_path_prefix') && !$schema->getDatabasePlatform() instanceof PostgreSQL94Platform) {
+				$output->writeln('<info>Adding additional path index to the filecache table, this can take some time...</info>');
+				$table->addIndex(['storage', 'path'], 'fs_storage_path_prefix', [], ['lengths' => [null, 64]]);
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
 				$updated = true;
 				$output->writeln('<info>Filecache table updated successfully.</info>');
 			}
@@ -159,7 +194,10 @@ class AddMissingIndices extends Command {
 			if (!$table->hasIndex('twofactor_providers_uid')) {
 				$output->writeln('<info>Adding additional twofactor_providers_uid index to the twofactor_providers table, this can take some time...</info>');
 				$table->addIndex(['uid'], 'twofactor_providers_uid');
-				$this->connection->migrateToSchema($schema->getWrappedSchema());
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
 				$updated = true;
 				$output->writeln('<info>Twofactor_providers table updated successfully.</info>');
 			}
@@ -183,7 +221,10 @@ class AddMissingIndices extends Command {
 				$table->addUniqueIndex(['poll_token'], 'poll_token');
 				$table->addUniqueIndex(['login_token'], 'login_token');
 				$table->addIndex(['timestamp'], 'timestamp');
-				$this->connection->migrateToSchema($schema->getWrappedSchema());
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
 				$updated = true;
 				$output->writeln('<info>login_flow_v2 table updated successfully.</info>');
 			}
@@ -202,7 +243,10 @@ class AddMissingIndices extends Command {
 				}
 
 				$table->addUniqueIndex(['version'], 'version');
-				$this->connection->migrateToSchema($schema->getWrappedSchema());
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
 				$updated = true;
 				$output->writeln('<info>whats_new table updated successfully.</info>');
 			}
@@ -214,15 +258,22 @@ class AddMissingIndices extends Command {
 			$table = $schema->getTable('cards');
 
 			if ($table->hasIndex('addressbookid_uri_index')) {
-				$output->writeln('<info>Renaming addressbookid_uri_index index to  to the cards table, this can take some time...</info>');
+				if ($table->hasIndex('cards_abiduri')) {
+					$table->dropIndex('addressbookid_uri_index');
+				} else {
+					$output->writeln('<info>Renaming addressbookid_uri_index index to cards_abiduri in the cards table, this can take some time...</info>');
 
-				foreach ($table->getIndexes() as $index) {
-					if ($index->getColumns() === ['addressbookid', 'uri']) {
-						$table->renameIndex('addressbookid_uri_index', 'cards_abiduri');
+					foreach ($table->getIndexes() as $index) {
+						if ($index->getColumns() === ['addressbookid', 'uri']) {
+							$table->renameIndex('addressbookid_uri_index', 'cards_abiduri');
+						}
 					}
 				}
 
-				$this->connection->migrateToSchema($schema->getWrappedSchema());
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
 				$cardsUpdated = true;
 			}
 
@@ -236,7 +287,10 @@ class AddMissingIndices extends Command {
 				}
 
 				$table->addIndex(['addressbookid'], 'cards_abid');
-				$this->connection->migrateToSchema($schema->getWrappedSchema());
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
 				$cardsUpdated = true;
 			}
 
@@ -250,7 +304,10 @@ class AddMissingIndices extends Command {
 				}
 
 				$table->addIndex(['addressbookid', 'uri'], 'cards_abiduri');
-				$this->connection->migrateToSchema($schema->getWrappedSchema());
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
 				$cardsUpdated = true;
 			}
 
@@ -273,7 +330,10 @@ class AddMissingIndices extends Command {
 				}
 
 				$table->addIndex(['addressbookid'], 'cards_prop_abid');
-				$this->connection->migrateToSchema($schema->getWrappedSchema());
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
 				$updated = true;
 				$output->writeln('<info>cards_properties table updated successfully.</info>');
 			}
@@ -286,7 +346,10 @@ class AddMissingIndices extends Command {
 				$output->writeln('<info>Adding calendarobject_calid_index index to the calendarobjects_props table, this can take some time...</info>');
 
 				$table->addIndex(['calendarid', 'calendartype'], 'calendarobject_calid_index');
-				$this->connection->migrateToSchema($schema->getWrappedSchema());
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
 				$updated = true;
 				$output->writeln('<info>calendarobjects_props table updated successfully.</info>');
 			}
@@ -299,7 +362,10 @@ class AddMissingIndices extends Command {
 				$output->writeln('<info>Adding schedulobj_principuri_index index to the schedulingobjects table, this can take some time...</info>');
 
 				$table->addIndex(['principaluri'], 'schedulobj_principuri_index');
-				$this->connection->migrateToSchema($schema->getWrappedSchema());
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
 				$updated = true;
 				$output->writeln('<info>schedulingobjects table updated successfully.</info>');
 			}
@@ -308,13 +374,64 @@ class AddMissingIndices extends Command {
 		$output->writeln('<info>Check indices of the oc_properties table.</info>');
 		if ($schema->hasTable('properties')) {
 			$table = $schema->getTable('properties');
+			$propertiesUpdated = false;
+
 			if (!$table->hasIndex('properties_path_index')) {
 				$output->writeln('<info>Adding properties_path_index index to the oc_properties table, this can take some time...</info>');
 
 				$table->addIndex(['userid', 'propertypath'], 'properties_path_index');
-				$this->connection->migrateToSchema($schema->getWrappedSchema());
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
+				$propertiesUpdated = true;
+			}
+			if (!$table->hasIndex('properties_pathonly_index')) {
+				$output->writeln('<info>Adding properties_pathonly_index index to the oc_properties table, this can take some time...</info>');
+
+				$table->addIndex(['propertypath'], 'properties_pathonly_index');
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
+				$propertiesUpdated = true;
+			}
+
+			if ($propertiesUpdated) {
 				$updated = true;
 				$output->writeln('<info>oc_properties table updated successfully.</info>');
+			}
+		}
+
+		$output->writeln('<info>Check indices of the oc_jobs table.</info>');
+		if ($schema->hasTable('jobs')) {
+			$table = $schema->getTable('jobs');
+			if (!$table->hasIndex('job_lastcheck_reserved')) {
+				$output->writeln('<info>Adding job_lastcheck_reserved index to the oc_jobs table, this can take some time...</info>');
+
+				$table->addIndex(['last_checked', 'reserved_at'], 'job_lastcheck_reserved');
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
+				$updated = true;
+				$output->writeln('<info>oc_properties table updated successfully.</info>');
+			}
+		}
+
+		$output->writeln('<info>Check indices of the oc_direct_edit table.</info>');
+		if ($schema->hasTable('direct_edit')) {
+			$table = $schema->getTable('direct_edit');
+			if (!$table->hasIndex('direct_edit_timestamp')) {
+				$output->writeln('<info>Adding direct_edit_timestamp index to the oc_direct_edit table, this can take some time...</info>');
+
+				$table->addIndex(['timestamp'], 'direct_edit_timestamp');
+				$sqlQueries = $this->connection->migrateToSchema($schema->getWrappedSchema(), $dryRun);
+				if ($dryRun && $sqlQueries !== null) {
+					$output->writeln($sqlQueries);
+				}
+				$updated = true;
+				$output->writeln('<info>oc_direct_edit table updated successfully.</info>');
 			}
 		}
 

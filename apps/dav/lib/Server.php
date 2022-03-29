@@ -34,6 +34,9 @@
  */
 namespace OCA\DAV;
 
+use OCA\DAV\Connector\Sabre\RequestIdHeaderPlugin;
+use OCP\Diagnostics\IEventLogger;
+use Psr\Log\LoggerInterface;
 use OCA\DAV\AppInfo\PluginManager;
 use OCA\DAV\CalDAV\BirthdayService;
 use OCA\DAV\CardDAV\HasPhotoPlugin;
@@ -62,6 +65,7 @@ use OCA\DAV\DAV\PublicAuth;
 use OCA\DAV\Events\SabrePluginAuthInitEvent;
 use OCA\DAV\Files\BrowserErrorPagePlugin;
 use OCA\DAV\Files\LazySearchBackend;
+use OCA\DAV\BulkUpload\BulkUploadPlugin;
 use OCA\DAV\Provisioning\Apple\AppleProvisioningPlugin;
 use OCA\DAV\SystemTag\SystemTagPlugin;
 use OCA\DAV\Upload\ChunkingPlugin;
@@ -152,7 +156,6 @@ class Server {
 			'principals/calendar-resources',
 			'principals/calendar-rooms',
 		];
-		$acl->defaultUsernamePath = 'principals/users';
 		$this->server->addPlugin($acl);
 
 		// calendar plugins
@@ -203,6 +206,7 @@ class Server {
 		));
 
 		$this->server->addPlugin(new CopyEtagHeaderPlugin());
+		$this->server->addPlugin(new RequestIdHeaderPlugin(\OC::$server->get(IRequest::class)));
 		$this->server->addPlugin(new ChunkingPlugin());
 
 		// allow setup of additional plugins
@@ -294,6 +298,10 @@ class Server {
 						\OC::$server->getShareManager(),
 						$view
 					));
+					$logger = \OC::$server->get(LoggerInterface::class);
+					$this->server->addPlugin(
+						new BulkUploadPlugin($userFolder, $logger)
+					);
 				}
 				$this->server->addPlugin(new \OCA\DAV\CalDAV\BirthdayCalendar\EnablePlugin(
 					\OC::$server->getConfig(),
@@ -330,7 +338,11 @@ class Server {
 	}
 
 	public function exec() {
+		/** @var IEventLogger $eventLogger */
+		$eventLogger = \OC::$server->get(IEventLogger::class);
+		$eventLogger->start('dav_server_exec', '');
 		$this->server->exec();
+		$eventLogger->end('dav_server_exec');
 	}
 
 	private function requestIsForSubtree(array $subTrees): bool {

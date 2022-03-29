@@ -273,7 +273,9 @@ class Updater extends BasicEmitter {
 		// upgrade appstore apps
 		$this->upgradeAppStoreApps($appManager->getInstalledApps());
 		$autoDisabledApps = $appManager->getAutoDisabledApps();
-		$this->upgradeAppStoreApps($autoDisabledApps, true);
+		if (!empty($autoDisabledApps)) {
+			$this->upgradeAppStoreApps(array_keys($autoDisabledApps), $autoDisabledApps);
+		}
 
 		// install new shipped apps on upgrade
 		$errors = Installer::installShippedApps(true);
@@ -400,12 +402,12 @@ class Updater extends BasicEmitter {
 	}
 
 	/**
-	 * @param array $disabledApps
-	 * @param bool $reenable
+	 * @param array $apps
+	 * @param array $previousEnableStates
 	 * @throws \Exception
 	 */
-	private function upgradeAppStoreApps(array $disabledApps, bool $reenable = false): void {
-		foreach ($disabledApps as $app => $previousEnableSetting) {
+	private function upgradeAppStoreApps(array $apps, array $previousEnableStates = []): void {
+		foreach ($apps as $app) {
 			try {
 				$this->emit('\OC\Updater', 'checkAppStoreAppBefore', [$app]);
 				if ($this->installer->isUpdateAvailable($app)) {
@@ -414,10 +416,10 @@ class Updater extends BasicEmitter {
 				}
 				$this->emit('\OC\Updater', 'checkAppStoreApp', [$app]);
 
-				if ($reenable) {
+				if (!empty($previousEnableStates)) {
 					$ocApp = new \OC_App();
-					if (!empty($previousEnableSetting)) {
-						$ocApp->enable($app, $previousEnableSetting);
+					if (!empty($previousEnableStates[$app]) && is_array($previousEnableStates[$app])) {
+						$ocApp->enable($app, $previousEnableStates[$app]);
 					} else {
 						$ocApp->enable($app);
 					}
@@ -543,13 +545,13 @@ class Updater extends BasicEmitter {
 			$log->info('\OC\Updater::incompatibleAppDisabled: Disabled incompatible app: ' . $app, ['app' => 'updater']);
 		});
 		$this->listen('\OC\Updater', 'checkAppStoreAppBefore', function ($app) use ($log) {
-			$log->info('\OC\Updater::checkAppStoreAppBefore: Checking for update of app "' . $app . '" in appstore', ['app' => 'updater']);
+			$log->debug('\OC\Updater::checkAppStoreAppBefore: Checking for update of app "' . $app . '" in appstore', ['app' => 'updater']);
 		});
 		$this->listen('\OC\Updater', 'upgradeAppStoreApp', function ($app) use ($log) {
 			$log->info('\OC\Updater::upgradeAppStoreApp: Update app "' . $app . '" from appstore', ['app' => 'updater']);
 		});
 		$this->listen('\OC\Updater', 'checkAppStoreApp', function ($app) use ($log) {
-			$log->info('\OC\Updater::checkAppStoreApp: Checked for update of app "' . $app . '" in appstore', ['app' => 'updater']);
+			$log->debug('\OC\Updater::checkAppStoreApp: Checked for update of app "' . $app . '" in appstore', ['app' => 'updater']);
 		});
 		$this->listen('\OC\Updater', 'appSimulateUpdate', function ($app) use ($log) {
 			$log->info('\OC\Updater::appSimulateUpdate: Checking whether the database schema for <' . $app . '> can be updated (this can take a long time depending on the database size)', ['app' => 'updater']);

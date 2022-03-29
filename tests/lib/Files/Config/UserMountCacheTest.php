@@ -11,7 +11,6 @@ namespace Test\Files\Config;
 use OC\DB\QueryBuilder\Literal;
 use OC\Files\Mount\MountPoint;
 use OC\Files\Storage\Storage;
-use OC\Log;
 use OC\User\Manager;
 use OCP\EventDispatcher\IEventDispatcher;
 use OCP\Files\Config\ICachedMountInfo;
@@ -19,6 +18,7 @@ use OCP\ICacheFactory;
 use OCP\IConfig;
 use OCP\IDBConnection;
 use OCP\IUserManager;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Test\TestCase;
 use Test\Util\User\Dummy;
@@ -45,15 +45,28 @@ class UserMountCacheTest extends TestCase {
 	private $fileIds = [];
 
 	protected function setUp(): void {
+		parent::setUp();
+
 		$this->fileIds = [];
 		$this->connection = \OC::$server->getDatabaseConnection();
-		$this->userManager = new Manager($this->createMock(IConfig::class), $this->createMock(EventDispatcherInterface::class), $this->createMock(ICacheFactory::class), $this->createMock(IEventDispatcher::class));
+		$config = $this->getMockBuilder(IConfig::class)
+			->disableOriginalConstructor()
+			->getMock();
+		$config
+			->expects($this->any())
+			->method('getUserValue')
+			->willReturnArgument(3);
+		$config
+			->expects($this->any())
+			->method('getAppValue')
+			->willReturnArgument(2);
+		$this->userManager = new Manager($config, $this->createMock(EventDispatcherInterface::class), $this->createMock(ICacheFactory::class), $this->createMock(IEventDispatcher::class));
 		$userBackend = new Dummy();
 		$userBackend->createUser('u1', '');
 		$userBackend->createUser('u2', '');
 		$userBackend->createUser('u3', '');
 		$this->userManager->registerBackend($userBackend);
-		$this->cache = new \OC\Files\Config\UserMountCache($this->connection, $this->userManager, $this->createMock(Log::class));
+		$this->cache = new \OC\Files\Config\UserMountCache($this->connection, $this->userManager, $this->createMock(LoggerInterface::class));
 	}
 
 	protected function tearDown(): void {

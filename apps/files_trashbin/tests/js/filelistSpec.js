@@ -9,7 +9,7 @@
  * @author Robin Appelman <robin@icewind.nl>
  * @author Vincent Petry <vincent@nextcloud.com>
  *
- * @license GNU AGPL version 3 or any later version
+ * @license AGPL-3.0-or-later
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -136,7 +136,7 @@ describe('OCA.Trashbin.FileList tests', function () {
 	describe('Initialization', function () {
 		it('Sorts by mtime by default', function () {
 			expect(fileList._sort).toEqual('mtime');
-			expect(fileList._sortDirection).toEqual('asc');
+			expect(fileList._sortDirection).toEqual('desc');
 		});
 		it('Always returns read and delete permission', function () {
 			expect(fileList.getDirectoryPermissions()).toEqual(OC.PERMISSION_READ | OC.PERMISSION_DELETE);

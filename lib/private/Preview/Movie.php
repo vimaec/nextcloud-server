@@ -30,12 +30,26 @@
 namespace OC\Preview;
 
 use OCP\Files\File;
+use OCP\Files\FileInfo;
 use OCP\IImage;
 use Psr\Log\LoggerInterface;
 
 class Movie extends ProviderV2 {
+
+	/**
+	 * @deprecated 23.0.0 pass option to \OCP\Preview\ProviderV2
+	 * @var string
+	 */
 	public static $avconvBinary;
+
+	/**
+	 * @deprecated 23.0.0 pass option to \OCP\Preview\ProviderV2
+	 * @var string
+	 */
 	public static $ffmpegBinary;
+
+	/** @var string */
+	private $binary;
 
 	/**
 	 * {@inheritDoc}
@@ -47,8 +61,29 @@ class Movie extends ProviderV2 {
 	/**
 	 * {@inheritDoc}
 	 */
+	public function isAvailable(FileInfo $file): bool {
+		// TODO: remove when avconv is dropped
+		if (is_null($this->binary)) {
+			if (isset($this->options['movieBinary'])) {
+				$this->binary = $this->options['movieBinary'];
+			} elseif (is_string(self::$avconvBinary)) {
+				$this->binary = self::$avconvBinary;
+			} elseif (is_string(self::$ffmpegBinary)) {
+				$this->binary = self::$ffmpegBinary;
+			}
+		}
+		return is_string($this->binary);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getThumbnail(File $file, int $maxX, int $maxY): ?IImage {
 		// TODO: use proc_open() and stream the source file ?
+
+		if (!$this->isAvailable($file)) {
+			return null;
+		}
 
 		$result = null;
 		if ($this->useTempFile($file)) {
@@ -64,11 +99,14 @@ class Movie extends ProviderV2 {
 		foreach ($sizeAttempts as $size) {
 			$absPath = $this->getLocalFile($file, $size);
 
-			$result = $this->generateThumbNail($maxX, $maxY, $absPath, 5);
-			if ($result === null) {
-				$result = $this->generateThumbNail($maxX, $maxY, $absPath, 1);
+			$result = null;
+			if (is_string($absPath)) {
+				$result = $this->generateThumbNail($maxX, $maxY, $absPath, 5);
 				if ($result === null) {
-					$result = $this->generateThumbNail($maxX, $maxY, $absPath, 0);
+					$result = $this->generateThumbNail($maxX, $maxY, $absPath, 1);
+					if ($result === null) {
+						$result = $this->generateThumbNail($maxX, $maxY, $absPath, 0);
+					}
 				}
 			}
 
@@ -82,27 +120,26 @@ class Movie extends ProviderV2 {
 		return $result;
 	}
 
-	/**
-	 * @param int $maxX
-	 * @param int $maxY
-	 * @param string $absPath
-	 * @param int $second
-	 * @return null|\OCP\IImage
-	 */
-	private function generateThumbNail($maxX, $maxY, $absPath, $second): ?IImage {
+	private function generateThumbNail(int $maxX, int $maxY, string $absPath, int $second): ?IImage {
 		$tmpPath = \OC::$server->getTempManager()->getTemporaryFile();
 
-		if (self::$avconvBinary) {
-			$cmd = self::$avconvBinary . ' -y -ss ' . escapeshellarg($second) .
+		$binaryType = substr(strrchr($this->binary, '/'), 1);
+
+		if ($binaryType === 'avconv') {
+			$cmd = $this->binary . ' -y -ss ' . escapeshellarg((string)$second) .
 				' -i ' . escapeshellarg($absPath) .
 				' -an -f mjpeg -vframes 1 -vsync 1 ' . escapeshellarg($tmpPath) .
 				' 2>&1';
-		} else {
-			$cmd = self::$ffmpegBinary . ' -y -ss ' . escapeshellarg($second) .
+		} elseif ($binaryType === 'ffmpeg') {
+			$cmd = $this->binary . ' -y -ss ' . escapeshellarg((string)$second) .
 				' -i ' . escapeshellarg($absPath) .
 				' -f mjpeg -vframes 1' .
 				' ' . escapeshellarg($tmpPath) .
 				' 2>&1';
+		} else {
+			// Not supported
+			unlink($tmpPath);
+			return null;
 		}
 
 		exec($cmd, $output, $returnCode);
@@ -118,8 +155,10 @@ class Movie extends ProviderV2 {
 			}
 		}
 
-		$logger = \OC::$server->get(LoggerInterface::class);
-		$logger->error('Movie preview generation failed Output: {output}', ['app' => 'core', 'output' => $output]);
+		if ($second === 0) {
+			$logger = \OC::$server->get(LoggerInterface::class);
+			$logger->error('Movie preview generation failed Output: {output}', ['app' => 'core', 'output' => $output]);
+		}
 
 		unlink($tmpPath);
 		return null;

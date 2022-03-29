@@ -10,9 +10,11 @@
 namespace Test\User;
 
 use OC\AllConfig;
+use OC\Files\Mount\ObjectHomeMountProvider;
 use OC\Hooks\PublicEmitter;
 use OC\User\User;
 use OCP\Comments\ICommentsManager;
+use OCP\Files\Storage\IStorageFactory;
 use OCP\IConfig;
 use OCP\IUser;
 use OCP\Notification\IManager as INotificationManager;
@@ -117,7 +119,7 @@ class UserTest extends TestCase {
 			});
 
 		$user = new User('foo', $backend, $this->dispatcher);
-		$this->assertTrue($user->setPassword('bar',''));
+		$this->assertTrue($user->setPassword('bar', ''));
 	}
 
 	public function testSetPasswordNotSupported() {
@@ -133,7 +135,7 @@ class UserTest extends TestCase {
 			->willReturn(false);
 
 		$user = new User('foo', $backend, $this->dispatcher);
-		$this->assertFalse($user->setPassword('bar',''));
+		$this->assertFalse($user->setPassword('bar', ''));
 	}
 
 	public function testChangeAvatarSupportedYes() {
@@ -214,6 +216,16 @@ class UserTest extends TestCase {
 	}
 
 	public function testDeleteWithDifferentHome() {
+
+		/** @var ObjectHomeMountProvider $homeProvider */
+		$homeProvider = \OC::$server->get(ObjectHomeMountProvider::class);
+		$user = $this->createMock(IUser::class);
+		$user->method('getUID')
+			->willReturn('foo');
+		if ($homeProvider->getHomeMountForUser($user, $this->createMock(IStorageFactory::class)) !== null) {
+			$this->markTestSkipped("Skipping test for non local home storage");
+		}
+
 		/**
 		 * @var Backend | \PHPUnit\Framework\MockObject\MockObject $backend
 		 */
@@ -389,12 +401,12 @@ class UserTest extends TestCase {
 
 		$backend->expects($this->once())
 			->method('setDisplayName')
-			->with('foo','Foo')
+			->with('foo', 'Foo')
 			->willReturn(true);
 
 		$user = new User('foo', $backend, $this->dispatcher);
 		$this->assertTrue($user->setDisplayName('Foo'));
-		$this->assertEquals('Foo',$user->getDisplayName());
+		$this->assertEquals('Foo', $user->getDisplayName());
 	}
 
 	/**
@@ -418,7 +430,7 @@ class UserTest extends TestCase {
 
 		$user = new User('foo', $backend, $this->dispatcher);
 		$this->assertFalse($user->setDisplayName(' '));
-		$this->assertEquals('foo',$user->getDisplayName());
+		$this->assertEquals('foo', $user->getDisplayName());
 	}
 
 	public function testSetDisplayNameNotSupported() {
@@ -436,7 +448,7 @@ class UserTest extends TestCase {
 
 		$user = new User('foo', $backend, $this->dispatcher);
 		$this->assertFalse($user->setDisplayName('Foo'));
-		$this->assertEquals('foo',$user->getDisplayName());
+		$this->assertEquals('foo', $user->getDisplayName());
 	}
 
 	public function testSetPasswordHooks() {
@@ -476,7 +488,7 @@ class UserTest extends TestCase {
 
 		$user = new User('foo', $backend, $this->dispatcher, $emitter);
 
-		$user->setPassword('bar','');
+		$user->setPassword('bar', '');
 		$this->assertEquals(2, $hooksCalled);
 	}
 

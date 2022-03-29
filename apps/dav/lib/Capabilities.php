@@ -3,6 +3,7 @@
  * @copyright Copyright (c) 2016, ownCloud GmbH
  *
  * @author Thomas Müller <thomas.mueller@tmit.eu>
+ * @author Louis Chemineau <louis@chmn.me>
  *
  * @license AGPL-3.0
  *
@@ -28,6 +29,8 @@ class Capabilities implements ICapability {
 		return [
 			'dav' => [
 				'chunking' => '1.0',
+				// disabled because of https://github.com/nextcloud/desktop/issues/4243
+				// 'bulkupload' => '1.0',
 			]
 		];
 	}

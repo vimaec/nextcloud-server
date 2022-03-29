@@ -41,6 +41,12 @@
 					</ul>
 				</template>
 
+				<template v-if="!isWebUpdaterRecommended && updaterEnabled && webUpdaterEnabled">
+					<h3 class="warning">
+						{{ t('updatenotification', 'Please note that the web updater is not recommended with more than 100 users! Please use the command line updater instead!') }}
+					</h3>
+				</template>
+
 				<div>
 					<a v-if="updaterEnabled && webUpdaterEnabled"
 						href="#"
@@ -136,6 +142,7 @@ export default {
 			lastCheckedDate: '',
 			isUpdateChecked: false,
 			webUpdaterEnabled: true,
+			isWebUpdaterRecommended: true,
 			updaterEnabled: true,
 			versionIsEol: false,
 			downloadLink: '',
@@ -198,8 +205,8 @@ export default {
 			}
 
 			return this.missingAppUpdates.length === 0
-				? t('updatenotification', '<strong>All</strong> apps have a compatible version for this Nextcloud version available', this)
-				: n('updatenotification', '<strong>%n</strong> app has no compatible version for this Nextcloud version available', '<strong>%n</strong> apps have no compatible version for this Nextcloud version available', this.missingAppUpdates.length)
+				? t('updatenotification', '<strong>All</strong> apps have a compatible version for this Nextcloud version available.', this)
+				: n('updatenotification', '<strong>%n</strong> app has no compatible version for this Nextcloud version available.', '<strong>%n</strong> apps have no compatible version for this Nextcloud version available.', this.missingAppUpdates.length)
 		},
 
 		whatsNew() {
@@ -328,6 +335,7 @@ export default {
 		this.lastCheckedDate = data.lastChecked
 		this.isUpdateChecked = data.isUpdateChecked
 		this.webUpdaterEnabled = data.webUpdaterEnabled
+		this.isWebUpdaterRecommended = data.isWebUpdaterRecommended
 		this.updaterEnabled = data.updaterEnabled
 		this.downloadLink = data.downloadLink
 		this.isNewVersionAvailable = data.isNewVersionAvailable
@@ -372,8 +380,8 @@ export default {
 
 	methods: {
 		/**
-			 * Creates a new authentication token and loads the updater URL
-			 */
+		 * Creates a new authentication token and loads the updater URL
+		 */
 		clickUpdaterButton() {
 			$.ajax({
 				url: generateUrl('/apps/updatenotification/credentials'),

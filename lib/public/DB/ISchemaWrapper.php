@@ -22,8 +22,16 @@
  */
 namespace OCP\DB;
 
+use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+
 /**
- * Interface ISchemaWrapper
+ * This interface allows to get information about the database schema.
+ * This is particularly helpful for database migration scripts.
+ *
+ * This interface must not be implemented in your application but
+ * instead can be obtained in your migration scripts with the
+ * `$schemaClosure` Closure.
  *
  * @since 13.0.0
  */
@@ -81,7 +89,7 @@ interface ISchemaWrapper {
 	 * @since 13.0.0
 	 */
 	public function getTableNames();
-	
+
 	/**
 	 * Gets all table names
 	 *
@@ -89,4 +97,14 @@ interface ISchemaWrapper {
 	 * @since 13.0.0
 	 */
 	public function getTableNamesWithoutPrefix();
+
+	/**
+	 * Gets the DatabasePlatform for the database.
+	 *
+	 * @return AbstractPlatform
+	 *
+	 * @throws Exception
+	 * @since 23.0.0
+	 */
+	public function getDatabasePlatform();
 }

@@ -65,6 +65,7 @@ class FilesPlugin extends ServerPlugin {
 	public const SIZE_PROPERTYNAME = '{http://owncloud.org/ns}size';
 	public const GETETAG_PROPERTYNAME = '{DAV:}getetag';
 	public const LASTMODIFIED_PROPERTYNAME = '{DAV:}lastmodified';
+	public const CREATIONDATE_PROPERTYNAME = '{DAV:}creationdate';
 	public const OWNER_ID_PROPERTYNAME = '{http://owncloud.org/ns}owner-id';
 	public const OWNER_DISPLAY_NAME_PROPERTYNAME = '{http://owncloud.org/ns}owner-display-name';
 	public const CHECKSUMS_PROPERTYNAME = '{http://owncloud.org/ns}checksums';
@@ -76,6 +77,8 @@ class FilesPlugin extends ServerPlugin {
 	public const UPLOAD_TIME_PROPERTYNAME = '{http://nextcloud.org/ns}upload_time';
 	public const CREATION_TIME_PROPERTYNAME = '{http://nextcloud.org/ns}creation_time';
 	public const SHARE_NOTE = '{http://nextcloud.org/ns}note';
+	public const SUBFOLDER_COUNT_PROPERTYNAME = '{http://nextcloud.org/ns}contained-folder-count';
+	public const SUBFILE_COUNT_PROPERTYNAME = '{http://nextcloud.org/ns}contained-file-count';
 
 	/**
 	 * Reference to main server object
@@ -391,11 +394,17 @@ class FilesPlugin extends ServerPlugin {
 					$user->getUID()
 				);
 			});
-		}
 
-		if ($node instanceof \OCA\DAV\Connector\Sabre\Node) {
 			$propFind->handle(self::DATA_FINGERPRINT_PROPERTYNAME, function () use ($node) {
 				return $this->config->getSystemValue('data-fingerprint', '');
+			});
+			$propFind->handle(self::CREATIONDATE_PROPERTYNAME, function () use ($node) {
+				return (new \DateTimeImmutable())
+					->setTimestamp($node->getFileInfo()->getCreationTime())
+					->format(\DateTimeInterface::ATOM);
+			});
+			$propFind->handle(self::CREATION_TIME_PROPERTYNAME, function () use ($node) {
+				return $node->getFileInfo()->getCreationTime();
 			});
 		}
 
@@ -423,16 +432,12 @@ class FilesPlugin extends ServerPlugin {
 				return new ChecksumList($checksum);
 			});
 
-			$propFind->handle(self::CREATION_TIME_PROPERTYNAME, function () use ($node) {
-				return $node->getFileInfo()->getCreationTime();
-			});
-
 			$propFind->handle(self::UPLOAD_TIME_PROPERTYNAME, function () use ($node) {
 				return $node->getFileInfo()->getUploadTime();
 			});
 		}
 
-		if ($node instanceof \OCA\DAV\Connector\Sabre\Directory) {
+		if ($node instanceof Directory) {
 			$propFind->handle(self::SIZE_PROPERTYNAME, function () use ($node) {
 				return $node->getSize();
 			});
@@ -440,6 +445,23 @@ class FilesPlugin extends ServerPlugin {
 			$propFind->handle(self::IS_ENCRYPTED_PROPERTYNAME, function () use ($node) {
 				return $node->getFileInfo()->isEncrypted() ? '1' : '0';
 			});
+
+			$requestProperties = $propFind->getRequestedProperties();
+			if (in_array(self::SUBFILE_COUNT_PROPERTYNAME, $requestProperties, true)
+				|| in_array(self::SUBFOLDER_COUNT_PROPERTYNAME, $requestProperties, true)) {
+				$nbFiles = 0;
+				$nbFolders = 0;
+				foreach ($node->getChildren() as $child) {
+					if ($child instanceof File) {
+						$nbFiles++;
+					} elseif ($child instanceof Directory) {
+						$nbFolders++;
+					}
+				}
+
+				$propFind->handle(self::SUBFILE_COUNT_PROPERTYNAME, $nbFiles);
+				$propFind->handle(self::SUBFOLDER_COUNT_PROPERTYNAME, $nbFolders);
+			}
 		}
 	}
 
@@ -497,6 +519,14 @@ class FilesPlugin extends ServerPlugin {
 				return true;
 			}
 			return false;
+		});
+		$propPatch->handle(self::CREATIONDATE_PROPERTYNAME, function ($time) use ($node) {
+			if (empty($time)) {
+				return false;
+			}
+			$dateTime = new \DateTimeImmutable($time);
+			$node->setCreationTime($dateTime->getTimestamp());
+			return true;
 		});
 		$propPatch->handle(self::CREATION_TIME_PROPERTYNAME, function ($time) use ($node) {
 			if (empty($time)) {

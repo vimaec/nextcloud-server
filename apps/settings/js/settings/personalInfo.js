@@ -16,7 +16,7 @@ OC.Settings = OC.Settings || {};
  * The callback will be fired as soon as enter is pressed by the
  * user or 1 second after the last data entry
  *
- * @param callback
+ * @param {any} callback -
  * @param allowEmptyValue if this is set to true the callback is also called when the value is empty
  */
 jQuery.fn.keyUpDelayedOrEnter = function (callback, allowEmptyValue) {
@@ -204,7 +204,8 @@ window.addEventListener('DOMContentLoaded', function () {
 	var federationSettingsView = new OC.Settings.FederationSettingsView({
 		el: settingsEl,
 		config: userSettings,
-		showFederationScopes: !!settingsEl.data('lookup-server-upload-enabled'),
+		showFederatedScope: !!settingsEl.data('federation-enabled'),
+		showPublishedScope: !!settingsEl.data('lookup-server-upload-enabled'),
 	});
 
 	userSettings.on("sync", function() {

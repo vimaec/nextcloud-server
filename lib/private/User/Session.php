@@ -54,7 +54,6 @@ use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\EventDispatcher\IEventDispatcher;
 use OCP\Files\NotPermittedException;
 use OCP\IConfig;
-use OCP\ILogger;
 use OCP\IRequest;
 use OCP\ISession;
 use OCP\IUser;
@@ -64,6 +63,7 @@ use OCP\Security\ISecureRandom;
 use OCP\Session\Exceptions\SessionNotAvailableException;
 use OCP\User\Events\PostLoginEvent;
 use OCP\Util;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
@@ -114,29 +114,18 @@ class Session implements IUserSession, Emitter {
 	/** @var ILockdownManager  */
 	private $lockdownManager;
 
-	/** @var ILogger */
-	private $logger;
+	private LoggerInterface $logger;
 	/** @var IEventDispatcher */
 	private $dispatcher;
 
-	/**
-	 * @param Manager $manager
-	 * @param ISession $session
-	 * @param ITimeFactory $timeFactory
-	 * @param IProvider $tokenProvider
-	 * @param IConfig $config
-	 * @param ISecureRandom $random
-	 * @param ILockdownManager $lockdownManager
-	 * @param ILogger $logger
-	 */
 	public function __construct(Manager $manager,
 								ISession $session,
 								ITimeFactory $timeFactory,
-								$tokenProvider,
+								?IProvider $tokenProvider,
 								IConfig $config,
 								ISecureRandom $random,
 								ILockdownManager $lockdownManager,
-								ILogger $logger,
+								LoggerInterface $logger,
 								IEventDispatcher $dispatcher
 	) {
 		$this->manager = $manager;
@@ -533,9 +522,8 @@ class Session implements IUserSession, Emitter {
 		} catch (ExpiredTokenException $e) {
 			throw $e;
 		} catch (InvalidTokenException $ex) {
-			$this->logger->logException($ex, [
-				'level' => ILogger::DEBUG,
-				'message' => 'Token is not valid: ' . $ex->getMessage(),
+			$this->logger->debug('Token is not valid: ' . $ex->getMessage(), [
+				'exception' => $ex,
 			]);
 			return false;
 		}
@@ -548,11 +536,11 @@ class Session implements IUserSession, Emitter {
 			\OC::$server->getCsrfTokenManager()->refreshToken();
 		}
 
-		//we need to pass the user name, which may differ from login name
-		$user = $this->getUser()->getUID();
-		OC_Util::setupFS($user);
-
 		if ($firstTimeLogin) {
+			//we need to pass the user name, which may differ from login name
+			$user = $this->getUser()->getUID();
+			OC_Util::setupFS($user);
+
 			// TODO: lock necessary?
 			//trigger creation of user home and /files folder
 			$userFolder = \OC::$server->getUserFolder($user);
@@ -681,7 +669,7 @@ class Session implements IUserSession, Emitter {
 			// User does not exist
 			return false;
 		}
-		$name = isset($request->server['HTTP_USER_AGENT']) ? $request->server['HTTP_USER_AGENT'] : 'unknown browser';
+		$name = isset($request->server['HTTP_USER_AGENT']) ? utf8_encode($request->server['HTTP_USER_AGENT']) : 'unknown browser';
 		try {
 			$sessionId = $this->session->getId();
 			$pwd = $this->getPassword($password);
@@ -750,6 +738,7 @@ class Session implements IUserSession, Emitter {
 			}
 
 			$dbToken->setLastCheck($now);
+			$this->tokenProvider->updateToken($dbToken);
 			return true;
 		}
 
@@ -767,6 +756,7 @@ class Session implements IUserSession, Emitter {
 		}
 
 		$dbToken->setLastCheck($now);
+		$this->tokenProvider->updateToken($dbToken);
 		return true;
 	}
 
@@ -888,7 +878,7 @@ class Session implements IUserSession, Emitter {
 		} catch (SessionNotAvailableException $ex) {
 			return false;
 		} catch (InvalidTokenException $ex) {
-			\OC::$server->getLogger()->warning('Renewing session token failed', ['app' => 'core']);
+			$this->logger->warning('Renewing session token failed', ['app' => 'core']);
 			return false;
 		}
 

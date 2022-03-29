@@ -127,8 +127,12 @@ abstract class AbstractMappingTest extends \Test\TestCase {
 		[$mapper, $data] = $this->initTest();
 
 		foreach ($data as $entry) {
+			$fdnBefore = $mapper->getDNByName($entry['name']);
 			$result = $mapper->unmap($entry['name']);
+			$fdnAfter = $mapper->getDNByName($entry['name']);
 			$this->assertTrue($result);
+			$this->assertSame($fdnBefore, $entry['dn']);
+			$this->assertFalse($fdnAfter);
 		}
 
 		$result = $mapper->unmap('notAnEntry');
@@ -272,7 +276,7 @@ abstract class AbstractMappingTest extends \Test\TestCase {
 		$this->assertSame(count($data) - 1, count($results));
 
 		// get first 2 entries by limit, but not offset
-		$results = $mapper->getList(null, 2);
+		$results = $mapper->getList(0, 2);
 		$this->assertSame(2, count($results));
 
 		// get 2nd entry by specifying both offset and limit

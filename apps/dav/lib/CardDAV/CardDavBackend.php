@@ -139,7 +139,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 			->from('addressbooks')
 			->where($query->expr()->eq('principaluri', $query->createNamedParameter($principalUri)));
 
-		$result = $query->execute();
+		$result = $query->executeQuery();
 		$column = (int) $result->fetchOne();
 		$result->closeCursor();
 		return $column;
@@ -1024,6 +1024,8 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 	 *    - 'escape_like_param' - If set to false wildcards _ and % are not escaped, otherwise they are
 	 *    - 'limit' - Set a numeric limit for the search results
 	 *    - 'offset' - Set the offset for the limited search results
+	 *    - 'wildcard' - Whether the search should use wildcards
+	 * @psalm-param array{escape_like_param?: bool, limit?: int, offset?: int, wildcard?: bool} $options
 	 * @return array an array of contacts which are arrays of key-value-pairs
 	 */
 	public function search($addressBookId, $pattern, $searchProperties, $options = []): array {
@@ -1055,6 +1057,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 	 * @param string $pattern
 	 * @param array $searchProperties
 	 * @param array $options
+	 * @psalm-param array{types?: bool, escape_like_param?: bool, limit?: int, offset?: int, wildcard?: bool} $options
 	 * @return array
 	 */
 	private function searchByAddressBookIds(array $addressBookIds,
@@ -1062,6 +1065,7 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 											array $searchProperties,
 											array $options = []): array {
 		$escapePattern = !\array_key_exists('escape_like_param', $options) || $options['escape_like_param'] !== false;
+		$useWildcards = !\array_key_exists('wildcard', $options) || $options['wildcard'] !== false;
 
 		$query2 = $this->db->getQueryBuilder();
 
@@ -1103,7 +1107,9 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 
 		// No need for like when the pattern is empty
 		if ('' !== $pattern) {
-			if (!$escapePattern) {
+			if (!$useWildcards) {
+				$query2->andWhere($query2->expr()->eq('cp.value', $query2->createNamedParameter($pattern)));
+			} elseif (!$escapePattern) {
 				$query2->andWhere($query2->expr()->ilike('cp.value', $query2->createNamedParameter($pattern)));
 			} else {
 				$query2->andWhere($query2->expr()->ilike('cp.value', $query2->createNamedParameter('%' . $this->db->escapeLikeParameter($pattern) . '%')));
@@ -1124,15 +1130,18 @@ class CardDavBackend implements BackendInterface, SyncSupport {
 			return (int)$match['cardid'];
 		}, $matches);
 
+		$cards = [];
 		$query = $this->db->getQueryBuilder();
 		$query->select('c.addressbookid', 'c.carddata', 'c.uri')
 			->from($this->dbCardsTable, 'c')
-			->where($query->expr()->in('c.id', $query->createNamedParameter($matches, IQueryBuilder::PARAM_INT_ARRAY)));
+			->where($query->expr()->in('c.id', $query->createParameter('matches')));
 
-		$result = $query->execute();
-		$cards = $result->fetchAll();
-
-		$result->closeCursor();
+		foreach (array_chunk($matches, 1000) as $matchesChunk) {
+			$query->setParameter('matches', $matchesChunk, IQueryBuilder::PARAM_INT_ARRAY);
+			$result = $query->executeQuery();
+			$cards = array_merge($cards, $result->fetchAll());
+			$result->closeCursor();
+		}
 
 		return array_map(function ($array) {
 			$array['addressbookid'] = (int) $array['addressbookid'];

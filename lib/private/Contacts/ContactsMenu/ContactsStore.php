@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright 2017 Christoph Wurst <christoph@winzerhof-wurst.at>
  * @copyright 2017 Lukas Reschke <lukas@statuscode.ch>
@@ -27,16 +28,20 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 namespace OC\Contacts\ContactsMenu;
 
 use OC\KnownUser\KnownUserService;
+use OC\Profile\ProfileManager;
 use OCP\Contacts\ContactsMenu\IContactsStore;
 use OCP\Contacts\ContactsMenu\IEntry;
 use OCP\Contacts\IManager;
 use OCP\IConfig;
 use OCP\IGroupManager;
+use OCP\IURLGenerator;
 use OCP\IUser;
 use OCP\IUserManager;
+use OCP\L10N\IFactory as IL10NFactory;
 
 class ContactsStore implements IContactsStore {
 
@@ -46,8 +51,14 @@ class ContactsStore implements IContactsStore {
 	/** @var IConfig */
 	private $config;
 
+	/** @var ProfileManager */
+	private $profileManager;
+
 	/** @var IUserManager */
 	private $userManager;
+
+	/** @var IURLGenerator */
+	private $urlGenerator;
 
 	/** @var IGroupManager */
 	private $groupManager;
@@ -55,16 +66,27 @@ class ContactsStore implements IContactsStore {
 	/** @var KnownUserService */
 	private $knownUserService;
 
-	public function __construct(IManager $contactsManager,
-								IConfig $config,
-								IUserManager $userManager,
-								IGroupManager $groupManager,
-								KnownUserService $knownUserService) {
+	/** @var IL10NFactory */
+	private $l10nFactory;
+
+	public function __construct(
+		IManager $contactsManager,
+		IConfig $config,
+		ProfileManager $profileManager,
+		IUserManager $userManager,
+		IURLGenerator $urlGenerator,
+		IGroupManager $groupManager,
+		KnownUserService $knownUserService,
+		IL10NFactory $l10nFactory
+	) {
 		$this->contactsManager = $contactsManager;
 		$this->config = $config;
+		$this->profileManager = $profileManager;
 		$this->userManager = $userManager;
+		$this->urlGenerator = $urlGenerator;
 		$this->groupManager = $groupManager;
 		$this->knownUserService = $knownUserService;
+		$this->l10nFactory = $l10nFactory;
 	}
 
 	/**
@@ -73,7 +95,10 @@ class ContactsStore implements IContactsStore {
 	 * @return IEntry[]
 	 */
 	public function getContacts(IUser $user, $filter, ?int $limit = null, ?int $offset = null) {
-		$options = [];
+		$options = [
+			'enumeration' => $this->config->getAppValue('core', 'shareapi_allow_share_dialog_user_enumeration', 'yes') === 'yes',
+			'fullmatch' => $this->config->getAppValue('core', 'shareapi_restrict_user_enumeration_full_match', 'yes') === 'yes',
+		];
 		if ($limit !== null) {
 			$options['limit'] = $limit;
 		}
@@ -82,7 +107,7 @@ class ContactsStore implements IContactsStore {
 		}
 
 		$allContacts = $this->contactsManager->search(
-			$filter ?: '',
+			$filter ?? '',
 			[
 				'FN',
 				'EMAIL'
@@ -90,9 +115,18 @@ class ContactsStore implements IContactsStore {
 			$options
 		);
 
+		$userId = $user->getUID();
+		$contacts = array_filter($allContacts, function ($contact) use ($userId) {
+			// When searching for multiple results, we strip out the current user
+			if (array_key_exists('UID', $contact)) {
+				return $contact['UID'] !== $userId;
+			}
+			return true;
+		});
+
 		$entries = array_map(function (array $contact) {
 			return $this->contactArrayToEntry($contact);
-		}, $allContacts);
+		}, $contacts);
 		return $this->filterContacts(
 			$user,
 			$entries,
@@ -102,23 +136,24 @@ class ContactsStore implements IContactsStore {
 
 	/**
 	 * Filters the contacts. Applied filters:
-	 *  1. filter the current user
-	 *  2. if the `shareapi_allow_share_dialog_user_enumeration` config option is
+	 *  1. if the `shareapi_allow_share_dialog_user_enumeration` config option is
 	 * enabled it will filter all local users
-	 *  3. if the `shareapi_exclude_groups` config option is enabled and the
+	 *  2. if the `shareapi_exclude_groups` config option is enabled and the
 	 * current user is in an excluded group it will filter all local users.
-	 *  4. if the `shareapi_only_share_with_group_members` config option is
+	 *  3. if the `shareapi_only_share_with_group_members` config option is
 	 * enabled it will filter all users which doens't have a common group
 	 * with the current user.
 	 *
 	 * @param IUser $self
 	 * @param Entry[] $entries
-	 * @param string $filter
+	 * @param string|null $filter
 	 * @return Entry[] the filtered contacts
 	 */
-	private function filterContacts(IUser $self,
-									array $entries,
-									$filter) {
+	private function filterContacts(
+		IUser $self,
+		array $entries,
+		$filter
+	) {
 		$disallowEnumeration = $this->config->getAppValue('core', 'shareapi_allow_share_dialog_user_enumeration', 'yes') !== 'yes';
 		$restrictEnumerationGroup = $this->config->getAppValue('core', 'shareapi_restrict_user_enumeration_to_group', 'no') === 'yes';
 		$restrictEnumerationPhone = $this->config->getAppValue('core', 'shareapi_restrict_user_enumeration_to_phone', 'no') === 'yes';
@@ -146,10 +181,6 @@ class ContactsStore implements IContactsStore {
 		$selfUID = $self->getUID();
 
 		return array_values(array_filter($entries, function (IEntry $entry) use ($skipLocal, $ownGroupsOnly, $selfGroups, $selfUID, $disallowEnumeration, $restrictEnumerationGroup, $restrictEnumerationPhone, $allowEnumerationFullMatch, $filter) {
-			if ($entry->getProperty('UID') === $selfUID) {
-				return false;
-			}
-
 			if ($entry->getProperty('isLocalSystemBook')) {
 				if ($skipLocal) {
 					return false;
@@ -241,11 +272,9 @@ class ContactsStore implements IContactsStore {
 				return null;
 		}
 
-		$userId = $user->getUID();
-		$allContacts = $this->contactsManager->search($shareWith, $filter);
-		$contacts = array_filter($allContacts, function ($contact) use ($userId) {
-			return $contact['UID'] !== $userId;
-		});
+		$contacts = $this->contactsManager->search($shareWith, $filter, [
+			'strict_search' => true,
+		]);
 		$match = null;
 
 		foreach ($contacts as $contact) {
@@ -299,6 +328,18 @@ class ContactsStore implements IContactsStore {
 		if (isset($contact['EMAIL'])) {
 			foreach ($contact['EMAIL'] as $email) {
 				$entry->addEMailAddress($email);
+			}
+		}
+
+		// Provide profile parameters for core/src/OC/contactsmenu/contact.handlebars template
+		if (isset($contact['UID']) && isset($contact['FN'])) {
+			$targetUserId = $contact['UID'];
+			$targetUser = $this->userManager->get($targetUserId);
+			if (!empty($targetUser)) {
+				if ($this->profileManager->isProfileEnabled($targetUser)) {
+					$entry->setProfileTitle($this->l10nFactory->get('lib')->t('View profile'));
+					$entry->setProfileUrl($this->urlGenerator->linkToRouteAbsolute('core.ProfilePage.index', ['targetUserId' => $targetUserId]));
+				}
 			}
 		}
 

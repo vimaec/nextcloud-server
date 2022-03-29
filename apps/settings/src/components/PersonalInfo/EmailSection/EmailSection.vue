@@ -17,12 +17,12 @@
 	-
 	- You should have received a copy of the GNU Affero General Public License
 	- along with this program. If not, see <http://www.gnu.org/licenses/>.
+	-
 -->
 
 <template>
 	<section>
-		<HeaderBar
-			:account-property="accountProperty"
+		<HeaderBar :account-property="accountProperty"
 			label-for="email"
 			:handle-scope-change="savePrimaryEmailScope"
 			:is-editable="true"
@@ -32,27 +32,31 @@
 			@add-additional="onAddAdditionalEmail" />
 
 		<template v-if="displayNameChangeSupported">
-			<Email
-				:primary="true"
+			<Email :primary="true"
 				:scope.sync="primaryEmail.scope"
 				:email.sync="primaryEmail.value"
 				:active-notification-email.sync="notificationEmail"
 				@update:email="onUpdateEmail"
 				@update:notification-email="onUpdateNotificationEmail" />
 		</template>
+
 		<span v-else>
 			{{ primaryEmail.value || t('settings', 'No email address set') }}
 		</span>
-		<Email v-for="(additionalEmail, index) in additionalEmails"
-			:key="index"
-			:index="index"
-			:scope.sync="additionalEmail.scope"
-			:email.sync="additionalEmail.value"
-			:local-verification-state="parseInt(additionalEmail.locallyVerified, 10)"
-			:active-notification-email.sync="notificationEmail"
-			@update:email="onUpdateEmail"
-			@update:notification-email="onUpdateNotificationEmail"
-			@delete-additional-email="onDeleteAdditionalEmail(index)" />
+
+		<template v-if="additionalEmails.length">
+			<em class="additional-emails-label">{{ t('settings', 'Additional emails') }}</em>
+			<Email v-for="(additionalEmail, index) in additionalEmails"
+				:key="index"
+				:index="index"
+				:scope.sync="additionalEmail.scope"
+				:email.sync="additionalEmail.value"
+				:local-verification-state="parseInt(additionalEmail.locallyVerified, 10)"
+				:active-notification-email.sync="notificationEmail"
+				@update:email="onUpdateEmail"
+				@update:notification-email="onUpdateNotificationEmail"
+				@delete-additional-email="onDeleteAdditionalEmail(index)" />
+		</template>
 	</section>
 </template>
 
@@ -67,7 +71,7 @@ import { ACCOUNT_PROPERTY_READABLE_ENUM, DEFAULT_ADDITIONAL_EMAIL_SCOPE } from '
 import { savePrimaryEmail, savePrimaryEmailScope, removeAdditionalEmail } from '../../../service/PersonalInfo/EmailService'
 import { validateEmail } from '../../../utils/validate'
 
-const { emails: { additionalEmails, primaryEmail, notificationEmail } } = loadState('settings', 'personalInfoParameters', {})
+const { emailMap: { additionalEmails, primaryEmail, notificationEmail } } = loadState('settings', 'personalInfoParameters', {})
 const { displayNameChangeSupported } = loadState('settings', 'accountParameters', {})
 
 export default {
@@ -141,7 +145,11 @@ export default {
 				const responseData = await savePrimaryEmail(this.primaryEmailValue)
 				this.handleResponse(responseData.ocs?.meta?.status)
 			} catch (e) {
-				this.handleResponse('error', 'Unable to update primary email address', e)
+				this.handleResponse(
+					'error',
+					t('settings', 'Unable to update primary email address'),
+					e
+				)
 			}
 		},
 
@@ -150,7 +158,11 @@ export default {
 				const responseData = await removeAdditionalEmail(this.firstAdditionalEmail)
 				this.handleDeleteFirstAdditionalEmail(responseData.ocs?.meta?.status)
 			} catch (e) {
-				this.handleResponse('error', 'Unable to delete additional email address', e)
+				this.handleResponse(
+					'error',
+					t('settings', 'Unable to delete additional email address'),
+					e
+				)
 			}
 		},
 
@@ -158,13 +170,17 @@ export default {
 			if (status === 'ok') {
 				this.$delete(this.additionalEmails, 0)
 			} else {
-				this.handleResponse('error', 'Unable to delete additional email address', {})
+				this.handleResponse(
+					'error',
+					t('settings', 'Unable to delete additional email address'),
+					{}
+				)
 			}
 		},
 
 		handleResponse(status, errorMessage, error) {
 			if (status !== 'ok') {
-				showError(t('settings', errorMessage))
+				showError(errorMessage)
 				this.logger.error(errorMessage, error)
 			}
 		},
@@ -178,6 +194,11 @@ section {
 
 	&::v-deep button:disabled {
 		cursor: default;
+	}
+
+	.additional-emails-label {
+		display: block;
+		margin-top: 16px;
 	}
 }
 </style>

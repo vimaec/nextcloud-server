@@ -31,7 +31,7 @@
  */
 namespace OCA\DAV\Connector\Sabre;
 
-use OC\Files\Node\Folder;
+use OCP\Files\Folder;
 use OCA\DAV\AppInfo\PluginManager;
 use OCA\DAV\Files\BrowserErrorPagePlugin;
 use OCP\Files\Mount\IMountManager;
@@ -130,6 +130,9 @@ class ServerFactory {
 		$server->addPlugin(new \OCA\DAV\Connector\Sabre\DummyGetResponsePlugin());
 		$server->addPlugin(new \OCA\DAV\Connector\Sabre\ExceptionLoggerPlugin('webdav', $this->logger));
 		$server->addPlugin(new \OCA\DAV\Connector\Sabre\LockPlugin());
+
+		$server->addPlugin(new RequestIdHeaderPlugin(\OC::$server->get(IRequest::class)));
+
 		// Some WebDAV clients do require Class 2 WebDAV support (locking), since
 		// we do not provide locking we emulate it using a fake locking plugin.
 		if ($this->request->isUserAgent([

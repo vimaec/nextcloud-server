@@ -1,4 +1,18 @@
-<!DOCTYPE html>
+<?php
+/**
+ * @var \OC_Defaults $theme
+ * @var array $_
+ */
+
+$getUserAvatar = static function (int $size) use ($_): string {
+	return \OC::$server->getURLGenerator()->linkToRoute('core.avatar.getAvatar', [
+		'userId' => $_['user_uid'],
+		'size' => $size,
+		'v' => $_['userAvatarVersion']
+	]);
+}
+
+?><!DOCTYPE html>
 <html class="ng-csp" data-placeholder-focus="false" lang="<?php p($_['language']); ?>" data-locale="<?php p($_['locale']); ?>" >
 	<head data-user="<?php p($_['user_uid']); ?>" data-user-displayname="<?php p($_['user_displayname']); ?>" data-requesttoken="<?php p($_['requesttoken']); ?>">
 		<meta charset="utf-8">
@@ -8,7 +22,6 @@
 				p($theme->getTitle());
 			?>
 		</title>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
 		<?php if ($theme->getiTunesAppId() !== '') { ?>
 		<meta name="apple-itunes-app" content="app-id=<?php p($theme->getiTunesAppId()); ?>">
@@ -42,7 +55,7 @@
 		</div>
 		<header role="banner" id="header">
 			<div class="header-left">
-				<a href="<?php print_unescaped(link_to('', 'index.php')); ?>"
+				<a href="<?php print_unescaped($_['logoUrl'] ?: link_to('', 'index.php')); ?>"
 					id="nextcloud">
 					<div class="logo logo-icon">
 						<h1 class="hidden-visually">
@@ -55,6 +68,7 @@
 					<?php foreach ($_['navigation'] as $entry): ?>
 						<li data-id="<?php p($entry['id']); ?>" class="hidden" tabindex="-1">
 							<a href="<?php print_unescaped($entry['href']); ?>"
+								<?php if (isset($entry['target']) && $entry['target']): ?> target="_blank" rel="noreferrer noopener"<?php endif; ?>
 								<?php if ($entry['active']): ?> class="active"<?php endif; ?>
 								aria-label="<?php p($entry['name']); ?>">
 									<svg width="24" height="20" viewBox="0 0 24 20" alt=""<?php if ($entry['unread'] !== 0) { ?> class="has-unread"<?php } ?>>
@@ -91,6 +105,7 @@
 								<?php foreach ($_['navigation'] as $entry): ?>
 									<li data-id="<?php p($entry['id']); ?>">
 									<a href="<?php print_unescaped($entry['href']); ?>"
+										<?php if (isset($entry['target']) && $entry['target']): ?> target="_blank" rel="noreferrer noopener"<?php endif; ?>
 										<?php if ($entry['active']): ?> class="active"<?php endif; ?>
 										aria-label="<?php p($entry['name']); ?>">
 										<svg width="20" height="20" viewBox="0 0 20 20" alt=""<?php if ($entry['unread'] !== 0) { ?> class="has-unread"<?php } ?>>
@@ -131,19 +146,30 @@
 					<div id="expand" tabindex="0" role="button" class="menutoggle"
 						aria-label="<?php p($l->t('Settings'));?>"
 						aria-haspopup="true" aria-controls="expanddiv" aria-expanded="false">
-						<div class="avatardiv<?php if ($_['userAvatarSet']) {
+						<div id="avatardiv-menu" class="avatardiv<?php if ($_['userAvatarSet']) {
 				print_unescaped(' avatardiv-shown');
 			} else {
 				print_unescaped('" style="display: none');
-			} ?>">
-							<?php if ($_['userAvatarSet']): ?>
+			} ?>"
+							 data-user="<?php p($_['user_uid']); ?>"
+							 data-displayname="<?php p($_['user_displayname']); ?>"
+			<?php if ($_['userStatus'] !== false) { ?>
+				data-userstatus="<?php p($_['userStatus']->getStatus()); ?>"
+				data-userstatus_message="<?php p($_['userStatus']->getMessage()); ?>"
+				data-userstatus_icon="<?php p($_['userStatus']->getIcon()); ?>"
+			<?php }
+			if ($_['userAvatarSet']) {
+				$avatar32 = $getUserAvatar(32); ?> data-avatar="<?php p($avatar32); ?>"
+			<?php
+			} ?>>
+							<?php
+							if ($_['userAvatarSet']) {?>
 								<img alt="" width="32" height="32"
-								src="<?php p(\OC::$server->getURLGenerator()->linkToRoute('core.avatar.getAvatar', ['userId' => $_['user_uid'], 'size' => 32, 'v' => $_['userAvatarVersion']]));?>"
-								srcset="<?php p(\OC::$server->getURLGenerator()->linkToRoute('core.avatar.getAvatar', ['userId' => $_['user_uid'], 'size' => 64, 'v' => $_['userAvatarVersion']]));?> 2x, <?php p(\OC::$server->getURLGenerator()->linkToRoute('core.avatar.getAvatar', ['userId' => $_['user_uid'], 'size' => 128, 'v' => $_['userAvatarVersion']]));?> 4x"
+								src="<?php p($avatar32);?>"
+								srcset="<?php p($getUserAvatar(64));?> 2x, <?php p($getUserAvatar(128));?> 4x"
 								>
-							<?php endif; ?>
+							<?php } ?>
 						</div>
-						<div id="expandDisplayName" class="icon-settings-white"></div>
 					</div>
 					<nav class="settings-menu" id="expanddiv" style="display:none;"
 						aria-label="<?php p($l->t('Settings menu'));?>">

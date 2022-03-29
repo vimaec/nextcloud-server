@@ -29,19 +29,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
+
 namespace OC\Files\Node;
 
 use OC\Cache\CappedMemoryCache;
 use OC\Files\Mount\Manager;
 use OC\Files\Mount\MountPoint;
+use OC\Files\View;
 use OC\Hooks\PublicEmitter;
 use OC\User\NoUserException;
+use OCP\EventDispatcher\IEventDispatcher;
 use OCP\Files\Config\IUserMountCache;
+use OCP\Files\Events\Node\FilesystemTornDownEvent;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotFoundException;
 use OCP\Files\NotPermittedException;
-use OCP\ILogger;
+use OCP\IUser;
 use OCP\IUserManager;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class Root
@@ -63,35 +68,29 @@ use OCP\IUserManager;
  * @package OC\Files\Node
  */
 class Root extends Folder implements IRootFolder {
-	/** @var Manager */
-	private $mountManager;
-	/** @var PublicEmitter */
-	private $emitter;
-	/** @var null|\OC\User\User */
-	private $user;
-	/** @var CappedMemoryCache */
-	private $userFolderCache;
-	/** @var IUserMountCache */
-	private $userMountCache;
-	/** @var ILogger */
-	private $logger;
-	/** @var IUserManager */
-	private $userManager;
+	private Manager $mountManager;
+	private PublicEmitter $emitter;
+	private ?IUser $user;
+	private CappedMemoryCache $userFolderCache;
+	private IUserMountCache $userMountCache;
+	private LoggerInterface $logger;
+	private IUserManager $userManager;
+	private IEventDispatcher $eventDispatcher;
 
 	/**
-	 * @param \OC\Files\Mount\Manager $manager
-	 * @param \OC\Files\View $view
-	 * @param \OC\User\User|null $user
-	 * @param IUserMountCache $userMountCache
-	 * @param ILogger $logger
-	 * @param IUserManager $userManager
+	 * @param Manager $manager
+	 * @param View $view
+	 * @param IUser|null $user
 	 */
-	public function __construct($manager,
-								$view,
-								$user,
-								IUserMountCache $userMountCache,
-								ILogger $logger,
-								IUserManager $userManager) {
+	public function __construct(
+		$manager,
+		$view,
+		$user,
+		IUserMountCache $userMountCache,
+		LoggerInterface $logger,
+		IUserManager $userManager,
+		IEventDispatcher $eventDispatcher
+	) {
 		parent::__construct($this, $view, '');
 		$this->mountManager = $manager;
 		$this->user = $user;
@@ -100,6 +99,9 @@ class Root extends Folder implements IRootFolder {
 		$this->userMountCache = $userMountCache;
 		$this->logger = $logger;
 		$this->userManager = $userManager;
+		$eventDispatcher->addListener(FilesystemTornDownEvent::class, function () {
+			$this->userFolderCache = new CappedMemoryCache();
+		});
 	}
 
 	/**
@@ -189,9 +191,9 @@ class Root extends Folder implements IRootFolder {
 
 	/**
 	 * @param string $path
-	 * @throws \OCP\Files\NotFoundException
-	 * @throws \OCP\Files\NotPermittedException
 	 * @return Node
+	 * @throws \OCP\Files\NotPermittedException
+	 * @throws \OCP\Files\NotFoundException
 	 */
 	public function get($path) {
 		$path = $this->normalizePath($path);
@@ -212,8 +214,8 @@ class Root extends Folder implements IRootFolder {
 
 	/**
 	 * @param string $targetPath
-	 * @throws \OCP\Files\NotPermittedException
 	 * @return \OC\Files\Node\Node
+	 * @throws \OCP\Files\NotPermittedException
 	 */
 	public function rename($targetPath) {
 		throw new NotPermittedException();
@@ -225,8 +227,8 @@ class Root extends Folder implements IRootFolder {
 
 	/**
 	 * @param string $targetPath
-	 * @throws \OCP\Files\NotPermittedException
 	 * @return \OC\Files\Node\Node
+	 * @throws \OCP\Files\NotPermittedException
 	 */
 	public function copy($targetPath) {
 		throw new NotPermittedException();
@@ -266,21 +268,21 @@ class Root extends Folder implements IRootFolder {
 	 * @return int
 	 */
 	public function getId() {
-		return null;
+		return 0;
 	}
 
 	/**
 	 * @return array
 	 */
 	public function stat() {
-		return null;
+		return [];
 	}
 
 	/**
 	 * @return int
 	 */
 	public function getMTime() {
-		return null;
+		return 0;
 	}
 
 	/**
@@ -288,14 +290,14 @@ class Root extends Folder implements IRootFolder {
 	 * @return int
 	 */
 	public function getSize($includeMounts = true) {
-		return null;
+		return 0;
 	}
 
 	/**
 	 * @return string
 	 */
 	public function getEtag() {
-		return null;
+		return '';
 	}
 
 	/**
@@ -375,25 +377,26 @@ class Root extends Folder implements IRootFolder {
 		$userId = $userObject->getUID();
 
 		if (!$this->userFolderCache->hasKey($userId)) {
-			\OC\Files\Filesystem::initMountPoints($userId);
-
-			try {
-				$folder = $this->get('/' . $userId . '/files');
-			} catch (NotFoundException $e) {
-				if (!$this->nodeExists('/' . $userId)) {
-					$this->newFolder('/' . $userId);
+			if ($this->mountManager->getSetupManager()->isSetupComplete($userObject)) {
+				try {
+					$folder = $this->get('/' . $userId . '/files');
+					if (!$folder instanceof \OCP\Files\Folder) {
+						throw new \Exception("User folder for $userId exists as a file");
+					}
+				} catch (NotFoundException $e) {
+					if (!$this->nodeExists('/' . $userId)) {
+						$this->newFolder('/' . $userId);
+					}
+					$folder = $this->newFolder('/' . $userId . '/files');
 				}
-				$folder = $this->newFolder('/' . $userId . '/files');
+			} else {
+				$folder = new LazyUserFolder($this, $userObject);
 			}
 
 			$this->userFolderCache->set($userId, $folder);
 		}
 
 		return $this->userFolderCache->get($userId);
-	}
-
-	public function clearCache() {
-		$this->userFolderCache = new CappedMemoryCache();
 	}
 
 	public function getUserMountCache() {

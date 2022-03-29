@@ -3,7 +3,6 @@ OC.L10N.register(
     {
     "Dashboard" : "Cruscotto",
     "Dashboard app" : "Cruscotto",
-    "Show something" : "Mostra qualcosa",
     "Customize" : "Personalizza",
     "Edit widgets" : "Modifica widget",
     "Get more widgets from the App Store" : "Ottieni altri widget dal negozio delle applicazioni",
@@ -27,9 +26,7 @@ OC.L10N.register(
     "Default images" : "Immagini predefinite",
     "Plain background" : "Sfondo semplice",
     "Insert from {productName}" : "Inserisci da {productName}",
-    "Get more widgets from the app store" : "Ottieni altri widget dal negozio delle applicazioni",
-    "Good night, {name}" : "Buona notte, {name}",
-    "Good night" : "Buona notte",
-    "Pick from files" : "Scegli da file"
+    "Show something" : "Mostra qualcosa",
+    "Get more widgets from the app store" : "Ottieni altri widget dal negozio delle applicazioni"
 },
 "nplurals=2; plural=(n != 1);");

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Björn Schießle <schiessle@owncloud.com>
  *
@@ -23,6 +24,7 @@ namespace Test\Accounts;
 
 use OC\Accounts\Account;
 use OC\Accounts\AccountManager;
+use OCA\Settings\BackgroundJobs\VerifyUserData;
 use OCP\Accounts\IAccountManager;
 use OCP\BackgroundJob\IJobList;
 use OCP\Defaults;
@@ -168,6 +170,26 @@ class AccountManagerTest extends TestCase {
 						'value' => 'https://acme.com',
 						'scope' => IAccountManager::SCOPE_PRIVATE
 					],
+					[
+						'name' => IAccountManager::PROPERTY_ORGANISATION,
+						'value' => 'Some organisation',
+						'scope' => IAccountManager::SCOPE_LOCAL
+					],
+					[
+						'name' => IAccountManager::PROPERTY_ROLE,
+						'value' => 'Human',
+						'scope' => IAccountManager::SCOPE_LOCAL
+					],
+					[
+						'name' => IAccountManager::PROPERTY_HEADLINE,
+						'value' => 'Hi',
+						'scope' => IAccountManager::SCOPE_LOCAL
+					],
+					[
+						'name' => IAccountManager::PROPERTY_BIOGRAPHY,
+						'value' => 'Biography',
+						'scope' => IAccountManager::SCOPE_LOCAL
+					],
 				],
 			],
 			[
@@ -202,6 +224,26 @@ class AccountManagerTest extends TestCase {
 						'name' => IAccountManager::PROPERTY_WEBSITE,
 						'value' => 'https://example.org',
 						'scope' => IAccountManager::SCOPE_LOCAL
+					],
+					[
+						'name' => IAccountManager::PROPERTY_ORGANISATION,
+						'value' => 'Another organisation',
+						'scope' => IAccountManager::SCOPE_FEDERATED
+					],
+					[
+						'name' => IAccountManager::PROPERTY_ROLE,
+						'value' => 'Alien',
+						'scope' => IAccountManager::SCOPE_FEDERATED
+					],
+					[
+						'name' => IAccountManager::PROPERTY_HEADLINE,
+						'value' => 'Hello',
+						'scope' => IAccountManager::SCOPE_FEDERATED
+					],
+					[
+						'name' => IAccountManager::PROPERTY_BIOGRAPHY,
+						'value' => 'Different biography',
+						'scope' => IAccountManager::SCOPE_FEDERATED
 					],
 				],
 			],
@@ -238,6 +280,26 @@ class AccountManagerTest extends TestCase {
 						'value' => 'https://example.com',
 						'scope' => IAccountManager::SCOPE_PUBLISHED
 					],
+					[
+						'name' => IAccountManager::PROPERTY_ORGANISATION,
+						'value' => 'Yet another organisation',
+						'scope' => IAccountManager::SCOPE_PUBLISHED
+					],
+					[
+						'name' => IAccountManager::PROPERTY_ROLE,
+						'value' => 'Being',
+						'scope' => IAccountManager::SCOPE_PUBLISHED
+					],
+					[
+						'name' => IAccountManager::PROPERTY_HEADLINE,
+						'value' => 'This is a headline',
+						'scope' => IAccountManager::SCOPE_PUBLISHED
+					],
+					[
+						'name' => IAccountManager::PROPERTY_BIOGRAPHY,
+						'value' => 'Some long biography',
+						'scope' => IAccountManager::SCOPE_PUBLISHED
+					],
 				],
 			],
 			[
@@ -272,6 +334,26 @@ class AccountManagerTest extends TestCase {
 						'name' => IAccountManager::PROPERTY_WEBSITE,
 						'value' => 'https://emca.com',
 						'scope' => IAccountManager::SCOPE_FEDERATED
+					],
+					[
+						'name' => IAccountManager::PROPERTY_ORGANISATION,
+						'value' => 'Organisation A',
+						'scope' => IAccountManager::SCOPE_LOCAL
+					],
+					[
+						'name' => IAccountManager::PROPERTY_ROLE,
+						'value' => 'Animal',
+						'scope' => IAccountManager::SCOPE_LOCAL
+					],
+					[
+						'name' => IAccountManager::PROPERTY_HEADLINE,
+						'value' => 'My headline',
+						'scope' => IAccountManager::SCOPE_LOCAL
+					],
+					[
+						'name' => IAccountManager::PROPERTY_BIOGRAPHY,
+						'value' => 'Short biography',
+						'scope' => IAccountManager::SCOPE_LOCAL
 					],
 					[
 						'name' => IAccountManager::COLLECTION_EMAIL,
@@ -317,6 +399,26 @@ class AccountManagerTest extends TestCase {
 						'name' => IAccountManager::PROPERTY_WEBSITE,
 						'value' => 'https://elpmaxe.org',
 						'scope' => IAccountManager::SCOPE_PUBLISHED
+					],
+					[
+						'name' => IAccountManager::PROPERTY_ORGANISATION,
+						'value' => 'Organisation B',
+						'scope' => IAccountManager::SCOPE_FEDERATED
+					],
+					[
+						'name' => IAccountManager::PROPERTY_ROLE,
+						'value' => 'Organism',
+						'scope' => IAccountManager::SCOPE_FEDERATED
+					],
+					[
+						'name' => IAccountManager::PROPERTY_HEADLINE,
+						'value' => 'Best headline',
+						'scope' => IAccountManager::SCOPE_FEDERATED
+					],
+					[
+						'name' => IAccountManager::PROPERTY_BIOGRAPHY,
+						'value' => 'Autobiography',
+						'scope' => IAccountManager::SCOPE_FEDERATED
 					],
 				],
 			],
@@ -406,18 +508,107 @@ class AccountManagerTest extends TestCase {
 		];
 	}
 
-	public function testAddMissingDefaultValues() {
+	public function testAddMissingDefaults() {
+		$user = $this->createMock(IUser::class);
+
+		$this->config
+			->expects($this->once())
+			->method('getAppValue')
+			->with('settings', 'profile_enabled_by_default', '1')
+			->willReturn('1');
+
 		$input = [
-			['value' => 'value1', 'verified' => '0', 'name' => 'key1'],
-			['value' => 'value1', 'name' => 'key2'],
+			[
+				'name' => IAccountManager::PROPERTY_DISPLAYNAME,
+				'value' => 'bob',
+				'verified' => IAccountManager::NOT_VERIFIED,
+			],
+			[
+				'name' => IAccountManager::PROPERTY_EMAIL,
+				'value' => 'bob@bob.bob',
+			],
 		];
 
 		$expected = [
-			['value' => 'value1', 'verified' => '0', 'name' => 'key1'],
-			['value' => 'value1', 'name' => 'key2', 'verified' => '0'],
+			[
+				'name' => IAccountManager::PROPERTY_DISPLAYNAME,
+				'value' => 'bob',
+				'scope' => IAccountManager::SCOPE_FEDERATED,
+				'verified' => IAccountManager::NOT_VERIFIED,
+			],
+
+			[
+				'name' => IAccountManager::PROPERTY_EMAIL,
+				'value' => 'bob@bob.bob',
+				'scope' => IAccountManager::SCOPE_FEDERATED,
+				'verified' => IAccountManager::NOT_VERIFIED,
+			],
+
+			[
+				'name' => IAccountManager::PROPERTY_ADDRESS,
+				'value' => '',
+				'scope' => IAccountManager::SCOPE_LOCAL,
+				'verified' => IAccountManager::NOT_VERIFIED,
+			],
+
+			[
+				'name' => IAccountManager::PROPERTY_WEBSITE,
+				'value' => '',
+				'scope' => IAccountManager::SCOPE_LOCAL,
+				'verified' => IAccountManager::NOT_VERIFIED,
+			],
+
+			[
+				'name' => IAccountManager::PROPERTY_AVATAR,
+				'scope' => IAccountManager::SCOPE_FEDERATED
+			],
+
+			[
+				'name' => IAccountManager::PROPERTY_PHONE,
+				'value' => '',
+				'scope' => IAccountManager::SCOPE_LOCAL,
+				'verified' => IAccountManager::NOT_VERIFIED,
+			],
+
+			[
+				'name' => IAccountManager::PROPERTY_TWITTER,
+				'value' => '',
+				'scope' => IAccountManager::SCOPE_LOCAL,
+				'verified' => IAccountManager::NOT_VERIFIED,
+			],
+
+			[
+				'name' => IAccountManager::PROPERTY_ORGANISATION,
+				'value' => '',
+				'scope' => IAccountManager::SCOPE_LOCAL,
+			],
+
+			[
+				'name' => IAccountManager::PROPERTY_ROLE,
+				'value' => '',
+				'scope' => IAccountManager::SCOPE_LOCAL,
+			],
+
+			[
+				'name' => IAccountManager::PROPERTY_HEADLINE,
+				'value' => '',
+				'scope' => IAccountManager::SCOPE_LOCAL,
+			],
+
+			[
+				'name' => IAccountManager::PROPERTY_BIOGRAPHY,
+				'value' => '',
+				'scope' => IAccountManager::SCOPE_LOCAL,
+			],
+
+			[
+				'name' => IAccountManager::PROPERTY_PROFILE_ENABLED,
+				'value' => '1',
+			],
 		];
 
-		$result = $this->invokePrivate($this->accountManager, 'addMissingDefaultValues', [$input]);
+		$defaultUserRecord = $this->invokePrivate($this->accountManager, 'buildDefaultUserRecord', [$user]);
+		$result = $this->invokePrivate($this->accountManager, 'addMissingDefaultValues', [$input, $defaultUserRecord]);
 
 		$this->assertSame($expected, $result);
 	}
@@ -585,5 +776,43 @@ class AccountManagerTest extends TestCase {
 				],
 			],
 		];
+	}
+
+	public function dataCheckEmailVerification(): array {
+		return [
+			[$this->makeUser('steve', 'Steve Smith', 'steve@steve.steve'), null],
+			[$this->makeUser('emma', 'Emma Morales', 'emma@emma.com'), 'emma@morales.com'],
+			[$this->makeUser('sarah@web.org', 'Sarah Foster', 'sarah@web.org'), null],
+			[$this->makeUser('cole@web.org', 'Cole Harrison', 'cole@web.org'), 'cole@example.com'],
+			[$this->makeUser('8d29e358-cf69-4849-bbf9-28076c0b908b', 'Alice McPherson', 'alice@example.com'), 'alice@mcpherson.com'],
+			[$this->makeUser('11da2744-3f4d-4c17-8c13-4c057a379237', 'James Loranger', 'james@example.com'), ''],
+		];
+	}
+
+	/**
+	 * @dataProvider dataCheckEmailVerification
+	 */
+	public function testCheckEmailVerification(IUser $user, ?string $newEmail): void {
+		$account = $this->accountManager->getAccount($user);
+		$emailUpdated = false;
+
+		if (!empty($newEmail)) {
+			$account->getProperty(IAccountManager::PROPERTY_EMAIL)->setValue($newEmail);
+			$emailUpdated = true;
+		}
+
+		if ($emailUpdated) {
+			$this->jobList->expects($this->once())
+				->method('add')
+				->with(VerifyUserData::class);
+		} else {
+			$this->jobList->expects($this->never())
+				->method('add')
+				->with(VerifyUserData::class);
+		}
+
+		/** @var array $oldData */
+		$oldData = $this->invokePrivate($this->accountManager, 'getUser', [$user, false]);
+		$this->invokePrivate($this->accountManager, 'checkEmailVerification', [$account, $oldData]);
 	}
 }

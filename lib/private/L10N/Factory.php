@@ -37,6 +37,7 @@ declare(strict_types=1);
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
+
 namespace OC\L10N;
 
 use OCP\IConfig;
@@ -104,10 +105,12 @@ class Factory implements IFactory {
 	 * @param IUserSession $userSession
 	 * @param string $serverRoot
 	 */
-	public function __construct(IConfig $config,
-								IRequest $request,
-								IUserSession $userSession,
-								$serverRoot) {
+	public function __construct(
+		IConfig $config,
+		IRequest $request,
+		IUserSession $userSession,
+		$serverRoot
+	) {
 		$this->config = $config;
 		$this->request = $request;
 		$this->userSession = $userSession;
@@ -149,7 +152,10 @@ class Factory implements IFactory {
 
 			if (!isset($this->instances[$lang][$app])) {
 				$this->instances[$lang][$app] = new L10N(
-					$this, $app, $lang, $locale,
+					$this,
+					$app,
+					$lang,
+					$locale,
 					$this->getL10nFilesForApp($app, $lang)
 				);
 			}
@@ -391,7 +397,7 @@ class Factory implements IFactory {
 	 * @return bool
 	 */
 	public function languageExists($app, $lang) {
-		if ($lang === 'en') {//english is always available
+		if ($lang === 'en') { //english is always available
 			return true;
 		}
 
@@ -424,6 +430,15 @@ class Factory implements IFactory {
 			$language = $this->config->getUserValue($user->getUID(), 'core', 'lang', null);
 			if ($language !== null) {
 				return $language;
+			}
+
+			// Use language from request
+			if ($this->userSession->getUser() instanceof IUser &&
+				$user->getUID() === $this->userSession->getUser()->getUID()) {
+				try {
+					return $this->getLanguageFromRequest();
+				} catch (LanguageNotFoundException $e) {
+				}
 			}
 		}
 
@@ -493,7 +508,8 @@ class Factory implements IFactory {
 
 		// use formal version of german ("Sie" instead of "Du") if the default
 		// language is set to 'de_DE' if possible
-		if (is_string($defaultLanguage) &&
+		if (
+			is_string($defaultLanguage) &&
 			strtolower($lang) === 'de' &&
 			strtolower($defaultLanguage) === 'de_de' &&
 			$this->languageExists($app, 'de_DE')
@@ -542,9 +558,9 @@ class Factory implements IFactory {
 
 		if (($this->isSubDirectory($transFile, $this->serverRoot . '/core/l10n/')
 				|| $this->isSubDirectory($transFile, $this->serverRoot . '/lib/l10n/')
-				|| $this->isSubDirectory($transFile, \OC_App::getAppPath($app) . '/l10n/')
-			)
-			&& file_exists($transFile)) {
+				|| $this->isSubDirectory($transFile, \OC_App::getAppPath($app) . '/l10n/'))
+			&& file_exists($transFile)
+		) {
 			// load the translations file
 			$languageFiles[] = $transFile;
 		}
@@ -579,78 +595,10 @@ class Factory implements IFactory {
 		return $this->serverRoot . '/core/l10n/';
 	}
 
-
 	/**
-	 * Creates a function from the plural string
-	 *
-	 * Parts of the code is copied from Habari:
-	 * https://github.com/habari/system/blob/master/classes/locale.php
-	 * @param string $string
-	 * @return string
+	 * @inheritDoc
 	 */
-	public function createPluralFunction($string) {
-		if (isset($this->pluralFunctions[$string])) {
-			return $this->pluralFunctions[$string];
-		}
-
-		if (preg_match('/^\s*nplurals\s*=\s*(\d+)\s*;\s*plural=(.*)$/u', $string, $matches)) {
-			// sanitize
-			$nplurals = preg_replace('/[^0-9]/', '', $matches[1]);
-			$plural = preg_replace('#[^n0-9:\(\)\?\|\&=!<>+*/\%-]#', '', $matches[2]);
-
-			$body = str_replace(
-				[ 'plural', 'n', '$n$plurals', ],
-				[ '$plural', '$n', '$nplurals', ],
-				'nplurals='. $nplurals . '; plural=' . $plural
-			);
-
-			// add parents
-			// important since PHP's ternary evaluates from left to right
-			$body .= ';';
-			$res = '';
-			$p = 0;
-			$length = strlen($body);
-			for ($i = 0; $i < $length; $i++) {
-				$ch = $body[$i];
-				switch ($ch) {
-					case '?':
-						$res .= ' ? (';
-						$p++;
-						break;
-					case ':':
-						$res .= ') : (';
-						break;
-					case ';':
-						$res .= str_repeat(')', $p) . ';';
-						$p = 0;
-						break;
-					default:
-						$res .= $ch;
-				}
-			}
-
-			$body = $res . 'return ($plural>=$nplurals?$nplurals-1:$plural);';
-			$function = create_function('$n', $body);
-			$this->pluralFunctions[$string] = $function;
-			return $function;
-		} else {
-			// default: one plural form for all cases but n==1 (english)
-			$function = create_function(
-				'$n',
-				'$nplurals=2;$plural=($n==1?0:1);return ($plural>=$nplurals?$nplurals-1:$plural);'
-			);
-			$this->pluralFunctions[$string] = $function;
-			return $function;
-		}
-	}
-
-	/**
-	 * returns the common language and other languages in an
-	 * associative array
-	 *
-	 * @return array
-	 */
-	public function getLanguages() {
+	public function getLanguages(): array {
 		$forceLanguage = $this->config->getSystemValue('force_language', false);
 		if ($forceLanguage !== false) {
 			$l = $this->get('lib', $forceLanguage);
@@ -674,7 +622,7 @@ class Factory implements IFactory {
 			$l = $this->get('lib', $lang);
 			// TRANSLATORS this is the language name for the language switcher in the personal settings and should be the localized version
 			$potentialName = $l->t('__language_name__');
-			if ($l->getLanguageCode() === $lang && $potentialName[0] !== '_') {//first check if the language name is in the translation file
+			if ($l->getLanguageCode() === $lang && $potentialName[0] !== '_') { //first check if the language name is in the translation file
 				$ln = [
 					'code' => $lang,
 					'name' => $potentialName
@@ -684,7 +632,7 @@ class Factory implements IFactory {
 					'code' => $lang,
 					'name' => 'English (US)'
 				];
-			} else {//fallback to language code
+			} else { //fallback to language code
 				$ln = [
 					'code' => $lang,
 					'name' => $lang

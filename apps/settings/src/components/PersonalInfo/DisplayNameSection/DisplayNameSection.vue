@@ -17,21 +17,19 @@
 	-
 	- You should have received a copy of the GNU Affero General Public License
 	- along with this program. If not, see <http://www.gnu.org/licenses/>.
+	-
 -->
 
 <template>
 	<section>
-		<HeaderBar
-			:account-property="accountProperty"
+		<HeaderBar :account-property="accountProperty"
 			label-for="displayname"
 			:is-editable="displayNameChangeSupported"
 			:is-valid-section="isValidSection"
-			:handle-scope-change="savePrimaryDisplayNameScope"
 			:scope.sync="primaryDisplayName.scope" />
 
 		<template v-if="displayNameChangeSupported">
-			<DisplayName
-				:display-name.sync="primaryDisplayName.value"
+			<DisplayName :display-name.sync="primaryDisplayName.value"
 				:scope.sync="primaryDisplayName.scope" />
 		</template>
 
@@ -48,10 +46,9 @@ import DisplayName from './DisplayName'
 import HeaderBar from '../shared/HeaderBar'
 
 import { ACCOUNT_PROPERTY_READABLE_ENUM } from '../../../constants/AccountPropertyConstants'
-import { savePrimaryDisplayNameScope } from '../../../service/PersonalInfo/DisplayNameService'
-import { validateDisplayName } from '../../../utils/validate'
+import { validateStringInput } from '../../../utils/validate'
 
-const { displayNames: { primaryDisplayName } } = loadState('settings', 'personalInfoParameters', {})
+const { displayNameMap: { primaryDisplayName } } = loadState('settings', 'personalInfoParameters', {})
 const { displayNameChangeSupported } = loadState('settings', 'accountParameters', {})
 
 export default {
@@ -67,13 +64,12 @@ export default {
 			accountProperty: ACCOUNT_PROPERTY_READABLE_ENUM.DISPLAYNAME,
 			displayNameChangeSupported,
 			primaryDisplayName,
-			savePrimaryDisplayNameScope,
 		}
 	},
 
 	computed: {
 		isValidSection() {
-			return validateDisplayName(this.primaryDisplayName.value)
+			return validateStringInput(this.primaryDisplayName.value)
 		},
 	},
 }

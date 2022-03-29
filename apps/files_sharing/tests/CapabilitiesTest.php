@@ -28,6 +28,7 @@
  */
 namespace OCA\Files_Sharing\Tests;
 
+use OC\KnownUser\KnownUserService;
 use OC\Share20\Manager;
 use OCA\Files_Sharing\Capabilities;
 use OCP\EventDispatcher\IEventDispatcher;
@@ -36,7 +37,6 @@ use OCP\Files\Mount\IMountManager;
 use OCP\IConfig;
 use OCP\IGroupManager;
 use OCP\IL10N;
-use OCP\ILogger;
 use OCP\IURLGenerator;
 use OCP\IUserManager;
 use OCP\IUserSession;
@@ -45,6 +45,7 @@ use OCP\Mail\IMailer;
 use OCP\Security\IHasher;
 use OCP\Security\ISecureRandom;
 use OCP\Share\IProviderFactory;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -78,7 +79,7 @@ class CapabilitiesTest extends \Test\TestCase {
 		$config = $this->getMockBuilder(IConfig::class)->disableOriginalConstructor()->getMock();
 		$config->method('getAppValue')->willReturnMap($map);
 		$shareManager = new Manager(
-			$this->createMock(ILogger::class),
+			$this->createMock(LoggerInterface::class),
 			$config,
 			$this->createMock(ISecureRandom::class),
 			$this->createMock(IHasher::class),
@@ -94,7 +95,8 @@ class CapabilitiesTest extends \Test\TestCase {
 			$this->createMock(IURLGenerator::class),
 			$this->createMock(\OC_Defaults::class),
 			$this->createMock(IEventDispatcher::class),
-			$this->createMock(IUserSession::class)
+			$this->createMock(IUserSession::class),
+			$this->createMock(KnownUserService::class)
 		);
 		$cap = new Capabilities($config, $shareManager);
 		$result = $this->getFilesSharingPart($cap->getCapabilities());

@@ -151,6 +151,7 @@ form #datadirField legend {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	padding: 10px 5px;
 	position: relative; /* Make the wrapper the containing block of its
 						   absolutely positioned descendant icons */
 }
@@ -164,7 +165,7 @@ form #datadirField legend {
 }
 
 .alternative-logins a.button {
-	margin: 10px 5px;
+	margin: 0;
 	display: block;
 	font-size: 15px;
 	white-space: nowrap;
@@ -207,7 +208,6 @@ form #datadirField legend {
 #submit-wrapper .submit-icon,
 #reset-password-wrapper .submit-icon {
 	position: absolute;
-	top: 22px;
 	right: 24px;
 	transition: right 100ms ease-in-out;
 	pointer-events: none; /* The submit icon is positioned on the submit button.
@@ -269,6 +269,10 @@ select {
 	border: none;
 	border-radius: 100px; /* --border-radius-pill */
 	cursor: pointer;
+}
+input[type='submit']:focus {
+	border: 2px solid black !important;
+	padding: 8px;
 }
 input[type='text'],
 input[type='tel'],
@@ -583,9 +587,17 @@ form .warning input[type='checkbox']+label {
 	display: inline-block;
 	text-align: center;
 	box-sizing: border-box;
+	border: 2px solid #ffffff;
 	background-color: #0082c9;
-	color: white;
+	color: #ffffff;
 	border-radius: 100px; /* --border-radius-pill */
+}
+
+.alternative-logins a.button:focus,
+.alternative-logins li a:focus {
+	border: 2px solid #000000;
+	background-image: linear-gradient(40deg, #0082c9 0%, #30b6ff 100%);
+	background-position: initial;
 }
 
 /* fixes for update page TODO should be fixed some time in a proper way */
@@ -667,18 +679,14 @@ form #selectDbType label span {
 	margin: 5px 0 !important;
 }
 
-#install-recommended-apps + label span {
-	display: inline-block;
-	opacity: .7;
-}
-
 /* Errors */
 /* Warnings and errors are the same */
 .body-login-container,
 .warning,
 .update,
 .error {
-	display: block;
+	display: flex;
+	flex-direction: column;
 	margin-top: 15px;
 	padding: 15px;
 	background-color: rgba(0,0,0,.3);

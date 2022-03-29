@@ -3,9 +3,9 @@ OC.L10N.register(
     {
     "Dashboard" : "Табло",
     "Dashboard app" : "Приложение за Табло",
-    "Show something" : "Покажи нещо",
     "Customize" : "Персонизиране",
     "Edit widgets" : "Редактиране на изпълнимите модули",
+    "Get more widgets from the App Store" : "Вземете повече приспособления от  App Store",
     "Change background image" : "Промяна на фоновото изображение",
     "Weather service" : "Метеорологична услуга",
     "For your privacy, the weather data is requested by your Nextcloud server on your behalf so the weather service receives no personal information." : "За вашата поверителност данните за времето се изискват от Nextcloud  сървъра ви от ваше име, така че метеорологичната служба не получава лична информация.",
@@ -26,9 +26,7 @@ OC.L10N.register(
     "Default images" : "Изображения по подразбиране",
     "Plain background" : "Обикновен фон",
     "Insert from {productName}" : "Вмъкване от {productName}",
-    "Get more widgets from the app store" : "Вземете повече приспособления от  app store",
-    "Good night, {name}" : "Лека нощ, {name}",
-    "Good night" : "Лека нощ",
-    "Pick from files" : "Избери от Файловете"
+    "Show something" : "Покажи нещо",
+    "Get more widgets from the app store" : "Вземете повече приспособления от  app store"
 },
 "nplurals=2; plural=(n != 1);");

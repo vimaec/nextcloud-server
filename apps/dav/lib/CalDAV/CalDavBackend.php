@@ -39,6 +39,7 @@
 namespace OCA\DAV\CalDAV;
 
 use DateTime;
+use DateTimeInterface;
 use OCA\DAV\AppInfo\Application;
 use OCA\DAV\Connector\Sabre\Principal;
 use OCA\DAV\DAV\Sharing\Backend;
@@ -62,6 +63,7 @@ use OCA\DAV\Events\CalendarUpdatedEvent;
 use OCA\DAV\Events\SubscriptionCreatedEvent;
 use OCA\DAV\Events\SubscriptionDeletedEvent;
 use OCA\DAV\Events\SubscriptionUpdatedEvent;
+use OCP\DB\Exception;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\EventDispatcher\IEventDispatcher;
 use OCP\IConfig;
@@ -99,7 +101,9 @@ use function array_merge;
 use function array_values;
 use function explode;
 use function is_array;
+use function is_resource;
 use function pathinfo;
+use function rewind;
 use function sprintf;
 use function str_replace;
 use function strtolower;
@@ -169,10 +173,25 @@ class CalDavBackend extends AbstractBackend implements SyncSupport, Subscription
 		'{http://calendarserver.org/ns/}subscribed-strip-attachments' => 'stripattachments',
 	];
 
-	/** @var array properties to index */
-	public static $indexProperties = ['CATEGORIES', 'COMMENT', 'DESCRIPTION',
-		'LOCATION', 'RESOURCES', 'STATUS', 'SUMMARY', 'ATTENDEE', 'CONTACT',
-		'ORGANIZER'];
+	/**
+	 * properties to index
+	 *
+	 * This list has to be kept in sync with ICalendarQuery::SEARCH_PROPERTY_*
+	 *
+	 * @see \OCP\Calendar\ICalendarQuery
+	 */
+	private const INDEXED_PROPERTIES = [
+		'CATEGORIES',
+		'COMMENT',
+		'DESCRIPTION',
+		'LOCATION',
+		'RESOURCES',
+		'STATUS',
+		'SUMMARY',
+		'ATTENDEE',
+		'CONTACT',
+		'ORGANIZER'
+	];
 
 	/** @var array parameters to index */
 	public static $indexParameters = [
@@ -1104,7 +1123,7 @@ class CalDavBackend extends AbstractBackend implements SyncSupport, Subscription
 	 *
 	 * @param string $principalUri
 	 * @return array
-	 * @throws \OCP\DB\Exception
+	 * @throws Exception
 	 */
 	public function getDeletedCalendarObjectsByPrincipal(string $principalUri): array {
 		$query = $this->db->getQueryBuilder();
@@ -1396,6 +1415,56 @@ class CalDavBackend extends AbstractBackend implements SyncSupport, Subscription
 
 		return '"' . $extraData['etag'] . '"';
 	}
+
+	/**
+	 * Moves a calendar object from calendar to calendar.
+	 *
+	 * @param int $sourceCalendarId
+	 * @param int $targetCalendarId
+	 * @param int $objectId
+	 * @param string $principalUri
+	 * @param int $calendarType
+	 * @return bool
+	 * @throws Exception
+	 */
+	public function moveCalendarObject(int $sourceCalendarId, int $targetCalendarId, int $objectId, string $principalUri, int $calendarType = self::CALENDAR_TYPE_CALENDAR): bool {
+		$object = $this->getCalendarObjectById($principalUri, $objectId);
+		if (empty($object)) {
+			return false;
+		}
+
+		$query = $this->db->getQueryBuilder();
+		$query->update('calendarobjects')
+			->set('calendarid', $query->createNamedParameter($targetCalendarId, IQueryBuilder::PARAM_INT))
+			->where($query->expr()->eq('id', $query->createNamedParameter($objectId, IQueryBuilder::PARAM_INT), IQueryBuilder::PARAM_INT))
+			->andWhere($query->expr()->eq('calendartype', $query->createNamedParameter($calendarType, IQueryBuilder::PARAM_INT), IQueryBuilder::PARAM_INT))
+			->executeStatement();
+
+		$this->purgeProperties($sourceCalendarId, $objectId);
+		$this->updateProperties($targetCalendarId, $object['uri'], $object['calendardata'], $calendarType);
+
+		$this->addChange($sourceCalendarId, $object['uri'], 1, $calendarType);
+		$this->addChange($targetCalendarId, $object['uri'], 3, $calendarType);
+
+		$object = $this->getCalendarObjectById($principalUri, $objectId);
+		// Calendar Object wasn't found - possibly because it was deleted in the meantime by a different client
+		if (empty($object)) {
+			return false;
+		}
+
+		$calendarRow = $this->getCalendarById($targetCalendarId);
+		// the calendar this event is being moved to does not exist any longer
+		if (empty($calendarRow)) {
+			return false;
+		}
+
+		if ($calendarType === self::CALENDAR_TYPE_CALENDAR) {
+			$shares = $this->getShares($targetCalendarId);
+			$this->dispatcher->dispatchTyped(new CalendarObjectUpdatedEvent($targetCalendarId, $calendarRow, $shares, $object));
+		}
+		return true;
+	}
+
 
 	/**
 	 * @param int $calendarObjectId
@@ -1845,17 +1914,19 @@ class CalDavBackend extends AbstractBackend implements SyncSupport, Subscription
 				$outerQuery->createNamedParameter(self::CALENDAR_TYPE_CALENDAR)));
 
 		// only return public items for shared calendars for now
-		if ($calendarInfo['principaluri'] !== $calendarInfo['{http://owncloud.org/ns}owner-principal']) {
+		if (isset($calendarInfo['{http://owncloud.org/ns}owner-principal']) === false || $calendarInfo['principaluri'] !== $calendarInfo['{http://owncloud.org/ns}owner-principal']) {
 			$innerQuery->andWhere($innerQuery->expr()->eq('c.classification',
 				$outerQuery->createNamedParameter(self::CLASSIFICATION_PUBLIC)));
 		}
 
-		$or = $innerQuery->expr()->orX();
-		foreach ($searchProperties as $searchProperty) {
-			$or->add($innerQuery->expr()->eq('op.name',
-				$outerQuery->createNamedParameter($searchProperty)));
+		if (!empty($searchProperties)) {
+			$or = $innerQuery->expr()->orX();
+			foreach ($searchProperties as $searchProperty) {
+				$or->add($innerQuery->expr()->eq('op.name',
+					$outerQuery->createNamedParameter($searchProperty)));
+			}
+			$innerQuery->andWhere($or);
 		}
-		$innerQuery->andWhere($or);
 
 		if ($pattern !== '') {
 			$innerQuery->andWhere($innerQuery->expr()->iLike('op.value',
@@ -1868,17 +1939,17 @@ class CalDavBackend extends AbstractBackend implements SyncSupport, Subscription
 			->where($outerQuery->expr()->isNull('deleted_at'));
 
 		if (isset($options['timerange'])) {
-			if (isset($options['timerange']['start']) && $options['timerange']['start'] instanceof DateTime) {
+			if (isset($options['timerange']['start']) && $options['timerange']['start'] instanceof DateTimeInterface) {
 				$outerQuery->andWhere($outerQuery->expr()->gt('lastoccurence',
 					$outerQuery->createNamedParameter($options['timerange']['start']->getTimeStamp())));
 			}
-			if (isset($options['timerange']['end']) && $options['timerange']['end'] instanceof DateTime) {
+			if (isset($options['timerange']['end']) && $options['timerange']['end'] instanceof DateTimeInterface) {
 				$outerQuery->andWhere($outerQuery->expr()->lt('firstoccurence',
 					$outerQuery->createNamedParameter($options['timerange']['end']->getTimeStamp())));
 			}
 		}
 
-		if (isset($options['types'])) {
+		if (!empty($options['types'])) {
 			$or = $outerQuery->expr()->orX();
 			foreach ($options['types'] as $type) {
 				$or->add($outerQuery->expr()->eq('componenttype',
@@ -1887,8 +1958,7 @@ class CalDavBackend extends AbstractBackend implements SyncSupport, Subscription
 			$outerQuery->andWhere($or);
 		}
 
-		$outerQuery->andWhere($outerQuery->expr()->in('c.id',
-			$outerQuery->createFunction($innerQuery->getSQL())));
+		$outerQuery->andWhere($outerQuery->expr()->in('c.id', $outerQuery->createFunction($innerQuery->getSQL())));
 
 		if ($offset) {
 			$outerQuery->setFirstResult($offset);
@@ -1898,7 +1968,40 @@ class CalDavBackend extends AbstractBackend implements SyncSupport, Subscription
 		}
 
 		$result = $outerQuery->executeQuery();
-		$calendarObjects = $result->fetchAll();
+		$calendarObjects = array_filter($result->fetchAll(), function (array $row) use ($options) {
+			$start = $options['timerange']['start'] ?? null;
+			$end = $options['timerange']['end'] ?? null;
+
+			if ($start === null || !($start instanceof DateTimeInterface) || $end === null || !($end instanceof DateTimeInterface)) {
+				// No filter required
+				return true;
+			}
+
+			$isValid = $this->validateFilterForObject($row, [
+				'name' => 'VCALENDAR',
+				'comp-filters' => [
+					[
+						'name' => 'VEVENT',
+						'comp-filters' => [],
+						'prop-filters' => [],
+						'is-not-defined' => false,
+						'time-range' => [
+							'start' => $start,
+							'end' => $end,
+						],
+					],
+				],
+				'prop-filters' => [],
+				'is-not-defined' => false,
+				'time-range' => null,
+			]);
+			if (is_resource($row['calendardata'])) {
+				// Put the stream back to the beginning so it can be read another time
+				rewind($row['calendardata']);
+			}
+			return $isValid;
+		});
+		$result->closeCursor();
 
 		return array_map(function ($o) {
 			$calendarData = Reader::read($o['calendardata']);
@@ -2613,6 +2716,7 @@ class CalDavBackend extends AbstractBackend implements SyncSupport, Subscription
 				'size' => (int)$row['size'],
 			];
 		}
+		$stmt->closeCursor();
 
 		return $result;
 	}
@@ -2946,7 +3050,7 @@ class CalDavBackend extends AbstractBackend implements SyncSupport, Subscription
 			}
 
 			foreach ($component->children() as $property) {
-				if (in_array($property->name, self::$indexProperties)) {
+				if (in_array($property->name, self::INDEXED_PROPERTIES, true)) {
 					$value = $property->getValue();
 					// is this a shitty db?
 					if (!$this->db->supports4ByteText()) {
@@ -2992,6 +3096,7 @@ class CalDavBackend extends AbstractBackend implements SyncSupport, Subscription
 			->executeQuery();
 
 		$ids = $result->fetchAll();
+		$result->closeCursor();
 		foreach ($ids as $id) {
 			$this->deleteCalendar(
 				$id['id'],

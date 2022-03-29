@@ -35,14 +35,14 @@ use OC\Files\Storage\Local;
 use OC\Files\Storage\Temporary;
 use OC\Files\Storage\Wrapper\PermissionsMask;
 use OC\Files\View;
-use OC\Security\SecureRandom;
 use OCA\DAV\Connector\Sabre\File;
 use OCP\Constants;
 use OCP\Files\ForbiddenException;
 use OCP\Files\Storage;
 use OCP\IConfig;
+use OCP\IRequestId;
 use OCP\Lock\ILockingProvider;
-use OCP\Security\ISecureRandom;
+use PHPUnit\Framework\MockObject\MockObject;
 use Test\HookHelper;
 use Test\TestCase;
 use Test\Traits\MountProviderTrait;
@@ -64,11 +64,11 @@ class FileTest extends TestCase {
 	 */
 	private $user;
 
-	/** @var IConfig | \PHPUnit\Framework\MockObject\MockObject */
+	/** @var IConfig|MockObject */
 	protected $config;
 
-	/** @var ISecureRandom */
-	protected $secureRandom;
+	/** @var IRequestId|MockObject */
+	protected $requestId;
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -83,8 +83,8 @@ class FileTest extends TestCase {
 
 		$this->loginAsUser($this->user);
 
-		$this->config = $this->getMockBuilder('\OCP\IConfig')->getMock();
-		$this->secureRandom = new SecureRandom();
+		$this->config = $this->createMock(IConfig::class);
+		$this->requestId = $this->createMock(IRequestId::class);
 	}
 
 	protected function tearDown(): void {
@@ -96,7 +96,7 @@ class FileTest extends TestCase {
 	}
 
 	/**
-	 * @return \PHPUnit\Framework\MockObject\MockObject|Storage
+	 * @return MockObject|Storage
 	 */
 	private function getMockStorage() {
 		$storage = $this->getMockBuilder(Storage::class)
@@ -184,7 +184,7 @@ class FileTest extends TestCase {
 			->setConstructorArgs([['datadir' => \OC::$server->getTempManager()->getTemporaryFolder()]])
 			->getMock();
 		\OC\Files\Filesystem::mount($storage, [], $this->user . '/');
-		/** @var View | \PHPUnit\Framework\MockObject\MockObject $view */
+		/** @var View | MockObject $view */
 		$view = $this->getMockBuilder(View::class)
 			->setMethods(['getRelativePath', 'resolvePath'])
 			->getMock();
@@ -330,7 +330,7 @@ class FileTest extends TestCase {
 			null
 		);
 
-		/** @var \OCA\DAV\Connector\Sabre\File | \PHPUnit\Framework\MockObject\MockObject $file */
+		/** @var \OCA\DAV\Connector\Sabre\File | MockObject $file */
 		$file = $this->getMockBuilder(\OCA\DAV\Connector\Sabre\File::class)
 			->setConstructorArgs([$view, $info, null, $request])
 			->setMethods(['header'])
@@ -361,28 +361,28 @@ class FileTest extends TestCase {
 				'expected result' => null
 			],
 			"castable string (int)" => [
-				'HTTP_X_OC_MTIME' => "34",
-				'expected result' => 34
+				'HTTP_X_OC_MTIME' => "987654321",
+				'expected result' => 987654321
 			],
 			"castable string (float)" => [
-				'HTTP_X_OC_MTIME' => "34.56",
-				'expected result' => 34
+				'HTTP_X_OC_MTIME' => "123456789.56",
+				'expected result' => 123456789
 			],
 			"float" => [
-				'HTTP_X_OC_MTIME' => 34.56,
-				'expected result' => 34
+				'HTTP_X_OC_MTIME' => 123456789.56,
+				'expected result' => 123456789
 			],
 			"zero" => [
 				'HTTP_X_OC_MTIME' => 0,
-				'expected result' => 0
+				'expected result' => null
 			],
 			"zero string" => [
 				'HTTP_X_OC_MTIME' => "0",
-				'expected result' => 0
+				'expected result' => null
 			],
 			"negative zero string" => [
 				'HTTP_X_OC_MTIME' => "-0",
-				'expected result' => 0
+				'expected result' => null
 			],
 			"string starting with number following by char" => [
 				'HTTP_X_OC_MTIME' => "2345asdf",
@@ -398,11 +398,11 @@ class FileTest extends TestCase {
 			],
 			"negative int" => [
 				'HTTP_X_OC_MTIME' => -34,
-				'expected result' => -34
+				'expected result' => null
 			],
 			"negative float" => [
 				'HTTP_X_OC_MTIME' => -34.43,
-				'expected result' => -34
+				'expected result' => null
 			],
 		];
 	}
@@ -416,12 +416,11 @@ class FileTest extends TestCase {
 			'server' => [
 				'HTTP_X_OC_MTIME' => $requestMtime,
 			]
-		], $this->secureRandom, $this->config, null);
+		], $this->requestId, $this->config, null);
 		$file = 'foo.txt';
 
 		if ($resultMtime === null) {
 			$this->expectException(\InvalidArgumentException::class);
-			$this->expectExceptionMessage("X-OC-MTime header must be an integer (unix timestamp).");
 		}
 
 		$this->doPut($file, null, $request);
@@ -440,14 +439,13 @@ class FileTest extends TestCase {
 			'server' => [
 				'HTTP_X_OC_MTIME' => $requestMtime,
 			]
-		], $this->secureRandom, $this->config, null);
+		], $this->requestId, $this->config, null);
 
 		$_SERVER['HTTP_OC_CHUNKED'] = true;
 		$file = 'foo.txt';
 
 		if ($resultMtime === null) {
 			$this->expectException(\Sabre\DAV\Exception::class);
-			$this->expectExceptionMessage("X-OC-MTime header must be an integer (unix timestamp).");
 		}
 
 		$this->doPut($file.'-chunking-12345-2-0', null, $request);

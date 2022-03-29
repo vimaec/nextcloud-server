@@ -43,6 +43,7 @@ namespace OCA\Theming;
 use OCP\App\AppPathNotFoundException;
 use OCP\App\IAppManager;
 use OCP\Files\NotFoundException;
+use OCP\Files\SimpleFS\ISimpleFile;
 use OCP\ICacheFactory;
 use OCP\IConfig;
 use OCP\IL10N;
@@ -156,6 +157,11 @@ class ThemingDefaults extends \OC_Defaults {
 		return $this->config->getAppValue('theming', 'url', $this->url);
 	}
 
+	/**
+	 * We pass a string and sanitizeHTML will return a string too in that case
+	 * @psalm-suppress InvalidReturnStatement
+	 * @psalm-suppress InvalidReturnType
+	 */
 	public function getSlogan(?string $lang = null) {
 		return \OCP\Util::sanitizeHTML($this->config->getAppValue('theming', 'slogan', parent::getSlogan($lang)));
 	}
@@ -363,17 +369,11 @@ class ThemingDefaults extends \OC_Defaults {
 		}
 		$cacheBusterValue = $this->config->getAppValue('theming', 'cachebuster', '0');
 
-		try {
-			$customFavicon = $this->imageManager->getImage('favicon');
-		} catch (NotFoundException $e) {
-			$customFavicon = null;
-		}
-
 		$route = false;
-		if ($image === 'favicon.ico' && ($customFavicon !== null || $this->imageManager->shouldReplaceIcons())) {
+		if ($image === 'favicon.ico' && ($this->imageManager->shouldReplaceIcons() || $this->getCustomFavicon() !== null)) {
 			$route = $this->urlGenerator->linkToRoute('theming.Icon.getFavicon', ['app' => $app]);
 		}
-		if (($image === 'favicon-touch.png' || $image === 'favicon-fb.png') && ($customFavicon !== null || $this->imageManager->shouldReplaceIcons())) {
+		if (($image === 'favicon-touch.png' || $image === 'favicon-fb.png') && ($this->imageManager->shouldReplaceIcons() || $this->getCustomFavicon() !== null)) {
 			$route = $this->urlGenerator->linkToRoute('theming.Icon.getTouchIcon', ['app' => $app]);
 		}
 		if ($image === 'manifest.json') {
@@ -397,12 +397,20 @@ class ThemingDefaults extends \OC_Defaults {
 		return false;
 	}
 
+	protected function getCustomFavicon(): ?ISimpleFile {
+		try {
+			return $this->imageManager->getImage('favicon');
+		} catch (NotFoundException $e) {
+			return null;
+		}
+	}
+
 	/**
 	 * Increases the cache buster key
 	 */
-	private function increaseCacheBuster() {
-		$cacheBusterKey = $this->config->getAppValue('theming', 'cachebuster', '0');
-		$this->config->setAppValue('theming', 'cachebuster', (int)$cacheBusterKey + 1);
+	private function increaseCacheBuster(): void {
+		$cacheBusterKey = (int)$this->config->getAppValue('theming', 'cachebuster', '0');
+		$this->config->setAppValue('theming', 'cachebuster', (string)($cacheBusterKey + 1));
 		$this->cacheFactory->createDistributed('theming-')->clear();
 		$this->cacheFactory->createDistributed('imagePath')->clear();
 	}

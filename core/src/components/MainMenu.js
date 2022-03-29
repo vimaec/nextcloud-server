@@ -5,7 +5,7 @@
  * @author John Molakvoæ <skjnldsv@protonmail.com>
  * @author Julius Härtl <jus@bitgrid.net>
  *
- * @license GNU AGPL version 3 or any later version
+ * @license AGPL-3.0-or-later
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -72,7 +72,7 @@ export const setUp = () => {
 		if (!$app.is('a')) {
 			$app = $app.closest('a')
 		}
-		if (event.which === 1 && !event.ctrlKey && !event.metaKey) {
+		if (event.which === 1 && !event.ctrlKey && !event.metaKey && $app.attr('target') !== '_blank') {
 			$app.find('svg').remove()
 			$app.find('div').remove() // prevent odd double-clicks
 			// no need for theming, loader is already inverted on dark mode
@@ -100,7 +100,7 @@ export const setUp = () => {
 			$app = $app.closest('a')
 		}
 
-		if (event.which === 1 && !event.ctrlKey && !event.metaKey && $app.parent('#more-apps').length === 0) {
+		if (event.which === 1 && !event.ctrlKey && !event.metaKey && $app.parent('#more-apps').length === 0 && $app.attr('target') !== '_blank') {
 			$app.find('svg').remove()
 			$app.find('div').remove() // prevent odd double-clicks
 			$app.prepend($('<div/>').addClass(

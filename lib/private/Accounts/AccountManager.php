@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright Copyright (c) 2016, ownCloud, Inc.
  * @copyright Copyright (c) 2016, Björn Schießle
@@ -30,6 +31,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  *
  */
+
 namespace OC\Accounts;
 
 use Exception;
@@ -38,6 +40,7 @@ use libphonenumber\NumberParseException;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
+use OC\Profile\TProfileHelper;
 use OCA\Settings\BackgroundJobs\VerifyUserData;
 use OCP\Accounts\IAccount;
 use OCP\Accounts\IAccountManager;
@@ -76,6 +79,8 @@ use function json_last_error;
  */
 class AccountManager implements IAccountManager {
 	use TAccountsHelper;
+
+	use TProfileHelper;
 
 	/** @var  IDBConnection database connection */
 	private $connection;
@@ -337,10 +342,14 @@ class AccountManager implements IAccountManager {
 			return $this->buildDefaultUserRecord($user);
 		}
 
-		return $this->addMissingDefaultValues($userDataArray);
+		return $this->addMissingDefaultValues($userDataArray, $this->buildDefaultUserRecord($user));
 	}
 
 	public function searchUsers(string $property, array $values): array {
+		// the value col is limited to 255 bytes. It is used for searches only.
+		$values = array_map(function (string $value) {
+			return Util::shortenMultibyteString($value, 255);
+		}, $values);
 		$chunks = array_chunk($values, 500);
 		$query = $this->connection->getQueryBuilder();
 		$query->select('*')
@@ -382,9 +391,13 @@ class AccountManager implements IAccountManager {
 		} catch (PropertyDoesNotExistException $e) {
 			return;
 		}
-		$oldMail = isset($oldData[self::PROPERTY_EMAIL]) ? $oldData[self::PROPERTY_EMAIL]['value']['value'] : '';
+
+		$oldMailIndex = array_search(self::PROPERTY_EMAIL, array_column($oldData, 'name'), true);
+		$oldMail = $oldMailIndex !== false ? $oldData[$oldMailIndex]['value'] : '';
+
 		if ($oldMail !== $property->getValue()) {
-			$this->jobList->add(VerifyUserData::class,
+			$this->jobList->add(
+				VerifyUserData::class,
 				[
 					'verificationCode' => '',
 					'data' => $property->getValue(),
@@ -416,12 +429,14 @@ class AccountManager implements IAccountManager {
 		$key = $this->crypto->encrypt($email);
 		$token = $this->verificationToken->create($user, 'verifyMail' . $ref, $email);
 
-		$link = $this->urlGenerator->linkToRouteAbsolute('provisioning_api.Verification.verifyMail',
+		$link = $this->urlGenerator->linkToRouteAbsolute(
+			'provisioning_api.Verification.verifyMail',
 			[
 				'userId' => $user->getUID(),
 				'token' => $token,
 				'key' => $key
-			]);
+			]
+		);
 
 		$emailTemplate = $this->mailer->createEMailTemplate('core.EmailVerification', [
 			'link' => $link,
@@ -465,14 +480,19 @@ class AccountManager implements IAccountManager {
 	}
 
 	/**
-	 * make sure that all expected data are set
-	 *
+	 * Make sure that all expected data are set
 	 */
-	protected function addMissingDefaultValues(array $userData): array {
-		foreach ($userData as $i => $value) {
-			if (!isset($value['verified'])) {
-				$userData[$i]['verified'] = self::NOT_VERIFIED;
+	protected function addMissingDefaultValues(array $userData, array $defaultUserData): array {
+		foreach ($defaultUserData as $defaultDataItem) {
+			// If property does not exist, initialize it
+			$userDataIndex = array_search($defaultDataItem['name'], array_column($userData, 'name'));
+			if ($userDataIndex === false) {
+				$userData[] = $defaultDataItem;
+				continue;
 			}
+
+			// Merge and extend default missing values
+			$userData[$userDataIndex] = array_merge($defaultDataItem, $userData[$userDataIndex]);
 		}
 
 		return $userData;
@@ -499,7 +519,7 @@ class AccountManager implements IAccountManager {
 					|| $property->getValue() !== $oldData[$propertyName]['value'])
 				&& ($property->getVerified() !== self::NOT_VERIFIED
 					|| $wasVerified)
-				) {
+			) {
 				$property->setVerified(self::NOT_VERIFIED);
 			}
 		}
@@ -615,8 +635,11 @@ class AccountManager implements IAccountManager {
 				continue;
 			}
 
+			// the value col is limited to 255 bytes. It is used for searches only.
+			$value = $property['value'] ? Util::shortenMultibyteString($property['value'], 255) : '';
+
 			$query->setParameter('name', $property['name'])
-				->setParameter('value', $property['value'] ?? '');
+				->setParameter('value', $value);
 			$query->executeStatement();
 		}
 	}
@@ -629,7 +652,6 @@ class AccountManager implements IAccountManager {
 	 */
 	protected function buildDefaultUserRecord(IUser $user) {
 		return [
-
 			[
 				'name' => self::PROPERTY_DISPLAYNAME,
 				'value' => $user->getDisplayName(),
@@ -677,6 +699,34 @@ class AccountManager implements IAccountManager {
 				'verified' => self::NOT_VERIFIED,
 			],
 
+			[
+				'name' => self::PROPERTY_ORGANISATION,
+				'value' => '',
+				'scope' => self::SCOPE_LOCAL,
+			],
+
+			[
+				'name' => self::PROPERTY_ROLE,
+				'value' => '',
+				'scope' => self::SCOPE_LOCAL,
+			],
+
+			[
+				'name' => self::PROPERTY_HEADLINE,
+				'value' => '',
+				'scope' => self::SCOPE_LOCAL,
+			],
+
+			[
+				'name' => self::PROPERTY_BIOGRAPHY,
+				'value' => '',
+				'scope' => self::SCOPE_LOCAL,
+			],
+
+			[
+				'name' => self::PROPERTY_PROFILE_ENABLED,
+				'value' => $this->isProfileEnabledByDefault($this->config) ? '1' : '0',
+			],
 		];
 	}
 

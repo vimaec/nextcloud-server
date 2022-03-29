@@ -32,13 +32,13 @@ namespace OC\Files\ObjectStore;
 
 use Aws\ClientResolver;
 use Aws\Credentials\CredentialProvider;
-use Aws\Credentials\EcsCredentialProvider;
 use Aws\Credentials\Credentials;
 use Aws\Exception\CredentialsException;
 use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 use GuzzleHttp\Promise;
 use GuzzleHttp\Promise\RejectedPromise;
+use OCP\ICertificateManager;
 use OCP\ILogger;
 
 trait S3ConnectionTrait {
@@ -63,6 +63,9 @@ trait S3ConnectionTrait {
 	/** @var int */
 	protected $uploadPartSize;
 
+	/** @var int */
+	private $putSizeLimit;
+
 	protected $test;
 
 	protected function parseParams($params) {
@@ -77,6 +80,7 @@ trait S3ConnectionTrait {
 		$this->proxy = $params['proxy'] ?? false;
 		$this->timeout = $params['timeout'] ?? 15;
 		$this->uploadPartSize = $params['uploadPartSize'] ?? 524288000;
+		$this->putSizeLimit = $params['putSizeLimit'] ?? 104857600;
 		$params['region'] = empty($params['region']) ? 'eu-west-1' : $params['region'];
 		$params['hostname'] = empty($params['hostname']) ? 's3.' . $params['region'] . '.amazonaws.com' : $params['hostname'];
 		if (!isset($params['port']) || $params['port'] === '') {
@@ -109,17 +113,22 @@ trait S3ConnectionTrait {
 		$base_url = $scheme . '://' . $this->params['hostname'] . ':' . $this->params['port'] . '/';
 
 		// Adding explicit credential provider to the beginning chain.
-		// Including environment variables and IAM instance profiles.
+		// Including default credential provider (skipping AWS shared config files).
 		$provider = CredentialProvider::memoize(
 			CredentialProvider::chain(
 				$this->paramCredentialProvider(),
-				CredentialProvider::env(),
-				CredentialProvider::assumeRoleWithWebIdentityCredentialProvider(),
-				!empty(getenv(EcsCredentialProvider::ENV_URI))
-					? CredentialProvider::ecsCredentials()
-					: CredentialProvider::instanceProfile()
+				CredentialProvider::defaultProvider(['use_aws_shared_config_files' => false])
 			)
 		);
+
+		// since we store the certificate bundles on the primary storage, we can't get the bundle while setting up the primary storage
+		if (!isset($this->params['primary_storage'])) {
+			/** @var ICertificateManager $certManager */
+			$certManager = \OC::$server->get(ICertificateManager::class);
+			$certPath = $certManager->getAbsoluteBundlePath();
+		} else {
+			$certPath = \OC::$SERVERROOT . '/resources/config/ca-bundle.crt';
+		}
 
 		$options = [
 			'version' => isset($this->params['version']) ? $this->params['version'] : 'latest',
@@ -130,9 +139,10 @@ trait S3ConnectionTrait {
 			'signature_provider' => \Aws\or_chain([self::class, 'legacySignatureProvider'], ClientResolver::_default_signature_provider()),
 			'csm' => false,
 			'use_arn_region' => false,
+			'http' => ['verify' => $certPath],
 		];
 		if ($this->getProxy()) {
-			$options['http'] = [ 'proxy' => $this->getProxy() ];
+			$options['http']['proxy'] = $this->getProxy();
 		}
 		if (isset($this->params['legacy_auth']) && $this->params['legacy_auth']) {
 			$options['signature_version'] = 'v2';

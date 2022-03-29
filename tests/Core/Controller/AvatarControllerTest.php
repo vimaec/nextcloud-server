@@ -119,6 +119,8 @@ class AvatarControllerTest extends \Test\TestCase {
 		$this->avatarFile->method('getContent')->willReturn('image data');
 		$this->avatarFile->method('getMimeType')->willReturn('image type');
 		$this->avatarFile->method('getEtag')->willReturn('my etag');
+		$this->avatarFile->method('getName')->willReturn('my name');
+		$this->avatarFile->method('getMTime')->willReturn(42);
 	}
 
 	protected function tearDown(): void {
@@ -191,24 +193,7 @@ class AvatarControllerTest extends \Test\TestCase {
 		$this->assertEquals(Http::STATUS_NOT_FOUND, $response->getStatus());
 	}
 
-	/**
-	 * Make sure we get the correct size
-	 */
-	public function testGetAvatarSize() {
-		$this->avatarMock->expects($this->once())
-			->method('getFile')
-			->with($this->equalTo(32))
-			->willReturn($this->avatarFile);
-
-		$this->avatarManager->method('getAvatar')->willReturn($this->avatarMock);
-
-		$this->avatarController->getAvatar('userId', 32);
-	}
-
-	/**
-	 * We cannot get avatars that are 0 or negative
-	 */
-	public function testGetAvatarSizeMin() {
+	public function testGetAvatarSize64(): void {
 		$this->avatarMock->expects($this->once())
 			->method('getFile')
 			->with($this->equalTo(64))
@@ -216,21 +201,78 @@ class AvatarControllerTest extends \Test\TestCase {
 
 		$this->avatarManager->method('getAvatar')->willReturn($this->avatarMock);
 
-		$this->avatarController->getAvatar('userId', 0);
+		$this->logger->expects($this->never())
+			->method('debug');
+
+		$this->avatarController->getAvatar('userId', 64);
 	}
 
-	/**
-	 * We do not support avatars larger than 2048*2048
-	 */
-	public function testGetAvatarSizeMax() {
+	public function testGetAvatarSize512(): void {
 		$this->avatarMock->expects($this->once())
 			->method('getFile')
-			->with($this->equalTo(2048))
+			->with($this->equalTo(512))
 			->willReturn($this->avatarFile);
 
 		$this->avatarManager->method('getAvatar')->willReturn($this->avatarMock);
 
-		$this->avatarController->getAvatar('userId', 2049);
+		$this->logger->expects($this->never())
+			->method('debug');
+
+		$this->avatarController->getAvatar('userId', 512);
+	}
+
+	/**
+	 * Small sizes return 64 and generate a log
+	 */
+	public function testGetAvatarSizeTooSmall(): void {
+		$this->avatarMock->expects($this->once())
+			->method('getFile')
+			->with($this->equalTo(64))
+			->willReturn($this->avatarFile);
+
+		$this->avatarManager->method('getAvatar')->willReturn($this->avatarMock);
+
+		$this->logger->expects($this->once())
+			->method('debug')
+			->with('Avatar requested in deprecated size 32');
+
+		$this->avatarController->getAvatar('userId', 32);
+	}
+
+	/**
+	 * Avatars between 64 and 512 are upgraded to 512
+	 */
+	public function testGetAvatarSizeBetween(): void {
+		$this->avatarMock->expects($this->once())
+			->method('getFile')
+			->with($this->equalTo(512))
+			->willReturn($this->avatarFile);
+
+		$this->avatarManager->method('getAvatar')->willReturn($this->avatarMock);
+
+		$this->logger->expects($this->once())
+			->method('debug')
+			->with('Avatar requested in deprecated size 65');
+
+		$this->avatarController->getAvatar('userId', 65);
+	}
+
+	/**
+	 * We do not support avatars larger than 512
+	 */
+	public function testGetAvatarSizeTooBig(): void {
+		$this->avatarMock->expects($this->once())
+			->method('getFile')
+			->with($this->equalTo(512))
+			->willReturn($this->avatarFile);
+
+		$this->avatarManager->method('getAvatar')->willReturn($this->avatarMock);
+
+		$this->logger->expects($this->once())
+			->method('debug')
+			->with('Avatar requested in deprecated size 513');
+
+		$this->avatarController->getAvatar('userId', 513);
 	}
 
 	/**
@@ -290,7 +332,7 @@ class AvatarControllerTest extends \Test\TestCase {
 	 */
 	public function testPostAvatarFile() {
 		//Create temp file
-		$fileName = tempnam(null, "avatarTest");
+		$fileName = tempnam('', "avatarTest");
 		$copyRes = copy(\OC::$SERVERROOT.'/tests/data/testimage.jpg', $fileName);
 		$this->assertTrue($copyRes);
 
@@ -328,7 +370,7 @@ class AvatarControllerTest extends \Test\TestCase {
 	 */
 	public function testPostAvatarFileGif() {
 		//Create temp file
-		$fileName = tempnam(null, "avatarTest");
+		$fileName = tempnam('', "avatarTest");
 		$copyRes = copy(\OC::$SERVERROOT.'/tests/data/testimage.gif', $fileName);
 		$this->assertTrue($copyRes);
 

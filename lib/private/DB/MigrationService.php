@@ -43,6 +43,7 @@ use OCP\AppFramework\App;
 use OCP\AppFramework\QueryException;
 use OCP\Migration\IMigrationStep;
 use OCP\Migration\IOutput;
+use Psr\Log\LoggerInterface;
 
 class MigrationService {
 
@@ -73,7 +74,7 @@ class MigrationService {
 		$this->connection = $connection;
 		$this->output = $output;
 		if (null === $this->output) {
-			$this->output = new SimpleOutput(\OC::$server->getLogger(), $appName);
+			$this->output = new SimpleOutput(\OC::$server->get(LoggerInterface::class), $appName);
 		}
 
 		if ($appName === 'core') {
@@ -634,6 +635,8 @@ class MigrationService {
 				if ($isUsingDefaultName && \strlen($table->getName()) - $prefixLength >= 23) {
 					throw new \InvalidArgumentException('Primary index name on "' . $table->getName() . '" is too long.');
 				}
+				// } elseif (!$primaryKey instanceof Index && !$sourceTable instanceof Table) {
+				// throw new \InvalidArgumentException('Table "' . $table->getName() . '" has no primary key and therefor will not behave sane in clustered setups.');
 			}
 		}
 

@@ -7,8 +7,7 @@
 		<!-- eslint-disable-next-line vue/no-v-html -->
 		<p class="settings-hint" v-html="hint" />
 		<p>
-			<input
-				id="caldavSendInvitations"
+			<input id="caldavSendInvitations"
 				v-model="sendInvitations"
 				type="checkbox"
 				class="checkbox">
@@ -23,8 +22,7 @@
 			<em v-html="sendInvitationsHelpText" />
 		</p>
 		<p>
-			<input
-				id="caldavGenerateBirthdayCalendar"
+			<input id="caldavGenerateBirthdayCalendar"
 				v-model="generateBirthdayCalendar"
 				type="checkbox"
 				class="checkbox">
@@ -41,8 +39,7 @@
 			</em>
 		</p>
 		<p>
-			<input
-				id="caldavSendEventReminders"
+			<input id="caldavSendEventReminders"
 				v-model="sendEventReminders"
 				type="checkbox"
 				class="checkbox">
@@ -60,9 +57,22 @@
 				{{ $t('dav', 'Notifications are sent via background jobs, so these must occur often enough.') }}
 			</em>
 		</p>
-		<p>
-			<input
-				id="caldavSendEventRemindersPush"
+		<p class="indented">
+			<input id="caldavSendEventRemindersToSharedGroupMembers"
+				v-model="sendEventRemindersToSharedGroupMembers"
+				type="checkbox"
+				class="checkbox"
+				:disabled="!sendEventReminders">
+			<label for="caldavSendEventRemindersToSharedGroupMembers">
+				{{ $t('dav', 'Send reminder notifications to calendar sharees as well' ) }}
+			</label>
+			<br>
+			<em>
+				{{ $t('dav', 'Reminders are always sent to organizers and attendees.' ) }}
+			</em>
+		</p>
+		<p class="indented">
+			<input id="caldavSendEventRemindersPush"
 				v-model="sendEventRemindersPush"
 				type="checkbox"
 				class="checkbox"
@@ -74,9 +84,18 @@
 	</div>
 </template>
 
+<style lang="scss" scoped>
+	.indented {
+		padding-left: 28px;
+	}
+</style>
+
 <script>
 import axios from '@nextcloud/axios'
 import { generateUrl } from '@nextcloud/router'
+import { loadState } from '@nextcloud/initial-state'
+
+const userSyncCalendarsDocUrl = loadState('dav', 'userSyncCalendarsDocUrl', '#')
 
 export default {
 	name: 'CalDavSettings',
@@ -88,7 +107,7 @@ export default {
 			)
 			return translated
 				.replace('{calendarappstoreopen}', '<a target="_blank" href="../apps/office/calendar">')
-				.replace('{calendardocopen}', '<a target="_blank" :href="userSyncCalendarsUrl" rel="noreferrer noopener">')
+				.replace('{calendardocopen}', `<a target="_blank" href="${userSyncCalendarsDocUrl}" rel="noreferrer noopener">`)
 				.replace(/\{linkclose\}/g, '</a>')
 		},
 		sendInvitationsHelpText() {
@@ -118,6 +137,13 @@ export default {
 		},
 		sendEventReminders(value) {
 			OCP.AppConfig.setValue('dav', 'sendEventReminders', value ? 'yes' : 'no')
+		},
+		sendEventRemindersToSharedGroupMembers(value) {
+			OCP.AppConfig.setValue(
+				'dav',
+				'sendEventRemindersToSharedGroupMembers',
+				value ? 'yes' : 'no'
+			)
 		},
 		sendEventRemindersPush(value) {
 			OCP.AppConfig.setValue('dav', 'sendEventRemindersPush', value ? 'yes' : 'no')

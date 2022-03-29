@@ -195,6 +195,14 @@
 							type: OC.SetupChecks.MESSAGE_TYPE_INFO
 						});
 					}
+					if (!data.wasEmailTestSuccessful) {
+						messages.push({
+							msg: t('core', 'You have not set or verified your email server configuration, yet. Please head over to the {mailSettingsStart}Basic settings{mailSettingsEnd} in order to set them. Afterwards, use the "Send email" button below the form to verify your settings.',)
+							.replace('{mailSettingsStart}', '<a href="' + OC.generateUrl('/settings/admin') + '">')
+							.replace('{mailSettingsEnd}', '</a>'),
+							type: OC.SetupChecks.MESSAGE_TYPE_INFO
+						});
+					}
 					if (!data.hasValidTransactionIsolationLevel) {
 						messages.push({
 							msg: t('core', 'Your database does not run with "READ COMMITTED" transaction isolation level. This can cause problems when multiple actions are executed in parallel.'),
@@ -217,7 +225,7 @@
 					}
 					if (data.suggestedOverwriteCliURL !== '') {
 						messages.push({
-							msg: t('core', 'If your installation is not installed at the root of the domain and uses system cron, there can be issues with the URL generation. To avoid these problems, please set the "overwrite.cli.url" option in your config.php file to the webroot path of your installation (suggestion: "{suggestedOverwriteCliURL}")', {suggestedOverwriteCliURL: data.suggestedOverwriteCliURL}),
+							msg: t('core', 'Please make sure to set the "overwrite.cli.url" option in your config.php file to the URL that your users mainly use to access this Nextcloud. Suggestion: "{suggestedOverwriteCliURL}". Otherwise there might be problems with the URL generation via cron. (It is possible though that the suggested URL is not the URL that your users mainly use to access this Nextcloud. Best is to double check this in any case.)', {suggestedOverwriteCliURL: data.suggestedOverwriteCliURL}),
 							type: OC.SetupChecks.MESSAGE_TYPE_WARNING
 						});
 					}
@@ -251,6 +259,12 @@
 							msg: t('core', 'Last background job execution ran {relativeTime}. Something seems wrong. {linkstart}Check the background job settings ↗{linkend}.', {relativeTime: data.cronInfo.relativeTime})
 									.replace('{linkstart}', '<a target="_blank" rel="noreferrer noopener" class="external" href="' + data.cronInfo.backgroundJobsUrl + '">')
 									.replace('{linkend}', '</a>'),
+							type: OC.SetupChecks.MESSAGE_TYPE_ERROR
+						});
+					}
+					if (!data.isFairUseOfFreePushService) {
+						messages.push({
+							msg: t('core', 'This is the unsupported community build of Nextcloud. Given the size of this instance, performance, reliability and scalability cannot be guaranteed. Push notifications have been disabled to avoid overloading our free service. Learn more about the benefits of Nextcloud Enterprise at nextcloud.com/enterprise.'),
 							type: OC.SetupChecks.MESSAGE_TYPE_ERROR
 						});
 					}
@@ -290,9 +304,9 @@
 							type: OC.SetupChecks.MESSAGE_TYPE_INFO
 						})
 					}
-					if (data.phpSupported && data.phpSupported.version.substr(0, 3) === '7.2') {
+					if (data.phpSupported && data.phpSupported.version.substr(0, 3) === '7.3') {
 						messages.push({
-							msg: t('core', 'Nextcloud 20 is the last release supporting PHP 7.2. Nextcloud 21 requires at least PHP 7.3.'),
+							msg: t('core', 'Nextcloud 23 is the last release supporting PHP 7.3. Nextcloud 24 requires at least PHP 7.4.'),
 							type: OC.SetupChecks.MESSAGE_TYPE_INFO
 						})
 					}
@@ -322,18 +336,15 @@
 							type: OC.SetupChecks.MESSAGE_TYPE_ERROR
 						});
 					}
-					if(!data.hasOpcacheLoaded) {
-						messages.push({
-							msg: t('core', 'The PHP OPcache module is not loaded. {linkstart}For better performance it is recommended ↗{linkend} to load it into your PHP installation.')
-								.replace('{linkstart}', '<a target="_blank" rel="noreferrer noopener" class="external" href="' + data.phpOpcacheDocumentation + '">')
-								.replace('{linkend}', '</a>'),
-							type: OC.SetupChecks.MESSAGE_TYPE_INFO
+					if(data.OpcacheSetupRecommendations.length > 0) {
+						var listOfOPcacheRecommendations = "";
+						data.OpcacheSetupRecommendations.forEach(function(element){
+							listOfOPcacheRecommendations += "<li>" + element + "</li>";
 						});
-					} else if(!data.isOpcacheProperlySetup) {
 						messages.push({
-							msg: t('core', 'The PHP OPcache module is not properly configured. {linkstart}For better performance it is recommended ↗{linkend} to use the following settings in the <code>php.ini</code>:')
-								.replace('{linkstart}', '<a target="_blank" rel="noreferrer noopener" class="external" href="' + data.phpOpcacheDocumentation + '">')
-								.replace('{linkend}', '</a>') + "<pre><code>opcache.enable=1\nopcache.interned_strings_buffer=8\nopcache.max_accelerated_files=10000\nopcache.memory_consumption=128\nopcache.save_comments=1\nopcache.revalidate_freq=1</code></pre>",
+							msg: t('core', 'The PHP OPcache module is not properly configured. See the {linkstart}documentation ↗{linkend} for more information.')
+								.replace('{linkstart}', '<a target="_blank" rel="noreferrer noopener" class="external" href="' + OC.theme.docPlaceholderUrl.replace('PLACEHOLDER', 'admin-php-opcache') + '">')
+								.replace('{linkend}', '</a>') + '<ul>' + listOfOPcacheRecommendations + '</ul>',
 							type: OC.SetupChecks.MESSAGE_TYPE_INFO
 						});
 					}
@@ -409,6 +420,24 @@
 								'core',
 								'This instance is missing some recommended PHP modules. For improved performance and better compatibility it is highly recommended to install them.'
 							) + "<ul><code>" + listOfRecommendedPHPModules + "</code></ul>",
+							type: OC.SetupChecks.MESSAGE_TYPE_INFO
+						})
+					}
+					if (!data.isImagickEnabled) {
+						messages.push({
+							msg: t(
+								'core',
+								'The PHP module "imagick" is not enabled although the theming app is. For favicon generation to work correctly, you need to install and enable this module.'
+							),
+							type: OC.SetupChecks.MESSAGE_TYPE_INFO
+						})
+					}
+					if (!data.areWebauthnExtensionsEnabled) {
+						messages.push({
+							msg: t(
+								'core',
+								'The PHP modules "gmp" and/or "bcmath" are not enabled. If you use WebAuthn passwordless authentication, these modules are required.'
+							),
 							type: OC.SetupChecks.MESSAGE_TYPE_INFO
 						})
 					}
@@ -510,6 +539,7 @@
 					OC.SetupChecks.addGenericSetupCheck(data, 'OCA\\Settings\\SetupChecks\\LegacySSEKeyFormat', messages)
 					OC.SetupChecks.addGenericSetupCheck(data, 'OCA\\Settings\\SetupChecks\\CheckUserCertificates', messages)
 					OC.SetupChecks.addGenericSetupCheck(data, 'OCA\\Settings\\SetupChecks\\SupportedDatabase', messages)
+					OC.SetupChecks.addGenericSetupCheck(data, 'OCA\\Settings\\SetupChecks\\LdapInvalidUuids', messages)
 
 				} else {
 					messages.push({
@@ -628,7 +658,6 @@
 					'X-Content-Type-Options': ['nosniff'],
 					'X-Robots-Tag': ['none'],
 					'X-Frame-Options': ['SAMEORIGIN', 'DENY'],
-					'X-Download-Options': ['noopen'],
 					'X-Permitted-Cross-Domain-Policies': ['none'],
 				};
 				for (var header in securityHeaders) {

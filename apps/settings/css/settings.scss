@@ -107,14 +107,20 @@ input {
 #personal-settings-avatar-container {
 	display: inline-grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: 2fr 1fr;
+	grid-template-rows: 2fr 1fr 2fr;
 	vertical-align: top;
 }
 
 .profile-settings-container {
 	display: inline-grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: 1fr 2fr 1fr;
+	grid-template-rows: 1fr 1fr 1fr 2fr;
+
+	#locale {
+		h3 {
+			height: 32px;
+		}
+	}
 }
 
 .personal-show-container {
@@ -217,7 +223,7 @@ select {
 
 		.personal-settings-container {
 			grid-template-columns: 1fr 1fr;
-			grid-template-rows: 1fr 1fr 1fr;
+			grid-template-rows: 1fr 1fr 1fr 1fr;
 		}
 
 		.profile-settings-container {
@@ -239,7 +245,7 @@ select {
 
 		.personal-settings-container {
 			grid-template-columns: 1fr 1fr;
-			grid-template-rows: 1fr 1fr 1fr;
+			grid-template-rows: 1fr 1fr 1fr 1fr;
 		}
 
 		.profile-settings-container {
@@ -273,7 +279,7 @@ select {
 .personal-settings-container {
 	display: inline-grid;
 	grid-template-columns: 1fr 1fr;
-	grid-template-rows: 1fr 1fr 2fr;
+	grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
 
 	&:after {
 		clear: both;
@@ -1015,6 +1021,9 @@ span.version {
 }
 
 .apps-list {
+	$toolbar-padding: 8px;
+	$toolbar-height: 44px + $toolbar-padding * 2;
+
 	.section {
 		cursor: pointer;
 	}
@@ -1027,9 +1036,17 @@ span.version {
 		margin-left: 10px;
 	}
 
-	.counter {
-		padding-left: $header-height - 10px;
-		margin: 10px;
+	.toolbar {
+		height: $toolbar-height;
+		padding: $toolbar-padding;
+		// Leave room for app-navigation-toggle
+		padding-left: $toolbar-height;
+		width: 100%;
+		background-color: var(--color-main-background);
+		position: fixed;
+		z-index: 1;
+		display: flex;
+		align-items: center;
 	}
 
 	&.installed {
@@ -1037,6 +1054,7 @@ span.version {
 			display: table;
 			width: 100%;
 			height: auto;
+			margin-top: $toolbar-height;
 		}
 
 		margin-bottom: 100px;
@@ -1549,9 +1567,8 @@ doesnotexist:-o-prefocus, .strengthify-wrapper {
 			}
 
 			/* various */
-			&#grid-header,
-			&#new-user {
-				@include position('sticky');
+			&#grid-header {
+				position: sticky;
 				align-self: normal;
 				background-color: var(--color-main-background);
 				z-index: 100; /* above multiselect */
@@ -1560,29 +1577,10 @@ doesnotexist:-o-prefocus, .strengthify-wrapper {
 				&.sticky {
 					box-shadow: 0 -2px 10px 1px var(--color-box-shadow);
 				}
-
-				/* fake input for groups validation */
-				input#newgroups {
-					position: absolute;
-					opacity: 0;
-					width: 80% !important;
-					margin: 0 10%;
-					z-index: 0;
-				}
-			}
-
-			// separate prop to set initial value to top: 50px
-			&#new-user {
-				height: 120px;
-
-				.row {
-					padding-top: 50px;
-				}
 			}
 
 			&#grid-header {
 				color: var(--color-text-maxcontrast);
-				z-index: 60; /* above new-user */
 				border-bottom-width: thin;
 
 				#headerDisplayName,
@@ -1762,4 +1760,19 @@ doesnotexist:-o-prefocus, .strengthify-wrapper {
 			user-select: none;
 		}
 	}
+}
+
+.animated {
+    animation: blink-animation 1s steps(5, start) 4;
+}
+
+@keyframes blink-animation {
+  to {
+    opacity: 0.6;
+  }
+}
+@-webkit-keyframes blink-animation {
+  to {
+    opacity: 1;
+  }
 }

@@ -48,7 +48,7 @@ interface IMountPoint {
 	/**
 	 * Get the storage that is mounted
 	 *
-	 * @return \OC\Files\Storage\Storage|null
+	 * @return \OCP\Files\Storage\IStorage|null
 	 * @since 8.0.0
 	 */
 	public function getStorage();
@@ -128,4 +128,12 @@ interface IMountPoint {
 	 * @since 12.0.0
 	 */
 	public function getMountType();
+
+	/**
+	 * Get the class of the mount provider that this mount originates from
+	 *
+	 * @return string
+	 * @since 24.0.0
+	 */
+	public function getMountProvider(): string;
 }

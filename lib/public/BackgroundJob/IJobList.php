@@ -85,10 +85,11 @@ interface IJobList {
 	/**
 	 * get the next job in the list
 	 *
+	 * @param bool $onlyTimeSensitive
 	 * @return \OCP\BackgroundJob\IJob|null
-	 * @since 7.0.0
+	 * @since 7.0.0 - In 24.0.0 parameter $onlyTimeSensitive got added
 	 */
-	public function getNext();
+	public function getNext(bool $onlyTimeSensitive = false): ?IJob;
 
 	/**
 	 * @param int $id
@@ -96,6 +97,13 @@ interface IJobList {
 	 * @since 7.0.0
 	 */
 	public function getById($id);
+
+	/**
+	 * @param int $id
+	 * @return array|null
+	 * @since 23.0.0
+	 */
+	public function getDetailsById(int $id): ?array;
 
 	/**
 	 * set the job that was last ran to the current time
@@ -129,4 +137,12 @@ interface IJobList {
 	 * @since 12.0.0
 	 */
 	public function setExecutionTime(IJob $job, $timeTaken);
+
+	/**
+	 * Reset the $job so it executes on the next trigger
+	 *
+	 * @param IJob $job
+	 * @since 23.0.0
+	 */
+	public function resetBackgroundJob(IJob $job): void;
 }

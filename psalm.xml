@@ -75,6 +75,8 @@
 		<file name="build/stubs/sftp.php"/>
 		<file name="build/stubs/ssh2.php"/>
 		<file name="build/stubs/xsl.php"/>
+		<file name="build/stubs/ftp.php"/>
+		<file name="build/stubs/pcntl.php"/>
 	</stubs>
 	<issueHandlers>
 		<UndefinedClass>

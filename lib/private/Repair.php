@@ -47,6 +47,7 @@ use OC\Repair\Collation;
 use OC\Repair\MoveUpdaterStepFile;
 use OC\Repair\NC22\LookupServerSendCheck;
 use OC\Repair\Owncloud\CleanPreviews;
+use OC\Repair\Owncloud\MigrateOauthTables;
 use OC\Repair\NC11\FixMountStorages;
 use OC\Repair\Owncloud\MoveAvatars;
 use OC\Repair\Owncloud\InstallCoreBundle;
@@ -80,6 +81,7 @@ use OCP\Migration\IRepairStep;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Throwable;
 
 class Repair implements IOutput {
 
@@ -92,13 +94,12 @@ class Repair implements IOutput {
 	/** @var string */
 	private $currentStep;
 
-	private $logger;
+	private LoggerInterface $logger;
 
 	/**
 	 * Creates a new repair step runner
 	 *
 	 * @param IRepairStep[] $repairSteps array of RepairStep instances
-	 * @param EventDispatcherInterface $dispatcher
 	 */
 	public function __construct(array $repairSteps, EventDispatcherInterface $dispatcher, LoggerInterface $logger) {
 		$this->repairSteps = $repairSteps;
@@ -140,9 +141,15 @@ class Repair implements IOutput {
 				$s = \OC::$server->query($repairStep);
 			} catch (QueryException $e) {
 				if (class_exists($repairStep)) {
-					$s = new $repairStep();
+					try {
+						// Last resort: hope there are no constructor arguments
+						$s = new $repairStep();
+					} catch (Throwable $inner) {
+						// Well, it was worth a try
+						throw new \Exception("Repair step '$repairStep' can't be instantiated: " . $e->getMessage(), 0, $e);
+					}
 				} else {
-					throw new \Exception("Repair step '$repairStep' is unknown");
+					throw new \Exception("Repair step '$repairStep' is unknown", 0, $e);
 				}
 			}
 
@@ -164,7 +171,7 @@ class Repair implements IOutput {
 	 */
 	public static function getRepairSteps() {
 		return [
-			new Collation(\OC::$server->getConfig(), \OC::$server->getLogger(), \OC::$server->getDatabaseConnection(), false),
+			new Collation(\OC::$server->getConfig(), \OC::$server->get(LoggerInterface::class), \OC::$server->getDatabaseConnection(), false),
 			new RepairMimeTypes(\OC::$server->getConfig(), \OC::$server->getDatabaseConnection()),
 			new CleanTags(\OC::$server->getDatabaseConnection(), \OC::$server->getUserManager()),
 			new RepairInvalidShares(\OC::$server->getConfig(), \OC::$server->getDatabaseConnection()),
@@ -178,6 +185,7 @@ class Repair implements IOutput {
 				\OC::$server->getUserManager(),
 				\OC::$server->getConfig()
 			),
+			new MigrateOauthTables(\OC::$server->get(Connection::class)),
 			new FixMountStorages(\OC::$server->getDatabaseConnection()),
 			new UpdateLanguageCodes(\OC::$server->getDatabaseConnection(), \OC::$server->getConfig()),
 			new InstallCoreBundle(
@@ -190,7 +198,7 @@ class Repair implements IOutput {
 			new ClearGeneratedAvatarCache(\OC::$server->getConfig(), \OC::$server->query(AvatarManager::class)),
 			new AddPreviewBackgroundCleanupJob(\OC::$server->getJobList()),
 			new AddCleanupUpdaterBackupsJob(\OC::$server->getJobList()),
-			new CleanupCardDAVPhotoCache(\OC::$server->getConfig(), \OC::$server->getAppDataDir('dav-photocache'), \OC::$server->getLogger()),
+			new CleanupCardDAVPhotoCache(\OC::$server->getConfig(), \OC::$server->getAppDataDir('dav-photocache'), \OC::$server->get(LoggerInterface::class)),
 			new AddClenupLoginFlowV2BackgroundJob(\OC::$server->getJobList()),
 			new RemoveLinkShares(\OC::$server->getDatabaseConnection(), \OC::$server->getConfig(), \OC::$server->getGroupManager(), \OC::$server->getNotificationManager(), \OC::$server->query(ITimeFactory::class)),
 			new ClearCollectionsAccessCache(\OC::$server->getConfig(), \OC::$server->query(IManager::class)),
@@ -231,7 +239,7 @@ class Repair implements IOutput {
 		$connectionAdapter = \OC::$server->get(ConnectionAdapter::class);
 		$config = \OC::$server->getConfig();
 		$steps = [
-			new Collation(\OC::$server->getConfig(), \OC::$server->getLogger(), $connectionAdapter, true),
+			new Collation(\OC::$server->getConfig(), \OC::$server->get(LoggerInterface::class), $connectionAdapter, true),
 			new SqliteAutoincrement($connection),
 			new SaveAccountsTableData($connectionAdapter, $config),
 			new DropAccountTermsTable($connectionAdapter),

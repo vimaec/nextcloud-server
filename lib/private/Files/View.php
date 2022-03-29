@@ -274,7 +274,7 @@ class View {
 	/**
 	 * remove mount point
 	 *
-	 * @param \OC\Files\Mount\MoveableMount $mount
+	 * @param IMountPoint $mount
 	 * @param string $path relative to data/
 	 * @return boolean
 	 */
@@ -719,7 +719,7 @@ class View {
 		$postFix = (substr($path, -1) === '/') ? '/' : '';
 		$absolutePath = Filesystem::normalizePath($this->getAbsolutePath($path));
 		$mount = Filesystem::getMountManager()->find($absolutePath . $postFix);
-		if ($mount and $mount->getInternalPath($absolutePath) === '') {
+		if ($mount->getInternalPath($absolutePath) === '') {
 			return $this->removeMount($mount, $absolutePath);
 		}
 		if ($this->is_dir($path)) {
@@ -1082,7 +1082,7 @@ class View {
 	 * @param string $type
 	 * @param string $path
 	 * @param bool $raw
-	 * @return bool|null|string
+	 * @return bool|string
 	 */
 	public function hash($type, $path, $raw = false) {
 		$postFix = (substr($path, -1) === '/') ? '/' : '';
@@ -1104,7 +1104,7 @@ class View {
 				return $storage->hash($type, $internalPath, $raw);
 			}
 		}
-		return null;
+		return false;
 	}
 
 	/**
@@ -1182,7 +1182,7 @@ class View {
 				if ($result && in_array('delete', $hooks) and $result) {
 					$this->removeUpdate($storage, $internalPath);
 				}
-				if ($result && in_array('write', $hooks,  true) && $operation !== 'fopen' && $operation !== 'touch') {
+				if ($result && in_array('write', $hooks, true) && $operation !== 'fopen' && $operation !== 'touch') {
 					$this->writeUpdate($storage, $internalPath);
 				}
 				if ($result && in_array('touch', $hooks)) {
@@ -1340,7 +1340,7 @@ class View {
 
 		try {
 			// if the file is not in the cache or needs to be updated, trigger the scanner and reload the data
-			if (!$data || $data['size'] === -1) {
+			if (!$data || (isset($data['size']) && $data['size'] === -1)) {
 				if (!$storage->file_exists($internalPath)) {
 					return false;
 				}
@@ -1383,10 +1383,6 @@ class View {
 		$path = Filesystem::normalizePath($this->fakeRoot . '/' . $path);
 
 		$mount = Filesystem::getMountManager()->find($path);
-		if (!$mount) {
-			\OC::$server->getLogger()->warning('Mountpoint not found for path: ' . $path);
-			return false;
-		}
 		$storage = $mount->getStorage();
 		$internalPath = $mount->getInternalPath($path);
 		if ($storage) {
@@ -1407,7 +1403,7 @@ class View {
 			}
 			$info = new FileInfo($path, $storage, $internalPath, $data, $mount, $owner);
 
-			if ($data and isset($data['fileid'])) {
+			if (isset($data['fileid'])) {
 				if ($includeMountPoints and $data['mimetype'] === 'httpd/unix-directory') {
 					//add the sizes of other mount points to the folder
 					$extOnly = ($includeMountPoints === 'ext');
@@ -1488,7 +1484,7 @@ class View {
 
 					$rootEntry = $subCache->get('');
 					if (!$rootEntry) {
-						$subScanner = $subStorage->getScanner('');
+						$subScanner = $subStorage->getScanner();
 						try {
 							$subScanner->scanFile('');
 						} catch (\OCP\Files\StorageNotAvailableException $e) {
@@ -1739,12 +1735,13 @@ class View {
 		$manager = Filesystem::getMountManager();
 		$mounts = $manager->findIn($this->fakeRoot);
 		$mounts[] = $manager->find($this->fakeRoot);
-		// reverse the array so we start with the storage this view is in
+		$mounts = array_filter($mounts);
+		// reverse the array, so we start with the storage this view is in
 		// which is the most likely to contain the file we're looking for
 		$mounts = array_reverse($mounts);
 
-		// put non shared mounts in front of the shared mount
-		// this prevent unneeded recursion into shares
+		// put non-shared mounts in front of the shared mount
+		// this prevents unneeded recursion into shares
 		usort($mounts, function (IMountPoint $a, IMountPoint $b) {
 			return $a instanceof SharedMount && (!$b instanceof SharedMount) ? 1 : -1;
 		});
@@ -1915,14 +1912,10 @@ class View {
 	 * @param string $absolutePath absolute path
 	 * @param bool $useParentMount true to return parent mount instead of whatever
 	 * is mounted directly on the given path, false otherwise
-	 * @return \OC\Files\Mount\MountPoint mount point for which to apply locks
+	 * @return IMountPoint mount point for which to apply locks
 	 */
 	private function getMountForLock($absolutePath, $useParentMount = false) {
-		$results = [];
 		$mount = Filesystem::getMountManager()->find($absolutePath);
-		if (!$mount) {
-			return $results;
-		}
 
 		if ($useParentMount) {
 			// find out if something is mounted directly on the path
