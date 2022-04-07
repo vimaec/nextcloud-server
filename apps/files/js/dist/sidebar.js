@@ -31212,15 +31212,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       isFullScreen: false
     };
   },
-  // updated() {
-  // 	if (this.sidebarClosed) {
-  // 		this.Sidebar.file = ""
-  // 	}
-  // 	console.log(this.Sidebar)
-  // },
-  // updated() {
-  // 	console.log(this.Sidebar)
-  // },
   computed: {
     /**
      * Current filename
@@ -31616,15 +31607,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       Object(_nextcloud_event_bus__WEBPACK_IMPORTED_MODULE_3__["emit"])('files:sidebar:closed');
     }
   },
-  watch: {
-    file: function file() {
-      if (this.file === '/' && this.sidebarClosed) {
-        this.Sidebar.file = '';
-      }
-
-      console.log(this.file);
-    }
-  }
+  watch: {}
 });
 
 /***/ }),
