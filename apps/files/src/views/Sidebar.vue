@@ -115,15 +115,6 @@ export default {
 			isFullScreen: false,
 		}
 	},
-	// updated() {
-	// 	if (this.sidebarClosed) {
-	// 		this.Sidebar.file = ""
-	// 	}
-	// 	console.log(this.Sidebar)
-	// },
-	// updated() {
-	// 	console.log(this.Sidebar)
-	// },
 	computed: {
 		/**
 		 * Current filename
@@ -482,12 +473,6 @@ export default {
 		},
 	},
 	watch: {
-		file() {
-			if (this.file === '/' && this.sidebarClosed) {
-				this.Sidebar.file = ''
-			}
-			console.log(this.file)
-		}
 	}
 }
 </script>
