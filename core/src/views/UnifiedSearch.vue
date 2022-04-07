@@ -37,6 +37,7 @@
 
 		<!-- Search form & filters wrapper -->
 		<div class="unified-search__input-wrapper" :class="showSearch ? '' : 'd-none d-block-md'">
+			<!-- <h1 class="folder-title d-block d-md-none">{{title}}</h1> -->
 			<form class="unified-search__form"
 				role="search"
 				:class="{'icon-loading-small': isLoading}"
@@ -139,6 +140,9 @@ import HeaderMenu from '../components/HeaderMenu'
 import SearchResult from '../components/UnifiedSearch/SearchResult'
 import SearchResultPlaceholders from '../components/UnifiedSearch/SearchResultPlaceholders'
 
+import { basename, dirname, encodePath, isSamePath, joinPaths } from '@nextcloud/paths'
+import FileInfo from '../../../apps/files/src/services/FileInfo'
+
 const REQUEST_FAILED = 0
 const REQUEST_OK = 1
 const REQUEST_CANCELED = 2
@@ -182,6 +186,11 @@ export default {
 			minSearchLength,
 
 			open: false,
+
+			fileInfo: null,
+			test: OCA,
+			test1: '',
+			// title: OCA.Files.App.currentFileList._currentDirectory
 		}
 	},
 
@@ -295,13 +304,40 @@ export default {
 		isLoading() {
 			return Object.values(this.loading).some(state => state === true)
 		},
+		davPath() {
+			const user = OC.getCurrentUser().uid
+			return OC.linkToRemote(`dav/files/${user}${encodePath(OCA.Files.Sidebar.state.file)}`)
+		},
+		// title() {
+		// 	return OCA.Files.App.currentFileList._currentDirectory
+		// }
+		// TODO need to be shown on the frontend:
+		// TODO current folder
+		// TODO all routes
+		// Selected file
+		// defaultAction() {
+		// 	return OCA.Files.Sidebar.state.file
+		// },
 	},
 
 	async created() {
 		this.types = await getTypes()
 		this.logger.debug('Unified Search initialized with the following providers', this.types)
+		if (OCA.Files.App.currentFileList._currentDirectory === '/') {
+			this.title = 'All Files'
+		} else this.title = OCA.Files.App.currentFileList._currentDirectory.slice(OCA.Files.App.currentFileList._currentDirectory.lastIndexOf('/') + 1)
+		
 	},
-
+	async updated() {
+		try {
+			this.fileInfo = await FileInfo(this.davPath)
+			console.log(this.davPath)
+			// adding this as fallback because other apps expect it
+		} catch (error) {
+			console.error(error)
+		} finally {
+		}
+	},
 	mounted() {
 		document.addEventListener('keydown', (event) => {
 			// if not already opened, allows us to trigger default browser on second keydown
@@ -640,6 +676,9 @@ export default {
 				.trim()
 			this.onInput()
 		},
+		titleFormated(title) {
+			return title.slice(title.lastIndexOf('/') + 1)
+		}
 	},
 }
 </script>
@@ -775,9 +814,19 @@ $input-padding: 6px;
   .unified-search__form {
     margin: 10px 24px;
   }
+	.unified-search__input-wrapper {
+		flex-wrap: wrap;
+	}
+	.folder-title {
+		font-size: 20px;
+		font-weight: 500;
+		color: var(--dark-gray-cool);
+		margin: 16px 24px;
+	}
 	.header-menu__content .unified-search__form-input, .header-menu__content .unified-search__form-input:active {
 		background-color: var(--c-light-gray);
 		height: 48px!important;
+		margin: 0;
 		border-radius: 10px;
 		padding: 6px 12px;
 		-webkit-appearance: none!important;

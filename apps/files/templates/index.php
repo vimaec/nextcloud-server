@@ -1,7 +1,6 @@
 <?php /** @var \OCP\IL10N $l */ ?>
 <?php $_['appNavigation']->printPage(); ?>
 <div id="app-content">
-
 	<?php if (!$_['isIE']) { ?>
 		<input type="checkbox" class="hidden-visually" id="showgridview"
 			aria-label="<?php p($l->t('Toggle grid view'))?>"

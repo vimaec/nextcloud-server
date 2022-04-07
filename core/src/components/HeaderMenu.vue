@@ -602,12 +602,20 @@ p {
 		display: none !important;
 	}
 	.header-menu .header-menu__trigger,
-	#filelist-header #recommendations,
-	#controls .breadcrumb {
+	#filelist-header #recommendations {
 		display: none;
 	}
 	#app-navigation + #app-content #controls {
 		padding-left: 0;
+		margin-left: 14px;
+		margin-right: 24px;
+
+	}
+	.breadcrumb .crumb>a, .breadcrumb .crumb>a:visited, .breadcrumb .crumb>span {
+		font-size: 20px;
+		font-weight: 400;
+		color: var(--dark-gray-cool);
+		padding: 6px 12px;
 	}
 	#header {
 		justify-content: flex-start;
@@ -644,6 +652,7 @@ p {
 		left: 0;
 		right: auto;
 		z-index: 1;
+		top: 50px
 	}
 	.header-menu__carret {
 		display: none;
@@ -655,11 +664,11 @@ p {
 		width: 100vw;
 	}
 	#app-content-files {
-		padding-top: 20px;
+		padding-top: 70px;
 	}
 	#view-toggle {
     right: 8px;
-		top: 132px;
+		top: 182px;
 	}
 	table th .columntitle.name {
 		margin-left: 5px;
