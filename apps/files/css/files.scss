@@ -1316,4 +1316,11 @@ table.dragshadow td.size {
 		box-shadow: none!important;
 		background-color: #73D665!important;
 	}
+	#filestable.view-grid:not(.hidden) {
+		tbody td.filename {
+			.thumbnail-wrapper {
+				z-index: auto;
+			}
+		}
+	}  
 }
