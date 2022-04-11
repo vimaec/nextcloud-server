@@ -616,6 +616,9 @@ export default {
 			const user = OC.getCurrentUser().uid
 			return OC.linkToRemote(`dav/files/${user}${encodePath(OCA.Files.Sidebar.state.file)}`)
 		},
+		tokenUrl() {
+			return encodeURIComponent(this.token);
+		},
 		// title() {
 		// 	return OCA.Files.App.currentFileList._currentDirectory
 		// }
