@@ -56,8 +56,21 @@ Vue.mixin({
 
 Vue.use(BootstrapVue)
 
+const windowSize = window.innerWidth;
+const mobileWidth = 767
+const currentPage = window.location.pathname
+const filesLayout = currentPage.search('apps/files')
+// console.log(filesLayout)
+
+var el = '#unified-search'
+
+if (windowSize < mobileWidth && filesLayout > 0) {
+	el = '#unified-search2'
+}
+// console.log(el)
+
 export default new Vue({
-	el: '#unified-search',
+	el: el,
 	// eslint-disable-next-line vue/match-component-file-name
 	name: 'UnifiedSearchRoot',
 	render: h => h(UnifiedSearch),

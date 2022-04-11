@@ -1,4 +1,3 @@
-<!-- <div id="unified-search2"></div> -->
 <div id="controls">
 		<div class="actions creatable hidden">
 			<div id="uploadprogresswrapper">
@@ -21,6 +20,7 @@
 	<input type="hidden" class="max_human_file_size"
 		   value="(max <?php isset($_['uploadMaxHumanFilesize']) ? p($_['uploadMaxHumanFilesize']) : ''; ?>)">
 </div>
+<div id="unified-search2"></div>
 <div id="filelist-header"></div>
 
 <div id="emptycontent" class="hidden">
