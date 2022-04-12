@@ -58,13 +58,17 @@ Vue.use(BootstrapVue)
 
 const windowSize = window.innerWidth;
 const mobileWidth = 767
-const currentPage = window.location.pathname
+const currentPage = window.location.href
 const filesLayout = currentPage.search('apps/files')
-// console.log(filesLayout)
+const favoritesLayout = currentPage.search('/&view=favorites')
+const shareLayout = currentPage.search('/&view=shareoverview')
+const tagsLayout = currentPage.search('/&view=systemtagsfilter')
+const archiveLayout = currentPage.search('/&view=trashbin')
+console.log(window.location)
 
 var el = '#unified-search'
 
-if (windowSize < mobileWidth && filesLayout > 0) {
+if (windowSize < mobileWidth && filesLayout > 0 && shareLayout < 0 && favoritesLayout < 0 && tagsLayout < 0 && archiveLayout < 0) {
 	el = '#unified-search2'
 }
 // console.log(el)
