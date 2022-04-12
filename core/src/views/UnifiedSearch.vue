@@ -160,7 +160,7 @@
 						<b-nav-item
 							:to="
 								mainPath +
-									'index.php/apps/files/?dir=/&view=favorites'
+									'/index.php/apps/files/?dir=/&view=favorites'
 							"
 							class="text-color-dark-gray-cool"
 							link-classes="text-reset text-18 py-2 px-4 d-flex align-items-center nav-link_mobile"
@@ -470,7 +470,7 @@ export default {
 
 	data() {
 		return {
-      currentPage: window.location.pathname,
+      currentPage: window.location.href,
 			types: [],
 
 			// Cursors per types
@@ -504,9 +504,9 @@ export default {
 
 	computed: {
     showSearch() {
-      if (this.currentPage.includes('apps/dashboard')) {
-        return false
-      } else return true
+      if (this.currentPage.includes('/apps/files/') && !this.currentPage.includes('&view=')) {
+        return true
+      } else return false
     },
 		typesIDs() {
 			return this.types.map(type => type.id)

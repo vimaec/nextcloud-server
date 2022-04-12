@@ -295,6 +295,9 @@ p {
 	vertical-align: baseline;
 }
 @media (max-width: 767px) {
+	.sidebar.b-sidebar-outer {
+		z-index: 2002;
+	}
 	#appmenu {
 		display: none;
 	}
