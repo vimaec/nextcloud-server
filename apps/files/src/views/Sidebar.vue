@@ -484,6 +484,33 @@ export default {
 		}
 		.app-files #app-sidebar-vue.app-sidebar {
 			z-index: 2100;
+			width: 100%;
+			max-width: 100%;
+			position: fixed;
+			top: auto;
+			bottom: 0;
+			border-radius: 12px 12px 0 0;
+			box-shadow: 0 0 37px 26px rgb(0 0 0 / 35%);
+			height: calc(100vh - var(--header-height) - 20px)
+		}
+		#app-sidebar-vue.app-sidebar .app-sidebar-header__desc .app-sidebar-header__title-container .app-sidebar-header__maintitle-container .app-sidebar-header__maintitle {
+			font-size: 16px;
+			line-height: 21px;
+			min-height: auto;
+		}
+		#app-sidebar-vue.app-sidebar .app-sidebar-header__desc .app-sidebar-header__title-container .app-sidebar-header__subtitle {
+			font-size: 14px;
+			line-height: 19px;
+			min-height: auto;
+			color: #999;
+			opacity: 1;
+		}
+		#app-sidebar-vue.app-sidebar .app-sidebar-header--compact.app-sidebar-header--with-figure .app-sidebar-header__info .app-sidebar-header__figure {
+			width: 38px;
+			height: 38px;
+		}
+		#app-sidebar-vue.app-sidebar .app-sidebar-header--compact.app-sidebar-header--with-figure .app-sidebar-header__info {
+			align-items: center;
 		}
 	}
 </style>

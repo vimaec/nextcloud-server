@@ -337,7 +337,7 @@ p {
 		justify-content: flex-start;
 	}
 	#header .header-left {
-		margin: 0 auto 0 -3rem;
+		margin: 0 auto 0 0;
 		flex: 0 0 auto;
 		order: 1;
 	}
