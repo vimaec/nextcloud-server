@@ -35379,7 +35379,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.i, "\n@media (max-width: 767px) {\n#rich-workspace {\n\t\tdisplay: none;\n\t\tposition: static;\n}\n.app-files #app-sidebar-vue.app-sidebar {\n\t\tz-index: 2100;\n}\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.i, "\n@media (max-width: 767px) {\n#rich-workspace {\n\t\tdisplay: none;\n\t\tposition: static;\n}\n.app-files #app-sidebar-vue.app-sidebar {\n\t\tz-index: 2100;\n\t\twidth: 100%;\n\t\tmax-width: 100%;\n\t\tposition: fixed;\n\t\ttop: auto;\n\t\tbottom: 0;\n\t\tborder-radius: 12px 12px 0 0;\n\t\tbox-shadow: 0 0 37px 26px rgb(0 0 0 / 35%);\n\t\theight: calc(100vh - var(--header-height) - 20px)\n}\n#app-sidebar-vue.app-sidebar .app-sidebar-header__desc .app-sidebar-header__title-container .app-sidebar-header__maintitle-container .app-sidebar-header__maintitle {\n\t\tfont-size: 16px;\n\t\tline-height: 21px;\n\t\tmin-height: auto;\n}\n#app-sidebar-vue.app-sidebar .app-sidebar-header__desc .app-sidebar-header__title-container .app-sidebar-header__subtitle {\n\t\tfont-size: 14px;\n\t\tline-height: 19px;\n\t\tmin-height: auto;\n\t\tcolor: #999;\n\t\topacity: 1;\n}\n#app-sidebar-vue.app-sidebar .app-sidebar-header--compact.app-sidebar-header--with-figure .app-sidebar-header__info .app-sidebar-header__figure {\n\t\twidth: 38px;\n\t\theight: 38px;\n}\n#app-sidebar-vue.app-sidebar .app-sidebar-header--compact.app-sidebar-header--with-figure .app-sidebar-header__info {\n\t\talign-items: center;\n}\n}\n", ""]);
 // Exports
 /* harmony default export */ __webpack_exports__["default"] = (___CSS_LOADER_EXPORT___);
 
