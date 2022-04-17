@@ -1,13 +1,13 @@
 <div id="controls">
-		<div class="actions creatable hidden">
-			<div id="uploadprogresswrapper">
-			</div>
+	<div class="actions creatable hidden">
+		<div id="uploadprogresswrapper">
 		</div>
-		<div id="file_action_panel"></div>
-		<div class="notCreatable notPublic hidden">
-			<div class="icon-alert-outline"></div>
-			<?php p($l->t('You don’t have permission to upload or create files here'))?>
-		</div>
+	</div>
+	<div id="file_action_panel"></div>
+	<div class="notCreatable notPublic hidden">
+		<div class="icon-alert-outline"></div>
+		<?php p($l->t('You don’t have permission to upload or create files here'))?>
+	</div>
 	<?php /* Note: the template attributes are here only for the public page. These are normally loaded
 			 through ajax instead (updateStorageStatistics).
 	*/ ?>
@@ -46,15 +46,14 @@
 			<th id='headerName' class="hidden column-name">
 				<div id="headerName-container">
 					<a class="name sort columntitle" data-sort="name">
-                        <span><?php p($l->t('Name')); ?></span>
-                        <span class="sort-indicator"></span>
-
-                    </a>
-                    <span id="selectedActionsList" class="selectedActions">
-                        <a href="" class="actions-selected">
-                            <span class="icon icon-more"></span>
-                            <span><?php p($l->t('Actions'))?></span>
-                        </a>
+						<span><?php p($l->t('Name')); ?></span>
+						<span class="sort-indicator"></span>
+					</a>
+					<span id="selectedActionsList" class="selectedActions">
+						<a href="" class="actions-selected">
+							<span class="icon icon-more"></span>
+							<span><?php p($l->t('Actions'))?></span>
+						</a>
 					</span>
 				</div>
 			</th>
