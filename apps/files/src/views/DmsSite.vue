@@ -38,7 +38,6 @@ export default {
 			ModelDetail: 'Club',
 			ModelName: null,
 			Title:null,
-			IsMenuAdded:false,
 			MenuItems: [],
 			AddClubMenuItem: {}			
 		}
@@ -132,7 +131,7 @@ export default {
 		},
 		async updateNewFileMenu(){
 			let _this=this
-			if(OCA.Files.App.currentFileList._newFileMenu !== undefined){
+			if(OCA.Files.App.currentFileList._newFileMenu !== undefined){				
 				OCA.Files.App.currentFileList._newFileMenu.removeMenuEntry('DmsSite-init')
 			}
 			let icon = 'icon-new-site'
@@ -150,21 +149,9 @@ export default {
 					_this.buttonClicked(name)
 				},
 			}
-			const initTemplatesPlugin = {
-				attach(menu) {
-						// register the new menu entry
-					menu.addMenuEntry(templatePlugin)
-				},
-			}
 			if(_this.ModelDetail!==""){
 				if(OC.isUserAdmin() || _oc_isdmsadmin){
-					if(OCA.Files.App.currentFileList._newFileMenu !== undefined){
-						OCA.Files.App.currentFileList._newFileMenu.addMenuEntry(templatePlugin)
-					}
-					else if(!_this.IsMenuAdded){
-						OC.Plugins.register('OCA.Files.NewFileMenu', initTemplatesPlugin)
-						_this.IsMenuAdded = true
-					}
+					OCA.Files.App.DmsMenu = templatePlugin
 					$('#newbuttonId').show()
 				}
 				else {
@@ -174,6 +161,7 @@ export default {
 
 			}
 			else{
+				OCA.Files.App.DmsMenu = undefined
 				$('#newbuttonId').show()
 			}
 			

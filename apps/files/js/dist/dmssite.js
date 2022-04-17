@@ -15060,7 +15060,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       ModelDetail: 'Club',
       ModelName: null,
       Title: null,
-      IsMenuAdded: false,
       MenuItems: [],
       AddClubMenuItem: {}
     };
@@ -15255,7 +15254,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _this8 = this;
 
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7() {
-        var _this, icon, templatePlugin, initTemplatesPlugin;
+        var _this, icon, templatePlugin;
 
         return regeneratorRuntime.wrap(function _callee7$(_context7) {
           while (1) {
@@ -15283,31 +15282,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                     _this.buttonClicked(name);
                   }
                 };
-                initTemplatesPlugin = {
-                  attach: function attach(menu) {
-                    // register the new menu entry
-                    menu.addMenuEntry(templatePlugin);
-                  }
-                };
 
                 if (_this.ModelDetail !== "") {
                   if (OC.isUserAdmin() || _oc_isdmsadmin) {
-                    if (OCA.Files.App.currentFileList._newFileMenu !== undefined) {
-                      OCA.Files.App.currentFileList._newFileMenu.addMenuEntry(templatePlugin);
-                    } else if (!_this.IsMenuAdded) {
-                      OC.Plugins.register('OCA.Files.NewFileMenu', initTemplatesPlugin);
-                      _this.IsMenuAdded = true;
-                    }
-
+                    OCA.Files.App.DmsMenu = templatePlugin;
                     $('#newbuttonId').show();
                   } else {
                     $('#newbuttonId').hide();
                   }
                 } else {
+                  OCA.Files.App.DmsMenu = undefined;
                   $('#newbuttonId').show();
                 }
 
-              case 7:
+              case 6:
               case "end":
                 return _context7.stop();
             }

@@ -3955,6 +3955,11 @@
 				});
 				$('.actions').append(this._newFileMenu.$el);
 			}
+			this._newFileMenu.removeMenuEntry('DmsSite-init')
+			if(OCA.Files.App.DmsMenu){
+				this._newFileMenu.addMenuEntry(OCA.Files.App.DmsMenu)
+			}
+			
 			this._newFileMenu.showAt($target);
 
 			return false;
